@@ -1,16 +1,18 @@
 
 var usernameColors = {
-  magenta: '#ff00ff',
-  gold: '#ffd700',
-  coolBlue: '#07F7F7',
-  orange: 'orange',
-  springGreen: '#00ff7f',
-  brightYellow: '#FFFF80',
-  streamerGreen: '#15FF8D',
-  darkBlue: '#0000ff',
+  divaPink: '#FF63B4', 
+  magenta: '#E509FB',//ff00ff',
   streamerRed: '#FF1515',
-  slateGray: '#708090',
-
+  brightYellow: '#FFFF80',
+  orange: 'orange',
+  springGreen: '#B9E50B',//C4F503',//a6d644',//C1F142',
+  streamerGreen: '#15FF8D', //A6FF73
+  grassGreen: '#05C305',
+  coolBlue: '#07F7F7',
+  dreamyBlue: '#1B98F5',
+  vacationTeal: '#56B6CA',
+  slateGray: '#F2F7F8',//7996B4',//#708090',
+  
 }
 
 let userColors = {}

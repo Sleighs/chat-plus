@@ -1,19 +1,30 @@
 
+
+/* # To-Do
+
+  // Add option to turn off username colors
+
+  // If @ is pressed, show list of usernames in chat. 
+    // If username is selected, add username to message
+*/
+
+
+// Text colors
 var usernameColors = {
+  rumbler: '#88a0b8',
   divaPink: '#FF63B4', 
   magenta: '#BD03E5',
   electricPurple: '#850DF4',
   streamerRed: '#EA0101',
   sundayRed: '#FFBBB1',
   brightYellow: '#FFFF6B',
-  orange: 'orange',//#FF8000',
+  orange: 'orange',
   springGreen: '#B9E50B',
   streamerGreen: '#15FF8D',
   grassGreen: '#05C305',
   marinerTeal: '#4FB5B0',
   coolBlue: '#07F7F7',
   dreamyBlue: '#2DA3FB',
-  rumble: '#88a0b8',
 }
 
 var messageColors = { 
@@ -31,7 +42,6 @@ const getRandomColor = () => {
 
 var currentChatHistory = [];
 var currentUser = '';
-var testText = 'test';
 
 // Set current user
 const usernameEle = document.querySelector('.chat-history--rant-username');
@@ -45,20 +55,6 @@ const chatHistoryList = document.getElementById('chat-history-list');
 const chatHistoryRows = document.querySelectorAll('.chat-history--row');
 const chatHistoryNames = document.querySelectorAll('.chat-history--username');
 const chatHistoryMessages = document.querySelectorAll('.chat-history--message');
-
-// Show chat history when user clicks 'test' button
-
-
-const showChatHistory = () => {
-  /*chatHistoryRows.forEach((element, index) => {
-    console.log(
-      'index: ' + index,
-      'username: ' + element.childNodes[0].textContent,
-      'message: ' + element.childNodes[1].textContent
-    );
-  });*/
-  console.log('currentChatHistory', currentChatHistory);
-}
 
 // Asign random color to each unique username in current chat history
 const assignRandomColor = (array) => {
@@ -180,7 +176,7 @@ var chatObserver = new MutationObserver(function(mutations) {
   });
 });
 
-// Observe chat for changes to its child elements
+// Observe chat for changes to its child elements to detect new messages
 chatObserver.observe(document.querySelector('#chat-history-list'), { childList: true });
 
 
@@ -196,10 +192,3 @@ testBtn.addEventListener('click', ()=>{
 //chatHistoryEle[0].appendChild(testBtn);
 
 
-
-
-// Add option to turn off username colors
-
-
-// If @ is pressed, show list of usernames in chat. 
-  // If username is selected, add username to message

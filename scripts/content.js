@@ -1,27 +1,41 @@
 
 var usernameColors = {
   divaPink: '#FF63B4', 
-  magenta: '#E509FB',//ff00ff',
-  streamerRed: '#FF1515',
-  brightYellow: '#FFFF80',
-  orange: 'orange',
-  springGreen: '#B9E50B',//C4F503',//a6d644',//C1F142',
-  streamerGreen: '#15FF8D', //A6FF73
+  magenta: '#BD03E5',
+  electricPurple: '#850DF4',
+  streamerRed: '#EA0101',
+  sundayRed: '#FFBBB1',
+  brightYellow: '#FFFF6B',
+  orange: 'orange',//#FF8000',
+  springGreen: '#B9E50B',
+  streamerGreen: '#15FF8D',
   grassGreen: '#05C305',
+  marinerTeal: '#4FB5B0',
   coolBlue: '#07F7F7',
-  dreamyBlue: '#1B98F5',
-  vacationTeal: '#56B6CA',
-  slateGray: '#F2F7F8',//7996B4',//#708090',
-  
+  dreamyBlue: '#2DA3FB',
+  rumble: '#88a0b8',
+}
+
+var messageColors = { 
+  chatPlus: '#EDF2F7',
+  rumble: '#d6e0ea',
+  white: '#FFFFFF',
 }
 
 let userColors = {}
+
 const getRandomColor = () => {
   const colors = Object.values(usernameColors);
   return colors[Math.floor(Math.random() * colors.length)];
 }
+
 var currentChatHistory = [];
-var currentUser = 'AirborneEvil';
+var currentUser = '';
+var testText = 'test';
+
+// Set current user
+const usernameEle = document.querySelector('.chat-history--rant-username');
+currentUser = usernameEle.textContent;
 
 // 'class-history' element
 const chatHistoryEle = document.querySelectorAll('.chat-history');
@@ -68,10 +82,38 @@ const getUserColor = (username) => {
   return userColors[username];
 }
 
+function highlightString(text, searchTerm, color, backgroundColor) {
+  var index = text.indexOf(searchTerm);
+  if (index >= 0) {
+    return (
+      text.substring(0, index) +
+      "<span style='color: " +
+      color +
+      "; background-color: " + 
+      backgroundColor +
+      ";'>" +
+      searchTerm +
+      "</span>" +
+      highlightString(text.substring(index + searchTerm.length), searchTerm, color, backgroundColor)
+    );
+  }
+  return text;
+}
+
 const getChatHistory = () => {
   chatHistoryRows.forEach((element, index) => {
     //Assign random color to each unique username in current chat history
     let userColor = getUserColor(element.childNodes[0].textContent);
+
+    // Assign text color to username and message
+      // If default colors selected, igonre
+    element.childNodes[0].style.color = userColor;
+    //element.childNodes[1].style.color = messageColors.chatPlus;
+
+    // Highlight current user's username when tagged with '@'
+    if (element.childNodes[1].textContent.toLowerCase().includes(('@' + currentUser).toLowerCase())) {
+      element.childNodes[1].innerHTML = highlightString(element.childNodes[1].textContent, '@' + currentUser, 'white', 'rgb(234, 100, 4, .85)');
+    }
 
     // Add the message to the chat history
     currentChatHistory.push({
@@ -80,16 +122,6 @@ const getChatHistory = () => {
       color: userColor,
       date: Date.now(),
     });
-
-    // Assign color to username
-      // If default colors selected, igonre
-    element.childNodes[0].style.color = userColor;
-
-    // Highlight current user's username when tagged with '@'
-    if (element.childNodes[1].textContent.includes('@' + currentUser)) {
-      element.childNodes[1].style.color = 'white';
-      element.childNodes[1].style.backgroundColor = 'rgb(234, 100, 4, .85)';
-    }
     
   });
 };
@@ -124,13 +156,16 @@ var chatObserver = new MutationObserver(function(mutations) {
       for (var i = 0; i < mutation.addedNodes.length; i++) {
         var addedNode = mutation.addedNodes[i];
         if (addedNode.classList.contains("chat-history--row")) {
-          /*console.log("New message detected:", 
-            addedNode.childNodes[0].textContent,
-            addedNode.childNodes[1].textContent
-          );*/
-
           // Add the message to the chat history
           let userColor = getUserColor(addedNode.childNodes[0].textContent);
+
+          // Assign color to username
+          addedNode.childNodes[0].style.color = userColor;
+
+          // Highlight current user's username when tagged with '@'
+          if (addedNode.childNodes[1].textContent.toLowerCase().includes(('@' + currentUser).toLowerCase())) {
+            addedNode.childNodes[1].innerHTML = highlightString(addedNode.childNodes[1].textContent, '@' + currentUser, 'white', 'rgb(234, 100, 4, .85)');
+          }
 
           // Add the message to the chat history
           currentChatHistory.push({
@@ -139,53 +174,32 @@ var chatObserver = new MutationObserver(function(mutations) {
             color: userColor,
             date: Date.now(),
           });
-
-          // Assign color to username
-          addedNode.childNodes[0].style.color = userColor;
-
-          // Highlight current user's username when tagged with '@'
-          if (addedNode.childNodes[1].textContent.includes('@' + currentUser)) {
-            addedNode.childNodes[1].style.color = 'white';
-            addedNode.childNodes[1].style.backgroundColor = 'rgb(234, 100, 4)';
-          }
-          
-          // Replace '@' tagged username with span element of current user's username
-          if (addedNode.childNodes[1].textContent.includes('@' + currentUser)) {
-            const message = addedNode.childNodes[1].textContent;
-            const messageArray = message.split(' ');
-            //const taggedUsername = messageArray[0].substring(1);
-            //const newMessage = message.replace('@' + taggedUsername, '<span style="color: white; background-color: Orange;">' + '@' + currentUser + '</span>');
-            //addedNode.childNodes[1].innerHTML = newMessage;
-          }
         }
       }
     }
   });
 });
 
-// Observe the chat container element for changes to its child elements
+// Observe chat for changes to its child elements
 chatObserver.observe(document.querySelector('#chat-history-list'), { childList: true });
 
 
 // Append test button to chat window
 const testBtn = document.createElement('button');
 testBtn.innerHTML = 'Test';
-testBtn.addEventListener('click', showChatHistory);
+testBtn.addEventListener('click', ()=>{
+  //showChatHistory()
+  console.log('userColors', userColors);
+
+  testBtn.innerHTML = highlightString('element @AirborneEvil childNodes textContent', '@' + currentUser, 'white', 'rgb(234, 100, 4, .85)');
+});
 //chatHistoryEle[0].appendChild(testBtn);
 
 
 
-/*
-window.onload = function() {
-  // Get chat history on page load
-  getChatHistory();
-}
-*/
 
+// Add option to turn off username colors
 
-// Set color's for usernames
-
-// highlight user's username when mentioned in chat
 
 // If @ is pressed, show list of usernames in chat. 
   // If username is selected, add username to message

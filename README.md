@@ -5,8 +5,7 @@ This Chrome extension adds livestream chat features to Rumble.com to enhance you
 ### Features
 - Colorized usernames 
 - User mention highlighting
-- View list users who've chatted
-- (Coming Soon) Chat timestamps
+- View list of users who've chatted
 
 ## Installation
 - Download this repository.

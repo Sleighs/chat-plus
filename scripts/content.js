@@ -7,6 +7,12 @@
   2. Add popup to show list of usernames in chat
     - autocomplete usernames when typing '@' in chat input
 
+  3. Add option to keep all usernames in history
+
+  4. Add option to change list font size
+
+  Maybe add option to highlight author's username differently 
+
 */
 
 
@@ -56,6 +62,11 @@ if (rantEle && usernameEle) {
     currentUser = usernameEle[usernameEle.length - 1].textContent;
   } 
 }
+
+// Get currentstreamer name
+var authorEle = document.querySelector('.media-by--a')
+var authorHref = authorEle.getAttribute('href');
+var currentStreamer = authorHref.replace('/c/', '');
 
 // 'class-history' element
 const chatHistoryEle = document.querySelectorAll('.chat-history');
@@ -117,11 +128,6 @@ function insertUsername(username, message, caretPos) {
   return message.slice(0, caretPos) + username + message.slice(caretPos);
 }
 
-function storeCaretPosition(input) {
-  const caretPosition = input.selectionStart;
-  return caretPosition;
-}
-
 const getChatHistory = () => {
   currentChatHistory = [];
   chatHistoryRows.forEach((element, index) => {
@@ -150,6 +156,7 @@ const getChatHistory = () => {
         element.childNodes[1].innerHTML = highlightString(element.childNodes[1].textContent, currentUser, 'white', 'rgb(234, 100, 4, .85)');
       }
     }
+
     // Add the message to the chat history
     currentChatHistory.push({
       username: element.childNodes[0].textContent,
@@ -160,7 +167,28 @@ const getChatHistory = () => {
   });
 };
 
-const openChatUsernamesPopup = () => {
+
+
+
+// Get page coordinates of the message input caret position
+function getPageCoordinates(element) {
+  var rect = element.getBoundingClientRect();
+  return {
+    x: rect.left + window.pageXOffset,
+    y: rect.top + window.pageYOffset,
+    left: rect.left + window.pageXOffset,
+    top: rect.top + window.pageYOffset,
+  };
+}
+
+// Get caret position in message input
+function storeCaretPosition(input) {
+  const caretPosition = input.selectionStart;
+  return caretPosition;
+}
+
+// Open popup with username list
+const openChatUsernamesPopup = (caretCoordinates) => {
   // Create popup element
   const popup = document.createElement('div');
   popup.classList.add('chat-plus-popup');
@@ -175,7 +203,16 @@ const openChatUsernamesPopup = () => {
   popup.style.borderRadius = '5px';
   popup.style.zIndex = '9999';
   popup.style.padding = '0 5px';
-  popup.style.marginLeft = '10px';
+  //popup.style.boxShadow = '5px 5px 5px 0 rgba(0, 0, 0, 0.5)';
+  popup.style.outline = '2px solid rgba(136,136,136,0.43)';
+  popup.style.outlineOffset = '0px';
+
+  var popupAdjustedHeight = document.getElementById("chat-message-text-input").clientHeight;
+
+  console.log('popupAdjustedHeight', popupAdjustedHeight)
+  popup.style.position = 'absolute';
+  popup.style.top = caretCoordinates.top + popupAdjustedHeight + 5 + 'px';
+  popup.style.left = caretCoordinates.left + 'px';
 
   // Create popup close button
   const popupClose = document.createElement('button');
@@ -191,7 +228,7 @@ const openChatUsernamesPopup = () => {
   popupClose.addEventListener('click', () => {
     popup.remove();
   });
-  popup.appendChild(popupClose);
+  //popup.appendChild(popupClose);
 
   // Create popup content element
   const popupContent = document.createElement('ul');
@@ -203,22 +240,23 @@ const openChatUsernamesPopup = () => {
   popupContent.style.overflow = 'auto';
   popup.appendChild(popupContent);
 
-
-  // Populate popup content with usernames from userColors object
-
-  // Create a sorted object of userColors by username
-  const sortedUserColors = Object.keys(userColors).sort().reduce(
-    (obj, key) => {
-      obj[key] = userColors[key];
-      return obj;
-    }, {}
-  );
+  // Sort userColors object by username
+  function sortObjectByPropName(obj) {
+    const sorted = {};
+    Object.keys(obj)
+      .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+      .forEach(key => {
+        sorted[key] = obj[key];
+      });
+    return sorted;
+  }
+  const sortedUserColors = sortObjectByPropName(userColors);
 
   // Loop through sortedUserColors object and add usernames to popup content
   for (let user in sortedUserColors) {
     const usernameTextElement = document.createElement('li');
     usernameTextElement.style.color = sortedUserColors[user];
-    usernameTextElement.style.fontSize = '1rem';
+    usernameTextElement.style.fontSize = '1.1rem';
     usernameTextElement.style.listStyle = 'none';
     usernameTextElement.style.cursor = 'pointer';
     usernameTextElement.style.fontWeight = 'bold';
@@ -241,16 +279,18 @@ const openChatUsernamesPopup = () => {
     });
   }
 
-  var chatFormEle = document.getElementById('chat-message-form')
+  // Append popup to page
+  document.body.appendChild(popup);
 
-  chatFormEle.appendChild(popup);
+  // Focus popup
+  document.querySelector('.chat-plus-popup').focus();
 }
   
 
 // Get chat history on page load
 getChatHistory();
 
-// Create a MutationObserver instance
+// Create a MutationObserver instance to watch for new chat messages
 var chatObserver = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
     if (mutation.type === "childList") {
@@ -275,20 +315,12 @@ var chatObserver = new MutationObserver(function(mutations) {
             if (
               addedNode.childNodes[1].textContent.toLowerCase().includes(('@' + currentUser).toLowerCase())
             ) {
-              console.log('username detected with @', 
-                addedNode.childNodes[1].textContent,
-                currentUser,
-              )
               addedNode.childNodes[1].innerHTML = highlightString(addedNode.childNodes[1].textContent, '@' + currentUser, 'white', 'rgb(234, 100, 4, .85)');
             } else 
 
             if (
               addedNode.childNodes[1].textContent.toLowerCase().includes((currentUser).toLowerCase())
             ) {
-              console.log('username detected', 
-                addedNode.childNodes[1].textContent,
-                currentUser,
-              )
               addedNode.childNodes[1].innerHTML = highlightString(addedNode.childNodes[1].textContent, currentUser, 'white', 'rgb(234, 100, 4, .85)');
             } 
           }
@@ -320,6 +352,7 @@ document.addEventListener("keydown", function(event) {
   }*/
 
   var usernameListPopup = document.querySelector('.chat-plus-popup');
+  
   // If space bar is pressed remove username list popup
   if (usernameListPopup && event.keyCode === 32) {
     // Close popup
@@ -327,6 +360,7 @@ document.addEventListener("keydown", function(event) {
       usernameListPopup.remove()
     }
   }
+
   // If backspace is pressed remove username list popup
   if (usernameListPopup && event.keyCode === 8) {
     // Close popup
@@ -350,30 +384,38 @@ if (inputElement) {
         atSignIndexes.push(i);
       }
     }
+
     // Get caret position
     let caretPosition = storeCaretPosition(inputElement);
 
-    // If @ is found in the input and caret is next to it
+    // Get coordinates of input element
+    let messageCoordinates = getPageCoordinates(inputElement)
+
+    // If "@"" is found in the input and caret is next to it
     if ( 
       !document.querySelector('.chat-plus-popup') 
       && atSignIndexes.includes(caretPosition - 1)
     ) {
-      //console.log("The @ character was found at index " + atSignIndexes);
-
       // Open username list popup
-      openChatUsernamesPopup();
+      openChatUsernamesPopup(messageCoordinates);
     } 
   });
 }
 
-// Close popup when clicking outside of it
+// Close popup when user clicks outside of element
 document.addEventListener("click", function(event) {
   var usernameListPopup = document.querySelector('.chat-plus-popup');
+  var usernameListPopup2 = document.querySelector('.chat-plus-popup2');
 
-  if (usernameListPopup && !usernameListPopup.contains(event.target)) {
+  if (
+    (usernameListPopup && !usernameListPopup.contains(event.target))
+    || (usernameListPopup2 && !usernameListPopup2.contains(event.target))
+  ) {
     usernameListPopup.remove()
+    usernameListPopup2.remove()
   }
 });
+
 
 // Refresh chat history every 120 seconds
 const chatRefreshInterval = setInterval(function(){
@@ -392,99 +434,84 @@ if (!chatHistoryList){
 
 
 
+
+
+
+
+
+
 ////    FOR TESTING     ////
+
+
+function openChatUsernamesPopup2(caretPosition) {
+  // Sort userColors object by username
+  function sortObjectByPropName(obj) {
+    const sorted = {};
+    Object.keys(obj)
+      .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+      .forEach(key => {
+        sorted[key] = obj[key];
+      });
+    return sorted;
+  }
+  const sortedUserColors = sortObjectByPropName(userColors);
+  
+  // Create username list
+  let usernameList = document.createElement('ul');
+  usernameList.style.listStyle = 'none';
+  usernameList.classList.add('chat-plus-popup-content');
+  usernameList.style.position = 'relative';
+  usernameList.style.width = '100%';
+  usernameList.style.height = '100%';
+  usernameList.style.zIndex = '9999';
+  usernameList.style.overflow = 'auto';
+
+  for (let user in sortedUserColors) {
+    let listItem = document.createElement('li');
+    listItem.textContent = user;
+    listItem.style.color = sortedUserColors[user];
+    usernameList.appendChild(listItem);
+  }
+
+  // Create username list container
+  let usernameListContainer = document.createElement('div');
+  usernameListContainer.classList.add('chat-plus-popup2');
+
+  usernameListContainer.style.position = 'relative';
+  usernameListContainer.style.width = '125px';
+  usernameListContainer.style.maxWidth = '125px';
+  usernameListContainer.style.height = '135px';
+  usernameListContainer.style.overflowY = 'scroll';
+  usernameListContainer.style.overflowX = 'auto';
+  usernameListContainer.style['-ms-overflow-style'] = 'none';
+  usernameListContainer.style.backgroundColor = '#061726';
+  usernameListContainer.style.borderRadius = '5px';
+  usernameListContainer.style.zIndex = '9999';
+  usernameListContainer.style.padding = '0 5px';
+  usernameListContainer.style.marginLeft = '10px';
+
+
+  usernameListContainer.style.position = 'absolute';
+  usernameListContainer.style.top = caretPosition.top - usernameList.offsetHeight + 'px';
+  usernameListContainer.style.left = caretPosition.left + 'px';
+  usernameListContainer.appendChild(usernameList);
+  
+  document.body.appendChild(usernameListContainer);
+}
+
+
 
 // Append test button to chat window
 const testBtn = document.createElement('div');
 testBtn.innerHTML = 'Test';
-testBtn.style.maxWidth = '200px';
+testBtn.style.maxWidth = '150px';
 testBtn.style.wordWrap = 'break-word';
 testBtn.style. height = '100%';
 testBtn.addEventListener('click', ()=>{
-  //showChatHistory()
-  //console.log('userColors', userColors);
+  //getChatHistory();
   //console.log('currentChatHistory', currentChatHistory);
-  //openChatUsernamesPopup();
-  var sampletext = 'element @airborneevil childNodes @AirborneEvil textContent airborneevil;;;';
-  var newEle1 = document.createElement('div');
-  var newEle2 = document.createElement('div');
-  newEle1.innerHTML = highlightString(sampletext, currentUser, 'white', 'rgb(234, 100, 4, .85)');
-  newEle2.innerHTML = highlightString(sampletext, currentUser, 'white', 'rgb(234, 100, 4, .85)');
-  testBtn.appendChild(newEle1);
-  testBtn.appendChild(newEle2);
+  console.log('currentUser: ' + currentUser, 'currentStreamer ' + currentStreamer );
 });
-//chatHistoryEle[0].appendChild(testBtn);
-
-
-
-
-
-
+chatHistoryEle[0].appendChild(testBtn);
 /*
-const autocomplete = (input, arr) => {  
-  let currentFocus;
-  input.addEventListener("input", function(e) {
-    let a, b, i, val = this.value;
-    closeAllLists();
-    if (!val) { return false;}
-    currentFocus = -1;
-    a = document.createElement("DIV");
-    a.setAttribute("id", this.id + "autocomplete-list");
-    a.setAttribute("class", "autocomplete-items");
-    this.parentNode.appendChild(a);
-    for (i = 0; i < arr.length; i++) {
-      if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-        b = document.createElement("DIV");
-        b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-        b.innerHTML += arr[i].substr(val.length);
-        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-        b.addEventListener("click", function(e) {
-          input.value = this.getElementsByTagName("input")[0].value;
-          closeAllLists();
-        });
-        a.appendChild(b);
-      }
-    }
-  });
-  input.addEventListener("keydown", function(e) {
-    let x = document.getElementById(this.id + "autocomplete-list");
-    if (x) x = x.getElementsByTagName("div");
-    if (e.keyCode == 40) {
-      currentFocus++;
-      addActive(x);
-    } else if (e.keyCode == 38) {
-      currentFocus--;
-      addActive(x);
-    } else if (e.keyCode == 13) {
-      e.preventDefault();
-      if (currentFocus > -1) {
-        if (x) x[currentFocus].click();
-      }
-    }
-  });
-  function addActive(x) {
-    if (!x) return false;
-    removeActive(x);
-    if (currentFocus >= x.length) currentFocus = 0;
-    if (currentFocus < 0) currentFocus = (x.length - 1);
-    x[currentFocus].classList.add("autocomplete-active");
-  }
-  function removeActive(x) {
-    for (let i = 0; i < x.length; i++) {
-      x[i].classList.remove("autocomplete-active");
-    }
-  }
-  function closeAllLists(elmnt) {
-    let x = document.getElementsByClassName("autocomplete-items");
-    for (let i = 0; i < x.length; i++) {
-      if (elmnt != x[i] && elmnt != input) {
-        x[i].parentNode.removeChild(x[i]);
-      }
-    }
-  }
-  document.addEventListener("click", function (e) {
-    closeAllLists(e.target);
-  });
-}
 */
-

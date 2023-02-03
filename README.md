@@ -8,9 +8,10 @@ This Chrome extension adds livestream chat features to Rumble.com to enhance you
 - View list users who've chatted
 
 ## Installation
-- Download the extension's files. 
-- From the chrome extensions page, turn on "Developer Mode" and click "Load unpacked" to add the extension.
-- You will see the extension icon in your browser's toolbar. 
+- Download this repository.
+- Unzip the zip file. 
+- From the chrome extensions page, turn on "Developer Mode", click "Load unpacked", then select the downloaded folder.
+- You will see the extension icon among your browser's extensions. 
 
 ## Usage
 - Login and open a livestream on Rumble.com.

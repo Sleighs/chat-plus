@@ -1,20 +1,6 @@
 
 
-/* # To-Do
-
-  1. Add option to turn off username colors
-
-  2. Add popup to show list of usernames in chat
-    - autocomplete usernames when typing '@' in chat input
-
-  3. Add option to keep all usernames in history
-
-  4. Add option to change list font size
-
-  Maybe add option to highlight author's username differently 
-
-*/
-
+////// Variables //////
 
 // Store chat history
 var currentChatHistory = [];
@@ -43,35 +29,42 @@ var messageColors = {
   white: '#FFFFFF',
 }
 
+// For assigned colors
 let userColors = {}
 
+// Gets random color from usernameColors object
 const getRandomColor = () => {
   const colors = Object.values(usernameColors);
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
+// Get current user from page if logged in
 var currentUser = '';
-
-// Set current user
 const rantEle = document.querySelectorAll('.chat-history--rant-head');
 const usernameEle = document.querySelectorAll('.chat-history--rant-username');
 
-// Get current user
 if (rantEle && usernameEle) {
   if (usernameEle.length > 0) {
     currentUser = usernameEle[usernameEle.length - 1].textContent;
   } 
 }
 
-// Get currentstreamer name
-var authorEle = document.querySelector('.media-by--a')
-var authorHref = authorEle.getAttribute('href');
-var currentStreamer = authorHref.replace('/c/', '');
+// Get current streamer from page if exists
+var currentStreamer = '';
+const authorEle = document.querySelector('.media-by--a');
+const authorHref = authorEle.getAttribute('href');
 
-// 'class-history' element
+if (authorEle && authorHref){
+  currentStreamer = authorHref.replace('/c/', '');
+}
+
+
+
+
+//////   Chat History  //////
+
+// Get chat elements
 const chatHistoryEle = document.querySelectorAll('.chat-history');
-
-// Get chat element id 'class-history-list'
 const chatHistoryList = document.getElementById('chat-history-list');
 const chatHistoryRows = document.querySelectorAll('.chat-history--row');
 const chatHistoryNames = document.querySelectorAll('.chat-history--username');
@@ -99,6 +92,7 @@ const getUserColor = (username) => {
   return userColors[username];
 }
 
+// Highlight each term in a string, for usernames in messages
 function highlightString(text, searchTerm, color, backgroundColor) {
   // Get inde of search term
   var index = text.toLowerCase().indexOf(searchTerm.toLowerCase());
@@ -167,8 +161,11 @@ const getChatHistory = () => {
   });
 };
 
+// Get chat history on page load
+getChatHistory();
 
 
+///////   Username List Popup    ///////
 
 // Get page coordinates of the message input caret position
 function getPageCoordinates(element) {
@@ -191,25 +188,28 @@ function storeCaretPosition(input) {
 const openChatUsernamesPopup = (caretCoordinates) => {
   // Create popup element
   const popup = document.createElement('div');
+
+  var popupAdjustedHeight = document.getElementById("chat-message-text-input").clientHeight;
+  var popupAdjustedWidth = document.getElementById("chat-message-text-input").clientWidth;
+
   popup.classList.add('chat-plus-popup');
   popup.style.position = 'relative';
-  popup.style.width = '125px';
-  popup.style.maxWidth = '125px';
-  popup.style.height = '135px';
+  popup.style.width = '100%';
+  popup.style.maxWidth = popupAdjustedWidth - 14 + 'px';
+  popup.style.height = '100%';
+  popup.style.maxHeight = '140px';
   popup.style.overflowY = 'scroll';
   popup.style.overflowX = 'auto';
   popup.style['-ms-overflow-style'] = 'none';
   popup.style.backgroundColor = '#061726';
   popup.style.borderRadius = '5px';
   popup.style.zIndex = '9999';
-  popup.style.padding = '0 5px';
+  popup.style.padding = '0 7px';
   //popup.style.boxShadow = '5px 5px 5px 0 rgba(0, 0, 0, 0.5)';
-  popup.style.outline = '2px solid rgba(136,136,136,0.43)';
+  popup.style.outline = '1px solid rgba(136,136,136,.25)';
   popup.style.outlineOffset = '0px';
 
-  var popupAdjustedHeight = document.getElementById("chat-message-text-input").clientHeight;
-
-  console.log('popupAdjustedHeight', popupAdjustedHeight)
+  // Position popup below caret
   popup.style.position = 'absolute';
   popup.style.top = caretCoordinates.top + popupAdjustedHeight + 5 + 'px';
   popup.style.left = caretCoordinates.left + 'px';
@@ -287,8 +287,9 @@ const openChatUsernamesPopup = (caretCoordinates) => {
 }
   
 
-// Get chat history on page load
-getChatHistory();
+
+
+///////   Chat Listeners   ///////
 
 // Create a MutationObserver instance to watch for new chat messages
 var chatObserver = new MutationObserver(function(mutations) {
@@ -405,14 +406,12 @@ if (inputElement) {
 // Close popup when user clicks outside of element
 document.addEventListener("click", function(event) {
   var usernameListPopup = document.querySelector('.chat-plus-popup');
-  var usernameListPopup2 = document.querySelector('.chat-plus-popup2');
 
   if (
-    (usernameListPopup && !usernameListPopup.contains(event.target))
-    || (usernameListPopup2 && !usernameListPopup2.contains(event.target))
+    usernameListPopup 
+    && !usernameListPopup.contains(event.target)
   ) {
     usernameListPopup.remove()
-    usernameListPopup2.remove()
   }
 });
 
@@ -434,85 +433,26 @@ if (!chatHistoryList){
 
 
 
-
-
-
-
-
-
 ////    FOR TESTING     ////
-
-
-function openChatUsernamesPopup2(caretPosition) {
-  // Sort userColors object by username
-  function sortObjectByPropName(obj) {
-    const sorted = {};
-    Object.keys(obj)
-      .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
-      .forEach(key => {
-        sorted[key] = obj[key];
-      });
-    return sorted;
-  }
-  const sortedUserColors = sortObjectByPropName(userColors);
-  
-  // Create username list
-  let usernameList = document.createElement('ul');
-  usernameList.style.listStyle = 'none';
-  usernameList.classList.add('chat-plus-popup-content');
-  usernameList.style.position = 'relative';
-  usernameList.style.width = '100%';
-  usernameList.style.height = '100%';
-  usernameList.style.zIndex = '9999';
-  usernameList.style.overflow = 'auto';
-
-  for (let user in sortedUserColors) {
-    let listItem = document.createElement('li');
-    listItem.textContent = user;
-    listItem.style.color = sortedUserColors[user];
-    usernameList.appendChild(listItem);
-  }
-
-  // Create username list container
-  let usernameListContainer = document.createElement('div');
-  usernameListContainer.classList.add('chat-plus-popup2');
-
-  usernameListContainer.style.position = 'relative';
-  usernameListContainer.style.width = '125px';
-  usernameListContainer.style.maxWidth = '125px';
-  usernameListContainer.style.height = '135px';
-  usernameListContainer.style.overflowY = 'scroll';
-  usernameListContainer.style.overflowX = 'auto';
-  usernameListContainer.style['-ms-overflow-style'] = 'none';
-  usernameListContainer.style.backgroundColor = '#061726';
-  usernameListContainer.style.borderRadius = '5px';
-  usernameListContainer.style.zIndex = '9999';
-  usernameListContainer.style.padding = '0 5px';
-  usernameListContainer.style.marginLeft = '10px';
-
-
-  usernameListContainer.style.position = 'absolute';
-  usernameListContainer.style.top = caretPosition.top - usernameList.offsetHeight + 'px';
-  usernameListContainer.style.left = caretPosition.left + 'px';
-  usernameListContainer.appendChild(usernameList);
-  
-  document.body.appendChild(usernameListContainer);
-}
-
-
 
 // Append test button to chat window
 const testBtn = document.createElement('div');
 testBtn.innerHTML = 'Test';
+testBtn.style.backgroundColor = 'red';
+//testBtn.style.position = 'absolute';
 testBtn.style.maxWidth = '150px';
 testBtn.style.wordWrap = 'break-word';
-testBtn.style. height = '100%';
+testBtn.style.height = '100%';
+//testBtn.style.right = 0;
+
 testBtn.addEventListener('click', ()=>{
   //getChatHistory();
   //console.log('currentChatHistory', currentChatHistory);
   console.log('currentUser: ' + currentUser, 'currentStreamer ' + currentStreamer );
 });
+
 //chatHistoryEle[0].appendChild(testBtn);
 
 /*
 */
+console.log('currentUser: ' + currentUser, 'currentStreamer ' + currentStreamer );

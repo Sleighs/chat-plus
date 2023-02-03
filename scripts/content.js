@@ -254,25 +254,6 @@ const openChatUsernamesPopup = () => {
 }
   
 
-/*
-// Get chat history from chrome storage
-const getChatHistoryFromStorage = () => {
-  chrome.storage.sync.get(['chatHistory'], function(result) {
-    console.log('Value currently is ' + result.chatHistory);
-    
-    // Compare current chat history with stored chat history
-    currentChatHistory = result.chatHistory;
-  }); 
-};
-
-// Store chat history in chrome storage
-const storeChatHistory = () => {
-  chrome.storage.sync.set({ chatHistory: currentChatHistory }, function() {
-    console.log('Value is set to ' + currentChatHistory);
-  });
-};
-*/
-
 // Get chat history on page load
 getChatHistory();
 
@@ -333,7 +314,9 @@ var chatObserver = new MutationObserver(function(mutations) {
 });
 
 // Observe chat for changes to its child elements to detect new messages
-chatObserver.observe(document.querySelector('#chat-history-list'), { childList: true });
+if (chatHistoryList){
+  chatObserver.observe(document.querySelector('#chat-history-list'), { childList: true });
+}
 
 // Listen for "@" keypress to open popup
 document.addEventListener("keydown", function(event) {
@@ -343,19 +326,17 @@ document.addEventListener("keydown", function(event) {
     openChatUsernamesPopup();
   }*/
 
+  var usernameListPopup = document.querySelector('.chat-plus-popup');
   // If space bar is pressed remove username list popup
-  if (event.keyCode === 32) {
+  if (usernameListPopup && event.keyCode === 32) {
     // Close popup
-    var usernameListPopup = document.querySelector('.chat-plus-popup');
     if (usernameListPopup) {
       usernameListPopup.remove()
     }
   }
-
   // If backspace is pressed remove username list popup
-  if (event.keyCode === 8) {
+  if (usernameListPopup && event.keyCode === 8) {
     // Close popup
-    var usernameListPopup = document.querySelector('.chat-plus-popup');
     if (usernameListPopup) {
       usernameListPopup.remove()
     }
@@ -365,30 +346,32 @@ document.addEventListener("keydown", function(event) {
 // Listen for input in chat message input
 let inputElement = document.getElementById("chat-message-text-input");
 
-inputElement.addEventListener("input", function() {
-  let inputValue = inputElement.value;
-  
-  // Get all indexes of @
-  let atSignIndexes = [];
-  for (var i = 0; i < inputValue.length; i++) {
-    if (inputValue[i] === "@") {
-      atSignIndexes.push(i);
+if (inputElement) {
+  inputElement.addEventListener("input", function() {
+    let inputValue = inputElement.value;
+    
+    // Get all indexes of @
+    let atSignIndexes = [];
+    for (var i = 0; i < inputValue.length; i++) {
+      if (inputValue[i] === "@") {
+        atSignIndexes.push(i);
+      }
     }
-  }
-  // Get caret position
-  let caretPosition = storeCaretPosition(inputElement);
+    // Get caret position
+    let caretPosition = storeCaretPosition(inputElement);
 
-  // If @ is found in the input and caret is next to it
-  if ( 
-    !document.querySelector('.chat-plus-popup') 
-    && atSignIndexes.includes(caretPosition - 1)
-  ) {
-    //console.log("The @ character was found at index " + atSignIndexes);
+    // If @ is found in the input and caret is next to it
+    if ( 
+      !document.querySelector('.chat-plus-popup') 
+      && atSignIndexes.includes(caretPosition - 1)
+    ) {
+      //console.log("The @ character was found at index " + atSignIndexes);
 
-    // Open username list popup
-    openChatUsernamesPopup();
-  } 
-});
+      // Open username list popup
+      openChatUsernamesPopup();
+    } 
+  });
+}
 
 // Close popup when clicking outside of it
 document.addEventListener("click", function(event) {
@@ -400,24 +383,22 @@ document.addEventListener("click", function(event) {
 });
 
 // Refresh chat history every 120 seconds
-setInterval(function(){
+const chatRefreshInterval = setInterval(function(){
   console.log('refreshing chat history');
   getChatHistory()
-  //console.log('currentChatHistory', currentChatHistory)
-  
-  
-  // Clear interval when user is logged out
-  if (currentUser === ''){
-    clearInterval();
-  }
 }, 12000);
 
+ // Clear interval if there is no chat history
+if (!chatHistoryList){
+  console.log('clearing chat refresh interval')
+  clearInterval(chatRefreshInterval);
+}
 
 
 
 
 
-
+////    FOR TESTING     ////
 
 // Append test button to chat window
 const testBtn = document.createElement('div');

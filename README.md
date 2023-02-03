@@ -1,4 +1,4 @@
-# ChatPlus Livestream Chat Extension for Rumble
+# ChatPlus: Livestream Chat Extension for Rumble
 
 This Chrome extension adds livestream chat features to Rumble.com to enhance your viewing experience.
 

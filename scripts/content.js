@@ -15,6 +15,11 @@
 */
 
 
+
+
+// Store chat history
+var currentChatHistory = [];
+
 // Text colors
 var usernameColors = {
   rumbler: '#88a0b8',
@@ -46,13 +51,17 @@ const getRandomColor = () => {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-var currentChatHistory = [];
 var currentUser = '';
 
 // Set current user
-const usernameEle = document.querySelector('.chat-history--rant-username');
-if (usernameEle && usernameEle.textContent){
-  currentUser = usernameEle.textContent;
+const rantEle = document.querySelectorAll('.chat-history--rant-head');
+const usernameEle = document.querySelectorAll('.chat-history--rant-username');
+
+// Get current user
+if (rantEle && usernameEle) {
+  if (usernameEle.length > 0) {
+    currentUser = usernameEle[usernameEle.length - 1].textContent;
+  } 
 }
 
 // 'class-history' element
@@ -121,6 +130,7 @@ function storeCaretPosition(input) {
 }
 
 const getChatHistory = () => {
+  currentChatHistory = [];
   chatHistoryRows.forEach((element, index) => {
     // Check element classlist for 'chat-history--rant' and skip row
     if (element.classList.contains('chat-history--rant')) {
@@ -162,8 +172,6 @@ const openChatUsernamesPopup = () => {
   const popup = document.createElement('div');
   popup.classList.add('chat-plus-popup');
   popup.style.position = 'relative';
-  //popup.style.top = '0';
-  //popup.style.left = '0';
   popup.style.width = '125px';
   popup.style.maxWidth = '125px';
   popup.style.height = '135px';
@@ -181,8 +189,6 @@ const openChatUsernamesPopup = () => {
   popupClose.classList.add('chat-plus-popup-close');
   popupClose.style.position = 'fixed';
   popupClose.style.marginTop = '0';
-  //popupClose.style.top = '0';
-  //popupClose.style.right = '0';
   popupClose.style.padding = '6px';
   popupClose.style.backgroundColor = 'transparent';
   popupClose.style.color = 'black';
@@ -198,9 +204,6 @@ const openChatUsernamesPopup = () => {
   const popupContent = document.createElement('ul');
   popupContent.classList.add('chat-plus-popup-content');
   popupContent.style.position = 'relative';
-  //popupContent.style.top = '50%';
-  //popupContent.style.left = '50%';
-  //popupContent.style.transform = 'translate(-50%, -50%)';
   popupContent.style.width = '100%';
   popupContent.style.height = '100%';
   popupContent.style.zIndex = '9999';
@@ -218,11 +221,10 @@ const openChatUsernamesPopup = () => {
     }, {}
   );
 
+  // Loop through sortedUserColors object and add usernames to popup content
   for (let user in sortedUserColors) {
     const usernameTextElement = document.createElement('li');
     usernameTextElement.style.color = sortedUserColors[user];
-    //usernameTextElement.style.margin = '0';
-    //usernameTextElement.style.padding = '0';
     usernameTextElement.style.fontSize = '1rem';
     usernameTextElement.style.listStyle = 'none';
     usernameTextElement.style.cursor = 'pointer';
@@ -240,14 +242,14 @@ const openChatUsernamesPopup = () => {
             
       // Remove popup
       popup.remove();
+
+      // Focus on chat message input
+      document.getElementById('chat-message-text-input').focus();
     });
   }
 
   var chatFormEle = document.getElementById('chat-message-form')
-  var chatMessageEle = document.getElementById('chat-message-text-input')
 
-  //chatFormEle.style.display = 'flex';
-  //chatFormEle.style.flexDirection = 'column';
   chatFormEle.appendChild(popup);
 }
   
@@ -301,10 +303,7 @@ var chatObserver = new MutationObserver(function(mutations) {
             ) {
               console.log('username detected with @', 
                 addedNode.childNodes[1].textContent,
-                addedNode.childNodes[1].textContent.toLowerCase(),
                 currentUser,
-                (currentUser).toLowerCase(),
-                addedNode.childNodes[1].textContent.toLowerCase().includes((currentUser).toLowerCase())
               )
               addedNode.childNodes[1].innerHTML = highlightString(addedNode.childNodes[1].textContent, '@' + currentUser, 'white', 'rgb(234, 100, 4, .85)');
             } else 
@@ -314,10 +313,7 @@ var chatObserver = new MutationObserver(function(mutations) {
             ) {
               console.log('username detected', 
                 addedNode.childNodes[1].textContent,
-                addedNode.childNodes[1].textContent.toLowerCase(),
                 currentUser,
-                (currentUser).toLowerCase(),
-                addedNode.childNodes[1].textContent.toLowerCase().includes((currentUser).toLowerCase())
               )
               addedNode.childNodes[1].innerHTML = highlightString(addedNode.childNodes[1].textContent, currentUser, 'white', 'rgb(234, 100, 4, .85)');
             } 
@@ -342,10 +338,10 @@ chatObserver.observe(document.querySelector('#chat-history-list'), { childList: 
 // Listen for "@" keypress to open popup
 document.addEventListener("keydown", function(event) {
   // If "2" key is pressed and shift key is held down
-  if (event.keyCode === 50 && event.shiftKey && !document.querySelector('.chat-plus-popup')) {
+  /*if (event.keyCode === 50 && event.shiftKey && !document.querySelector('.chat-plus-popup')) {
     // Open username list popup
     openChatUsernamesPopup();
-  }
+  }*/
 
   // If space bar is pressed remove username list popup
   if (event.keyCode === 32) {
@@ -366,15 +362,61 @@ document.addEventListener("keydown", function(event) {
   }
 });
 
+// Listen for input in chat message input
+let inputElement = document.getElementById("chat-message-text-input");
+
+inputElement.addEventListener("input", function() {
+  let inputValue = inputElement.value;
+  
+  // Get all indexes of @
+  let atSignIndexes = [];
+  for (var i = 0; i < inputValue.length; i++) {
+    if (inputValue[i] === "@") {
+      atSignIndexes.push(i);
+    }
+  }
+  // Get caret position
+  let caretPosition = storeCaretPosition(inputElement);
+
+  // If @ is found in the input and caret is next to it
+  if ( 
+    !document.querySelector('.chat-plus-popup') 
+    && atSignIndexes.includes(caretPosition - 1)
+  ) {
+    //console.log("The @ character was found at index " + atSignIndexes);
+
+    // Open username list popup
+    openChatUsernamesPopup();
+  } 
+});
+
 // Close popup when clicking outside of it
 document.addEventListener("click", function(event) {
   var usernameListPopup = document.querySelector('.chat-plus-popup');
 
   if (usernameListPopup && !usernameListPopup.contains(event.target)) {
     usernameListPopup.remove()
-    //usernameListPopup.style.display = "none";
   }
 });
+
+// Refresh chat history every 120 seconds
+setInterval(function(){
+  console.log('refreshing chat history');
+  getChatHistory()
+  //console.log('currentChatHistory', currentChatHistory)
+  
+  
+  // Clear interval when user is logged out
+  if (currentUser === ''){
+    clearInterval();
+  }
+}, 12000);
+
+
+
+
+
+
 
 
 // Append test button to chat window
@@ -396,6 +438,6 @@ testBtn.addEventListener('click', ()=>{
   testBtn.appendChild(newEle1);
   testBtn.appendChild(newEle2);
 });
-chatHistoryEle[0].appendChild(testBtn);
+//chatHistoryEle[0].appendChild(testBtn);
 
 

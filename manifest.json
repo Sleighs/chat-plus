@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ChatPlus for Rumble",
-  "version": "1.0",
+  "version": "0.3",
   "description": "Adds features to Rumble livestream chat.",
   "action": {
     "default_icon": {

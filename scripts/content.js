@@ -512,6 +512,7 @@ testBtn.addEventListener('click', ()=>{
   //console.log('currentChatHistory', currentChatHistory);
   console.log('currentUser: ' + currentUser, 'currentStreamer ' + currentStreamer );
 });
-chatHistoryEle[0].appendChild(testBtn);
+//chatHistoryEle[0].appendChild(testBtn);
+
 /*
 */

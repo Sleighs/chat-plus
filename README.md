@@ -18,9 +18,8 @@ This Chrome extension adds livestream chat features to Rumble.com to enhance you
 - Type "@" to view the user list. Click name to add to message input.
 - Click the extension icon in the browser's toolbar to open the options.
 
-===
 
-### Support
+## Support
 - For support and troubleshooting, please contact me at wsright987@gmail.com.
 
 ### Contributing

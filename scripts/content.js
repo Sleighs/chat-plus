@@ -14,7 +14,7 @@ loaded = false;*/
 (function init() {
   chrome.storage.sync.get("options")
   .then(function (result) {
-    console.log('Options from storage', JSON.stringify(result));
+    //console.log('Options from storage', JSON.stringify(result));
     
     if (result && result.options) {
       Object.assign(optionsState, result.options);

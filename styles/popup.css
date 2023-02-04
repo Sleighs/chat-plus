@@ -5,8 +5,9 @@
   flex-direction: column;
 }
 #popup-title {
-  font-size: 1.25em;
-  color: rgb(11, 14, 11);
+  font-size: 1.4em;
+  color: #85c742;
+  /*text-shadow: 0px 0px 1px rgba(16, 13, 13, 0.5);*/
   margin-bottom: 10px;
 }
 .form-label {
@@ -17,12 +18,14 @@
 }
 
 .options-btn {
-  background: #cdd7d1;
-  border: 1px solid #ccc;
+  background: #a4b2aa;
+  border: 1px solid rgb(195, 200, 205);
   border-radius: 3px;
-  padding: 7px 12px;
-  color: #000;
-  font-size: 1.25em;
+  padding: 5px 12px;
+  color: rgb(42, 45, 56);
+  color: white;
+  text-shadow: 0px 0px 1px rgba(16, 13, 13, 0.5);
+  font-size: 1.15em;
   cursor: pointer;
   margin: 5px 5px;
   display: inline-block;

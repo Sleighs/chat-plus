@@ -188,6 +188,8 @@ function wait() {
   setTimeout(function() {
   getChatHistory();
     //console.log('Executed after + ' + time + ' miliseconds.');
+
+    // if enableApp is undefined set to true
   }, time);
 }
 wait()

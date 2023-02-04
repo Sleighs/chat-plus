@@ -37,5 +37,3 @@ optionsForm.colorUsernames.addEventListener("change", (event) => {
   options.colorUsernames = event.target.checked;
   chrome.storage.sync.set({ options });
 });
-
-

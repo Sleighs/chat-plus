@@ -3,25 +3,35 @@
 
 // Options
 let optionsState = {};
+var enableApp, colorUsernames, debugMode, loaded;
 
-var enableApp = true;
-var colorUsernames = true;
-var debugMode = false;
-//var showUsernameList = false;
-//var mainUserList = true;
+/*enableApp = true;
+colorUsernames = true;
+debugMode = false;
+loaded = false;*/
 
 // Get options from storage
-chrome.storage.sync.get("options", function (result) {
-  //console.log('Options from storage', JSON.stringify(result));
-  
-  if (result && result.options) {
-    Object.assign(optionsState, result.options);
-  
-    enableApp = result.options.enableChatPlus;
-    colorUsernames = result.options.colorUsernames;
-    debugMode = result.options.debug;
-  }
-});
+(function init() {
+  chrome.storage.sync.get("options")
+  .then(function (result) {
+    console.log('Options from storage', JSON.stringify(result));
+    
+    if (result && result.options) {
+      Object.assign(optionsState, result.options);
+    
+      enableApp = result.options.enableChatPlus;
+      colorUsernames = result.options.colorUsernames;
+      debugMode = result.options.debug;
+    }
+    loaded = true;
+  });
+})();
+
+//init()
+
+
+//var showUsernameList = false;
+//var mainUserList = true;
 
 
 // Chat history
@@ -97,14 +107,12 @@ const chatHistoryMessages = document.querySelectorAll('.chat-history--message');
 
 // Retrieves user color from userColor object
 const getUserColor = (username) => {
-  if (!userColors[username]) {
-    if (colorUsernames === false){
-      userColors[username] = usernameColors.rumbler;
-    } else {
-      userColors[username] = getRandomColor();
-    }
-    
+  if ( optionsState.colorUsernames === false || colorUsernames === false ){
+    userColors[username] = usernameColors.rumbler;
+  } else if (!userColors[username]) {
+    userColors[username] = getRandomColor();
   }
+  //console.log('colorUsername, userColors[username], optionsState.colorUsernames', colorUsernames, optionsState.colorUsernames, userColors[username])
   return userColors[username];
 }
 
@@ -175,7 +183,14 @@ const getChatHistory = () => {
 };
 
 // Get chat history on page load
-getChatHistory();
+function wait() {
+  var time = 100;
+  setTimeout(function() {
+  getChatHistory();
+    console.log('Executed after + ' + time + ' miliseconds.');
+  }, time);
+}
+wait()
 
 // Refresh chat history every 120 seconds
 const chatRefreshInterval = setInterval(function(){

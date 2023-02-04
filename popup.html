@@ -5,32 +5,36 @@
   <link rel="stylesheet" href="styles/popup.css">
 </head>
 <body>
-  <script defer src="scripts/options.js" type="module"></script>
 
-  <div id="options">
+
+
+  <div id="popup">
     <h1>ChatPlus</h1>
-
-    <form id="popupOptionsForm" class="content">
-      <div class="option">
-        <label class="option-label" for="enableChatPlus">
-          <input type="checkbox" name="enableChatPlus" id="enable-chatplus-input">
-        </label>
-        <span class="option-name">Enable ChatPlus</span>
-      </div>
-      <div class="option">
-        <label class="option-label" for="debug">
-          <input type="checkbox" name="debug" id="debug-input">
-          <span class="option-name">Enable debug mode</span>
-        </label>
-      </div>
-      <div class="option">
-        <label class="option-label" for="colorUsernames">
-          <input type="checkbox" name="colorUsernames" id="color-usernames-input">
-          <span class="option-name">Color Usernames</span>
-        </label>
-      </div>
+ 
+    <form id="popupForm">
+      
+      <label class="form-label" for="enableChatPlus">
+        <input type="checkbox" name="enableChatPlus" id="debug"/>
+        Enable ChatPlus
+      </label>
+    
+      <label class="form-label" for="debug">
+        <input type="checkbox" name="debug" id="debug"/>
+        Enable debug mode
+      </label>
+    
+      <label class="form-label" for="colorUsernames">
+        <input type="checkbox" name="colorUsernames" id="color-usernames"/>
+        Color Usernames
+      </label>
+      
     </form>
-  </div>
 
+    <button id="go-to-options">Options</button>
+
+  </div>  
+  <script src="scripts/popup.js"></script>
+  <script src="scripts/background.js"></script>
+  
 </body>
 </html>

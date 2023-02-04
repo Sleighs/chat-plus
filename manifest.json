@@ -24,10 +24,16 @@
   },
   "content_scripts": [
     {
-      "js": ["scripts/content.js", "scripts/options.js", "scripts/popup.js"],
-      "css": ["styles/options.css", "styles/popup.css"],
       "matches": [
         "https://rumble.com/*"
+      ],
+      "js": [
+        "scripts/content.js"
+      ],
+      "run_at": "document_end",
+      "css": [
+        "styles/options.css",
+        "styles/popup.css"
       ]
     }
   ],

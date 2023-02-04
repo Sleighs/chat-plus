@@ -1,11 +1,9 @@
-//import { options } from "./options.js";
-
-//console.log(options);
-
 
 //////   Variables   //////
 
 // Options
+let optionsState = {};
+
 var enableApp = true;
 var colorUsernames = true;
 var debugMode = false;
@@ -13,17 +11,17 @@ var debugMode = false;
 //var mainUserList = true;
 
 // Get options from storage
-chrome.runtime.sendMessage("get_options", function (response){
-  console.log('Options from background.js', response);
-  //enableApp = response.enableChatPlus;
-  //colorUsernames = response.colorUsernames;
-  debugMode = response.debug;
+chrome.storage.sync.get("options", function (result) {
+  //console.log('Options from storage', JSON.stringify(result));
+  
+  if (result && result.options) {
+    Object.assign(optionsState, result.options);
+  
+    enableApp = result.options.enableChatPlus;
+    colorUsernames = result.options.colorUsernames;
+    debugMode = result.options.debug;
+  }
 });
-
-chrome.runtime.onMessage.addListener("options_changed", function (response){
-  console.log('Options from background.js', response);
-});
-
 
 
 // Chat history
@@ -42,7 +40,7 @@ var usernameColors = {
   springGreen: '#B9E50B',
   streamerGreen: '#15FF8D',
   grassGreen: '#05C305',
-  marinerTeal: '#4FB5B0',
+  marinerTeal: '#48A4A0',//4FB5B0',
   coolBlue: '#07F7F7',
   dreamyBlue: '#2DA3FB',
 }
@@ -52,6 +50,7 @@ var messageColors = {
   rumble: '#d6e0ea',
   white: '#FFFFFF',
 }
+
 
 // For assigned colors
 let userColors = {}
@@ -83,7 +82,9 @@ if (authorEle && authorHref){
 }
 
 
-
+if (enableApp === false) {
+  console.log('ChatPlus is disabled');
+} else {
 
 //////   Chat History  //////
 
@@ -133,9 +134,6 @@ function highlightString(text, searchTerm, color, backgroundColor) {
   return text;
 }
 
-function insertUsername(username, message, caretPos) {
-  return message.slice(0, caretPos) + username + message.slice(caretPos);
-}
 
 const getChatHistory = () => {
   currentChatHistory = [];
@@ -212,6 +210,11 @@ function getPageCoordinates(element) {
 function storeCaretPosition(input) {
   const caretPosition = input.selectionStart;
   return caretPosition;
+}
+
+// Inserts a username into a message
+function insertUsername(username, message, caretPos) {
+  return message.slice(0, caretPos) + username + ' ' + message.slice(caretPos);
 }
 
 // Open popup with username list
@@ -473,3 +476,5 @@ window.addEventListener('resize', function(event){
     usernameListPopup.remove()
   }  
 }, true);
+
+} 

@@ -6,8 +6,8 @@
 </head>
 <body>
   <!-- type="module" allows you to use top level await -->
-  <script defer src="scripts/options.js" type="module"></script>
-
+  <script defer src="scripts/background.js" type="module"></script>
+  
   <div id="options" class="content">
     <h1>ChatPlus Options</h1>
     <p>ChatPlus is a browser extension that adds features to the chat on Rumble.com.</p>
@@ -17,19 +17,19 @@
   <form id="optionsForm" class="content">
     <div class="option">
       <label class="option-label" for="enableChatPlus">
-        <input type="checkbox" name="enableChatPlus" id="enable-chatplus-input">
+        <input type="checkbox" name="enableChatPlus" id="enableChatPlus"/>
+        Enable ChatPlus
       </label>
-      <span class="option-name">Enable ChatPlus</span>
     </div>
     <div class="option">
       <label class="option-label" for="debug">
-        <input type="checkbox" name="debug" id="debug-input">
-        <span class="option-name">Enable debug mode</span>
+        <input type="checkbox" name="debug" id="debug"/>
+        Enable debug mode
       </label>
     </div>
     <div class="option">
       <label class="option-label" for="colorUsernames">
-        <input type="checkbox" name="colorUsernames" id="color-usernames-input">
+        <input type="checkbox" name="colorUsernames" id="colorUsernames"/>
         <span class="option-name">Color Usernames</span>
       </label>
     </div>

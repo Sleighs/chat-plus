@@ -1,28 +1,64 @@
-// In-page cache of the user's options
-const options = {};
-const popupOptionsForm = document.getElementById("popupOptionsForm");
+
+
+ // Link to the options page
+ document.getElementById('go-to-options').addEventListener('click', function() {
+  if (chrome.runtime.openOptionsPage) {
+    console.log('chrome runtime opened options page');
+    chrome.runtime.openOptionsPage();
+  } else {
+    console.log('window opened options page');
+    window.open(chrome.runtime.getURL('options.html'));
+  }
+});
+
+
+
+
+// User's options
+
+
+var docElement = document.documentElement;
+
+console.log('docElement', docElement)
+
+
+let popupOptions = {};
 
 // Initialize the form with the user's option settings
-const data = await chrome.storage.sync.get("options");
+chrome.storage.sync.get("options").then((result) => {
+  //console.log('popupData result', result)
+  Object.assign(popupOptions, result.options);
+});
 
-Object.assign(options, data.options);
+console.log('popupOptions', popupOptions)
 
-popupOptionsForm.enableChatPlus.checked = Boolean(options.enableChatPlus);
-popupOptionsForm.debug.checked = Boolean(options.debug);
-popupOptionsForm.colorUsernames.checked = Boolean(options.colorUsernames);
+
+//const popupOptionsForm = document.getElementById("popup");
+//console.log('popupOptionsForm', popupOptionsForm)
+
+
+
+/*
+popupOptionsForm.enableChatPlus.checked = Boolean(popupOptions.enableChatPlus);
+popupOptionsForm.debug.checked = Boolean(popupOptions.debug);
+popupOptionsForm.colorUsernames.checked = Boolean(popupOptions.colorUsernames);
 
 // Immediately persist options changes
 popupOptionsForm.enableChatPlus.addEventListener("change", (event) => {
-  options.enableChatPlus = event.target.checked;
-  chrome.storage.sync.set({ options });
+  popupOptions.enableChatPlus = event.target.checked;
+  chrome.storage.sync.set({ popupOptions });
 });
 
 popupOptionsForm.debug.addEventListener("change", (event) => {
-  options.debug = event.target.checked;
-  chrome.storage.sync.set({ options });
+  popupOptions.debug = event.target.checked;
+  chrome.storage.sync.set({ popupOptions });
 });
 
 popupOptionsForm.colorUsernames.addEventListener("change", (event) => {
-  options.colorUsernames = event.target.checked;
-  chrome.storage.sync.set({ options });
+  popupOptions.colorUsernames = event.target.checked;
+  chrome.storage.sync.set({ popupOptions });
 });
+*/
+
+
+   

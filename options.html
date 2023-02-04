@@ -1,21 +1,41 @@
 <!DOCTYPE html>
 <html>
-<head><title>ChatPlus Options</title></head>
+<head>
+  <title>ChatPlus Options</title>
+  <link rel="stylesheet" href="styles/options.css">
+</head>
 <body>
 
   <div id="options">
     <h1>ChatPlus Options</h1>
     <p>ChatPlus is a browser extension that adds features to the chat on Rumble.com.</p>
-    <p>ChatPlus is currently in beta. If you have any suggestions or find any bugs, please let me know at <a href="mailto:wsright987m@gmail.com">wsright987m@gmail.com</a>.</p>
-    
-    <div class="option">
-      <div class="option-name">Enable ChatPlus</div>
-      <div class="option-value">
-        <input type="checkbox" id="enable-chatplus" checked disabled>
-      </div>
-    </div>
+    <p>ChatPlus is currently in beta. If you have any suggestions or find any bugs, please let me know at <a href="mailto:wsright987@gmail.com">wsright987@gmail.com</a>.</p>
   </div>  
 
-  <script src="scripts/content.js"></script>
+  <!-- type="module" allows you to use top level await -->
+  <script defer src="scripts/options.js" type="module"></script>
+
+  <form id="optionsForm">
+    <div class="option">
+      <label class="option-label" for="enable-chatplus">
+        <input type="checkbox" name="enableChatPlus" id="enable-chatplus-input">
+      </label>
+      <span class="option-name">Enable ChatPlus</span>
+    </div>
+    
+    <div class="option">
+      <label class="option-label" for="debug">
+        <input type="checkbox" name="debug" id="debug-input">
+        <span class="option-name">Enable debug mode</span>
+      </label>
+    </div>
+    <div class="option">
+      <label class="option-label" for="colorUsernames">
+        <input type="checkbox" name="colorUsernames" id="color-usernames-input">
+        <span class="option-name">Color Usernames</span>
+      </label>
+    </div>
+  </form>
+
 </body>
 </html>

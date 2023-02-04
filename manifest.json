@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "ChatPlus for Rumble",
+  "name": "ChatPlus for Rumble (Beta)",
   "version": "0.3",
   "description": "Adds features to Rumble livestream chat.",
   "action": {
@@ -24,7 +24,8 @@
   },
   "content_scripts": [
     {
-      "js": ["scripts/content.js"],
+      "js": ["scripts/content.js", "scripts/options.js"],
+      "css": ["styles/options.css", "styles/popup.css"],
       "matches": [
         "https://rumble.com/*"
       ]

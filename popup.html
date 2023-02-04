@@ -2,30 +2,34 @@
 <html>
 <head><title>ChatPlus Options</title></head>
 <body>
+  <script defer src="scripts/options.js" type="module"></script>
 
   <div id="options">
     <h1>ChatPlus</h1>
-    
-    <div class="option">
-      <div class="option-name">Enable ChatPlus</div>
-      <div class="option-value">
-        <input type="checkbox" id="enable-chatplus" disabled>
+
+    <form id="optionsForm">
+      <div>
+        <label for="debug">
+          <input type="checkbox" name="debug" id="debug">
+          Enable debug mode
+        </label>
       </div>
-    </div>
-    <div class="option">
-      <div class="option-name">Enable Colorized Usernames</div>
-      <div class="option-value">
-        <input type="checkbox" id="enable-colorized-sernames" disabled>
+      <div>
+        <label for="colorUsernames">
+          <input type="checkbox" name="colorUsernames" id="color-usernames">
+          Color Usernames
+        </label>
       </div>
-    </div>
-    <div class="option">
-      <div class="option-name">Highlight Streamer Mentions</div>
-      <div class="option-value">
-        <input type="checkbox" id="enable-colorized-sernames" disabled>
+      <div>
+        <label for="highlightStreamerMentions">
+          <input type="checkbox" name="highlightStreamerMentions" id="highlight-streamer-mentions">
+          Highlight Streamer Mentions
+        </label>
       </div>
-    </div>
-  </div>  
+    </form>
+  </div>
 
   <script src="scripts/content.js"></script>
+
 </body>
 </html>

@@ -1,8 +1,15 @@
+/* content.js */
 
 
-////// Variables //////
+//////   Variables   //////
 
-// Store chat history
+// Options
+var enableApp = true;
+var showUsernameList = false;
+var mainUserList = true;
+var colorUsernames = true;
+
+// Chat history
 var currentChatHistory = [];
 
 // Text colors
@@ -61,6 +68,16 @@ if (authorEle && authorHref){
 
 
 
+//////   Options   //////
+
+// Get options from storage
+chrome.runtime.sendMessage("get_options", function (response){
+  console.log('options from background', response);
+  options = response;
+});
+
+
+
 //////   Chat History  //////
 
 // Get chat elements
@@ -71,7 +88,7 @@ const chatHistoryNames = document.querySelectorAll('.chat-history--username');
 const chatHistoryMessages = document.querySelectorAll('.chat-history--message');
 
 // Asign random color to each unique username in current chat history
-const assignRandomColor = (array) => {
+/*const assignRandomColor = (array) => {
   const colors = Object.values(usernameColors);
   let colorIndex = 0;
 
@@ -81,13 +98,19 @@ const assignRandomColor = (array) => {
       userColors[user.username] = colors[colorIndex % colors.length];
       colorIndex++;
     }
-    console.log('assignRandomColor', user, colors, userColors )
-  }
-}
 
+  }
+}*/
+
+// Retrieves user color from userColor object
 const getUserColor = (username) => {
   if (!userColors[username]) {
-    userColors[username] = getRandomColor();
+    if (colorUsernames === false){
+      userColors[username] = usernameColors.rumbler;
+    } else {
+      userColors[username] = getRandomColor();
+    }
+    
   }
   return userColors[username];
 }
@@ -164,6 +187,21 @@ const getChatHistory = () => {
 // Get chat history on page load
 getChatHistory();
 
+// Refresh chat history every 120 seconds
+const chatRefreshInterval = setInterval(function(){
+  //console.log('refreshing chat history');
+  getChatHistory()
+}, 120000);
+
+ // Clear interval if there is no chat history
+if (!chatHistoryList){
+  //console.log('clearing chat refresh interval')
+  clearInterval(chatRefreshInterval);
+}
+
+
+
+
 
 ///////   Username List Popup    ///////
 
@@ -185,10 +223,11 @@ function storeCaretPosition(input) {
 }
 
 // Open popup with username list
-const openChatUsernamesPopup = (caretCoordinates) => {
-  // Create popup element
+const openChatUsernamesPopup = (coordinates) => {
+  // Create element for popup
   const popup = document.createElement('div');
 
+  // Get dimensions of the message input
   var popupAdjustedHeight = document.getElementById("chat-message-text-input").clientHeight;
   var popupAdjustedWidth = document.getElementById("chat-message-text-input").clientWidth;
 
@@ -205,32 +244,15 @@ const openChatUsernamesPopup = (caretCoordinates) => {
   popup.style.borderRadius = '5px';
   popup.style.zIndex = '9999';
   popup.style.padding = '0 7px';
-  //popup.style.boxShadow = '5px 5px 5px 0 rgba(0, 0, 0, 0.5)';
   popup.style.outline = '1px solid rgba(136,136,136,.25)';
   popup.style.outlineOffset = '0px';
 
   // Position popup below caret
   popup.style.position = 'absolute';
-  popup.style.top = caretCoordinates.top + popupAdjustedHeight + 5 + 'px';
-  popup.style.left = caretCoordinates.left + 'px';
+  popup.style.top = coordinates.top + popupAdjustedHeight + 5 + 'px';
+  popup.style.left = coordinates.left + 'px';
 
-  // Create popup close button
-  const popupClose = document.createElement('button');
-  popupClose.classList.add('chat-plus-popup-close');
-  popupClose.style.position = 'fixed';
-  popupClose.style.marginTop = '0';
-  popupClose.style.padding = '6px';
-  popupClose.style.backgroundColor = 'transparent';
-  popupClose.style.color = 'black';
-  popupClose.style.border = 'none';
-  popupClose.style.zIndex = '9999';
-  popupClose.innerHTML = 'X';
-  popupClose.addEventListener('click', () => {
-    popup.remove();
-  });
-  //popup.appendChild(popupClose);
-
-  // Create popup content element
+  // Create a list element
   const popupContent = document.createElement('ul');
   popupContent.classList.add('chat-plus-popup-content');
   popupContent.style.position = 'relative';
@@ -289,6 +311,32 @@ const openChatUsernamesPopup = (caretCoordinates) => {
 
 
 
+
+///////   Main Chat User List   ///////
+
+var chatContainerElement = document.querySelector('.chat--container');
+
+
+const addMainList = () => {
+  var chatContainerElement = document.querySelector('.chat--container');
+
+  const chatUserListElement = document.createElement('div');
+  let chatContainerCoordinates = chatContainerElement.getBoundingClientRect();
+
+
+  console.log('chatContainerCoordinates', chatContainerCoordinates)
+
+  chatUserListElement.classList.add('chat-plus-user-list');
+  chatUserListElement.style.position = 'absolute';
+
+  chatUserListElement.style.top = '0';
+
+  const chatUserListContentElement = document.createElement('ul');
+
+};
+
+
+
 ///////   Chat Listeners   ///////
 
 // Create a MutationObserver instance to watch for new chat messages
@@ -339,6 +387,8 @@ var chatObserver = new MutationObserver(function(mutations) {
   });
 });
 
+
+
 // Observe chat for changes to its child elements to detect new messages
 if (chatHistoryList){
   chatObserver.observe(document.querySelector('#chat-history-list'), { childList: true });
@@ -353,11 +403,12 @@ document.addEventListener("keydown", function(event) {
   }*/
 
   var usernameListPopup = document.querySelector('.chat-plus-popup');
-  
+
   // If space bar is pressed remove username list popup
   if (usernameListPopup && event.keyCode === 32) {
     // Close popup
     if (usernameListPopup) {
+      showUsernameList = false;
       usernameListPopup.remove()
     }
   }
@@ -366,6 +417,7 @@ document.addEventListener("keydown", function(event) {
   if (usernameListPopup && event.keyCode === 8) {
     // Close popup
     if (usernameListPopup) {
+      showUsernameList = false;
       usernameListPopup.remove()
     }
   }
@@ -398,10 +450,12 @@ if (inputElement) {
       && atSignIndexes.includes(caretPosition - 1)
     ) {
       // Open username list popup
+      showUsernameList = true;
       openChatUsernamesPopup(messageCoordinates);
     } 
   });
 }
+
 
 // Close popup when user clicks outside of element
 document.addEventListener("click", function(event) {
@@ -411,48 +465,32 @@ document.addEventListener("click", function(event) {
     usernameListPopup 
     && !usernameListPopup.contains(event.target)
   ) {
+    showUsernameList = false;
     usernameListPopup.remove()
   }
 });
 
+// Listen for resize event
+window.addEventListener('resize', function(event){
+  // Get chat container coordinates
+  chatContainerCoordinates = chatContainerElement.getBoundingClientRect();
+  //console.log('resized chatContainerCoordinates', chatContainerCoordinates)
 
-// Refresh chat history every 120 seconds
-const chatRefreshInterval = setInterval(function(){
-  //console.log('refreshing chat history');
-  getChatHistory()
-}, 120000);
+  var usernameListPopup = document.querySelector('.chat-plus-popup');
 
- // Clear interval if there is no chat history
-if (!chatHistoryList){
-  //console.log('clearing chat refresh interval')
-  clearInterval(chatRefreshInterval);
-}
-
-
-
+  if (usernameListPopup) {
+    showUsernameList = false;
+    usernameListPopup.remove()
+  }  
+}, true);
 
 
-
-////    FOR TESTING     ////
-
-// Append test button to chat window
-const testBtn = document.createElement('div');
-testBtn.innerHTML = 'Test';
-testBtn.style.backgroundColor = 'red';
-//testBtn.style.position = 'absolute';
-testBtn.style.maxWidth = '150px';
-testBtn.style.wordWrap = 'break-word';
-testBtn.style.height = '100%';
-//testBtn.style.right = 0;
-
-testBtn.addEventListener('click', ()=>{
-  //getChatHistory();
-  //console.log('currentChatHistory', currentChatHistory);
-  console.log('currentUser: ' + currentUser, 'currentStreamer ' + currentStreamer );
-});
-
-//chatHistoryEle[0].appendChild(testBtn);
 
 /*
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  // communication tree
+  if (request === 'test request') {
+     console.log('test request received')
+   }
+});
 */
-console.log('currentUser: ' + currentUser, 'currentStreamer ' + currentStreamer );

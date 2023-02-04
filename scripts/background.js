@@ -26,15 +26,6 @@ chrome.storage.sync.get(["colorizeUsernames"]).then((result) => {
   console.log("Value currently is " + result.key);
 });
 
-
-chrome.storage.onChanged.addListener((changes, namespace) => {
-  for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
-    console.log(
-      `Storage key "${key}" in namespace "${namespace}" changed.`,
-      `Old value was "${oldValue}", new value is "${newValue}".`
-    );
-  }
-});
 */
 
 function setEnableChatPlus(value) { 
@@ -81,16 +72,18 @@ chrome.storage.onChanged.addListener((changes, area) => {
     const colorUsernames = Boolean(changes.options.newValue.colorUsernames);
     console.log('enable color usernames?', colorUsernames);
     setColorUsernames(colorUsernames);
-  }
 
-});
-
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  // communication tree
-  if (message === 'get_options') {
-    chrome.storage.sync.get("options").then((result) => {
-      console.log("get_options value currently is " + JSON.stringify(result));
-      sendResponse(result);
+    chrome.runtime.sendMessage('options_changed', (message, ) => {
+      console.log('options_changed response', message);
     });
   }
 });
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message === 'get_options') {
+    console.log('get_options', options)
+    chrome.storage.sync.get("options").then((result) => {
+      sendResponse(result);
+    });
+  }
+} );

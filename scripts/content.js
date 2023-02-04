@@ -1,13 +1,30 @@
-/* content.js */
+//import { options } from "./options.js";
+
+//console.log(options);
 
 
 //////   Variables   //////
 
 // Options
 var enableApp = true;
-var showUsernameList = false;
-var mainUserList = true;
 var colorUsernames = true;
+var debugMode = false;
+//var showUsernameList = false;
+//var mainUserList = true;
+
+// Get options from storage
+chrome.runtime.sendMessage("get_options", function (response){
+  console.log('Options from background.js', response);
+  //enableApp = response.enableChatPlus;
+  //colorUsernames = response.colorUsernames;
+  debugMode = response.debug;
+});
+
+chrome.runtime.onMessage.addListener("options_changed", function (response){
+  console.log('Options from background.js', response);
+});
+
+
 
 // Chat history
 var currentChatHistory = [];
@@ -68,16 +85,6 @@ if (authorEle && authorHref){
 
 
 
-//////   Options   //////
-
-// Get options from storage
-chrome.runtime.sendMessage("get_options", function (response){
-  console.log('options from background', response);
-  options = response;
-});
-
-
-
 //////   Chat History  //////
 
 // Get chat elements
@@ -86,21 +93,6 @@ const chatHistoryList = document.getElementById('chat-history-list');
 const chatHistoryRows = document.querySelectorAll('.chat-history--row');
 const chatHistoryNames = document.querySelectorAll('.chat-history--username');
 const chatHistoryMessages = document.querySelectorAll('.chat-history--message');
-
-// Asign random color to each unique username in current chat history
-/*const assignRandomColor = (array) => {
-  const colors = Object.values(usernameColors);
-  let colorIndex = 0;
-
-  for (let i = 0; i < array.length; i++) {
-    const user = array[i];
-    if (!userColors[user.username]) {
-      userColors[user.username] = colors[colorIndex % colors.length];
-      colorIndex++;
-    }
-
-  }
-}*/
 
 // Retrieves user color from userColor object
 const getUserColor = (username) => {
@@ -311,7 +303,6 @@ const openChatUsernamesPopup = (coordinates) => {
 
 
 
-
 ///////   Main Chat User List   ///////
 
 var chatContainerElement = document.querySelector('.chat--container');
@@ -334,6 +325,7 @@ const addMainList = () => {
   const chatUserListContentElement = document.createElement('ul');
 
 };
+
 
 
 
@@ -386,8 +378,6 @@ var chatObserver = new MutationObserver(function(mutations) {
     }
   });
 });
-
-
 
 // Observe chat for changes to its child elements to detect new messages
 if (chatHistoryList){
@@ -483,14 +473,3 @@ window.addEventListener('resize', function(event){
     usernameListPopup.remove()
   }  
 }, true);
-
-
-
-/*
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  // communication tree
-  if (request === 'test request') {
-     console.log('test request received')
-   }
-});
-*/

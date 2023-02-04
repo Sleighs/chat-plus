@@ -5,24 +5,22 @@
   <link rel="stylesheet" href="styles/options.css">
 </head>
 <body>
+  <!-- type="module" allows you to use top level await -->
+  <script defer src="scripts/options.js" type="module"></script>
 
-  <div id="options">
+  <div id="options" class="content">
     <h1>ChatPlus Options</h1>
     <p>ChatPlus is a browser extension that adds features to the chat on Rumble.com.</p>
     <p>ChatPlus is currently in beta. If you have any suggestions or find any bugs, please let me know at <a href="mailto:wsright987@gmail.com">wsright987@gmail.com</a>.</p>
   </div>  
 
-  <!-- type="module" allows you to use top level await -->
-  <script defer src="scripts/options.js" type="module"></script>
-
-  <form id="optionsForm">
+  <form id="optionsForm" class="content">
     <div class="option">
-      <label class="option-label" for="enable-chatplus">
+      <label class="option-label" for="enableChatPlus">
         <input type="checkbox" name="enableChatPlus" id="enable-chatplus-input">
       </label>
       <span class="option-name">Enable ChatPlus</span>
     </div>
-    
     <div class="option">
       <label class="option-label" for="debug">
         <input type="checkbox" name="debug" id="debug-input">

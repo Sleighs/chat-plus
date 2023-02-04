@@ -1,35 +1,36 @@
 <!DOCTYPE html>
 <html>
-<head><title>ChatPlus Options</title></head>
+<head>
+  <title>ChatPlus Options</title>
+  <link rel="stylesheet" href="styles/popup.css">
+</head>
 <body>
   <script defer src="scripts/options.js" type="module"></script>
 
   <div id="options">
     <h1>ChatPlus</h1>
 
-    <form id="optionsForm">
-      <div>
-        <label for="debug">
-          <input type="checkbox" name="debug" id="debug">
-          Enable debug mode
+    <form id="popupOptionsForm" class="content">
+      <div class="option">
+        <label class="option-label" for="enableChatPlus">
+          <input type="checkbox" name="enableChatPlus" id="enable-chatplus-input">
+        </label>
+        <span class="option-name">Enable ChatPlus</span>
+      </div>
+      <div class="option">
+        <label class="option-label" for="debug">
+          <input type="checkbox" name="debug" id="debug-input">
+          <span class="option-name">Enable debug mode</span>
         </label>
       </div>
-      <div>
-        <label for="colorUsernames">
-          <input type="checkbox" name="colorUsernames" id="color-usernames">
-          Color Usernames
-        </label>
-      </div>
-      <div>
-        <label for="highlightStreamerMentions">
-          <input type="checkbox" name="highlightStreamerMentions" id="highlight-streamer-mentions">
-          Highlight Streamer Mentions
+      <div class="option">
+        <label class="option-label" for="colorUsernames">
+          <input type="checkbox" name="colorUsernames" id="color-usernames-input">
+          <span class="option-name">Color Usernames</span>
         </label>
       </div>
     </form>
   </div>
-
-  <script src="scripts/content.js"></script>
 
 </body>
 </html>

@@ -21,12 +21,10 @@ chrome.runtime.onInstalled.addListener(() => {
       //options = defaultOptions;
     }
   });
-
   
   //optionsForm.enableChatPlus.checked = Boolean(result.options.enableChatPlus);
   //optionsForm.debug.checked = Boolean(result.options.debug);
   //optionsForm.colorUsernames.checked = Boolean(result.options.colorUsernames);
-
 
   chrome.storage.sync.set({ options: options });
 });
@@ -49,7 +47,7 @@ function saveOptions() {
     status.textContent = 'Options saved.';
     setTimeout(function() {
       status.textContent = '';
-    }, 750);
+    }, 2500);
   });
 }
 

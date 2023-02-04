@@ -5,13 +5,10 @@
   <link rel="stylesheet" href="styles/popup.css">
 </head>
 <body>
-
-
-
   <div id="popup">
-    <h1>ChatPlus</h1>
+    <h1 id="popup-title">ChatPlus</h1>
  
-    <form id="popupForm">
+    <form id="popupForm" style="display: none;">
       
       <label class="form-label" for="enableChatPlus">
         <input type="checkbox" name="enableChatPlus" id="debug"/>
@@ -30,11 +27,11 @@
       
     </form>
 
-    <button id="go-to-options">Options</button>
+    <button id="go-to-options" class="options-btn">Options</button>
 
   </div>  
-  <script src="scripts/popup.js"></script>
   <script src="scripts/background.js"></script>
+  <script src="scripts/popup.js"></script>
   
 </body>
 </html>

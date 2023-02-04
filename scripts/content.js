@@ -184,10 +184,10 @@ const getChatHistory = () => {
 
 // Get chat history on page load
 function wait() {
-  var time = 100;
+  var time = 200;
   setTimeout(function() {
   getChatHistory();
-    console.log('Executed after + ' + time + ' miliseconds.');
+    //console.log('Executed after + ' + time + ' miliseconds.');
   }, time);
 }
 wait()

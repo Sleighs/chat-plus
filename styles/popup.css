@@ -1,9 +1,29 @@
 #popup {
-  padding: 15px 20px;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+#popup-title {
+  font-size: 1.25em;
+  color: rgb(11, 14, 11);
+  margin-bottom: 10px;
 }
 .form-label {
   font-size: 1.2em;
   color: #000;
   margin-bottom: 5px;
   display: block;
+}
+
+.options-btn {
+  background: #cdd7d1;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 7px 12px;
+  color: #000;
+  font-size: 1.25em;
+  cursor: pointer;
+  margin: 5px 5px;
+  display: inline-block;
 }

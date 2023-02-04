@@ -7,4 +7,41 @@ body {
     width: 90%;
     margin: 0 auto;
 }
+.email a {
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+}
+.email a:hover {
+    text-decoration: none;
+    color: rgb(62, 22, 22);
+}
+.email a:visited {
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+}
+.option {
+    margin: 10px 0;
+}
+.option-checkbox {
+    font-size: 1.25em;
+    cursor: pointer;
+    margin: 5px 8px;
+    display: inline-block;
 
+}
+#status {
+    color: #ffffff;
+    font-size: 1.25em;
+    margin: 20px 0;
+}
+.save-btn {
+    background: #cdd7d1;
+    color: #000000;
+    border: 0;
+    border-radius: 5px;
+    padding: 8px 20px;
+    font-size: 1em;
+    margin: 20px 0; 
+    display: block;
+    cursor: pointer;
+}

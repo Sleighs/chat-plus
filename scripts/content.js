@@ -90,8 +90,9 @@ if (authorEle && authorHref){
 
 // Block function if app is disabled
 if (
-  options.enableApp === false
-  || options.enableApp === undefined && enableApp === false
+  //(optionsState && optionsState.enableApp === false)
+  //|| 
+  enableApp === false
 ) {
   console.log('ChatPlus is disabled');
 } else {

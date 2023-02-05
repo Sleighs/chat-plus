@@ -2,13 +2,21 @@
 const defaultOptions = {
   enableChatPlus: true,
   debug: false,
-  colorUsernames: true
+  colorUsernames: true,
+  showUsernameListOnStartup: false,
+  enableUsernameMenu: true
 };
 let options = {};
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.sync.get("options").then((result) => {
-    var optionsList = ["enableChatPlus", "debug", "colorUsernames"];
+    var optionsList = [
+      "enableChatPlus", 
+      "debug", 
+      "colorUsernames", 
+      "showUsernameListOnStartup",
+      "enableUsernameMenu"
+    ];
 
     function extractProperties(names, obj) {
       let extracted = {};
@@ -23,7 +31,6 @@ chrome.runtime.onInstalled.addListener(() => {
     }
 
     var newOptionObj = extractProperties(optionsList, result.options);
-    
   
     chrome.storage.sync.set({ options: newOptionObj })
       .then(() => {

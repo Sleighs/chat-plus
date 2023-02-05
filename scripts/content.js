@@ -1,20 +1,18 @@
 
-//////   Variables   //////
+//////   Define Variables   //////
 
 // Options
 let optionsState = {};
-var enableApp, colorUsernames, debugMode, loaded;
+var enableApp, colorUsernames, debugMode;
 
-/*enableApp = true;
-colorUsernames = true;
-debugMode = false;
-loaded = false;*/
+//var showUsernameList = false;
+//var mainUserList = true;
+//var popoutUserList = false;
 
 // Get options from storage
-(function init() {
+(() => {
   chrome.storage.sync.get("options")
   .then(function (result) {
-    //console.log('Options from storage', JSON.stringify(result));
     
     if (result && result.options) {
       Object.assign(optionsState, result.options);
@@ -22,16 +20,15 @@ loaded = false;*/
       enableApp = result.options.enableChatPlus;
       colorUsernames = result.options.colorUsernames;
       debugMode = result.options.debug;
+
+      if (result.options.debug) console.log('Options from storage', JSON.stringify(result));
+    } else {
+      enableApp = true;
+      colorUsernames = true;
+      debugMode = false;
     }
-    loaded = true;
   });
 })();
-
-//init()
-
-
-//var showUsernameList = false;
-//var mainUserList = true;
 
 
 // Chat history
@@ -60,7 +57,6 @@ var messageColors = {
   rumble: '#d6e0ea',
   white: '#FFFFFF',
 }
-
 
 // For assigned colors
 let userColors = {}
@@ -92,7 +88,11 @@ if (authorEle && authorHref){
 }
 
 
-if (enableApp === false) {
+// Block function if app is disabled
+if (
+  options.enableApp === false
+  || options.enableApp === undefined && enableApp === false
+) {
   console.log('ChatPlus is disabled');
 } else {
 

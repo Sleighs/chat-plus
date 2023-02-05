@@ -11,7 +11,7 @@
       "128": "images/icon-128.png"
     },
     "default_title": "ChatPlus for Rumble",
-    "default_popup": "popup.html"
+    "default_popup": "extension/build/index.html"
   },
   "icons": {
     "16": "images/icon-16.png",
@@ -30,17 +30,9 @@
       "js": [
         "scripts/content.js"
       ],
-      "run_at": "document_end",
-      "css": [
-        "styles/options.css",
-        "styles/popup.css"
-      ]
+      "run_at": "document_end"
     }
   ],
-  "options_ui": {
-    "page": "options.html",
-    "open_in_tab": true
-  },
   "permissions": [
     "storage"
   ]

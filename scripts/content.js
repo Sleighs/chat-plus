@@ -210,7 +210,7 @@ const getChatHistory = () => {
 
 // Get chat history on page load
 function wait() {
-  var time = 250;
+  var time = 225;
   setTimeout(function() {
   getChatHistory();
     //console.log('Executed after + ' + time + ' miliseconds.');
@@ -285,10 +285,15 @@ const openChatUsernamesPopup = (coordinates) => {
   popup.style.outline = '1px solid rgba(136,136,136,.25)';
   popup.style.outlineOffset = '0px';
 
-  // Position popup below caret
+  // Position popup
   popup.style.position = 'absolute';
-  popup.style.top = coordinates.top + popupAdjustedHeight + 5 + 'px';
   popup.style.left = coordinates.left + 'px';
+
+  // Show popup below message input
+  //popup.style.top = coordinates.top + popupAdjustedHeight + 5 + 'px';
+  // Show popup above message input
+  popup.style.top = coordinates.top - 145 + 'px';
+  
 
   // Create a list element
   const popupContent = document.createElement('ul');

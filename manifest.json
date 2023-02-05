@@ -33,10 +33,6 @@
       "run_at": "document_end"
     }
   ],
-  "options_ui": {
-    "page": "extension/build/index.html",
-    "open_in_tab": true
-  },
   "permissions": [
     "storage"
   ]

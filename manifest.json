@@ -11,7 +11,7 @@
       "128": "images/icon-128.png"
     },
     "default_title": "ChatPlus for Rumble",
-    "default_popup": "extension/build/index.html"
+    "default_popup": "build/index.html"
   },
   "icons": {
     "16": "images/icon-16.png",

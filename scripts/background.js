@@ -24,25 +24,11 @@ chrome.runtime.onInstalled.addListener(() => {
 
     var newOptionObj = extractProperties(optionsList, result.options);
     
-    console.log( 
-      "Installed - stored options", 
-      'result: ' + JSON.stringify(result), 
-      'newOptionsObj: ' + JSON.stringify(newOptionObj)
-    );
-    
-    /*if (resultLength > 1) {
-      Object.assign(options, result.options);
-      console.log("Installed - stored options" + JSON.stringify(result), options);
-    } else {
-      Object.assign(options, defaultOptions);
-      console.log("Installed - default options", options);
-    }
-  });*/
   
-  chrome.storage.sync.set({ options: newOptionObj })
-    .then(() => {
-      console.log("Installed - set options", newOptionObj);
-    });
+    chrome.storage.sync.set({ options: newOptionObj })
+      .then(() => {
+        console.log("Installed - set options", newOptionObj);
+      });
   });
 });
 

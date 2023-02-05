@@ -2,7 +2,11 @@
 //////   Define Variables   //////
 
 // Options
-let optionsState = {};
+var optionsState = {
+  enableChatPlus: true,
+  debug: true,
+  colorUsernames: true
+};
 var enableApp, colorUsernames, debugMode;
 
 //var showUsernameList = false;
@@ -13,23 +17,46 @@ var enableApp, colorUsernames, debugMode;
 (() => {
   chrome.storage.sync.get("options")
   .then(function (result) {
-    
-    if (result && result.options) {
-      Object.assign(optionsState, result.options);
-    
-      enableApp = result.options.enableChatPlus;
-      colorUsernames = result.options.colorUsernames;
-      debugMode = result.options.debug;
+    const defaultOptions = {
+      enableChatPlus: true,
+      debug: false,
+      colorUsernames: true
+    };
 
-      if (result.options.debug) console.log('Options from storage', JSON.stringify(result));
-    } else {
-      enableApp = true;
-      colorUsernames = true;
-      debugMode = false;
+    var optionsList = ["enableChatPlus", "debug", "colorUsernames"];
+
+    function extractProperties(names, obj) {
+      let extracted = {};
+      names.forEach(name => {
+        if (name in obj) {
+          extracted[name] = obj[name];
+        } else {
+          extracted[name] = defaultOptions[name];
+        }
+      });
+      return extracted;
     }
+
+    let newOptionObj = extractProperties(optionsList, result.options);
+
+    enableApp = newOptionObj.enableChatPlus;
+    colorUsernames = newOptionObj.colorUsernames;
+    debugMode = newOptionObj.debug;
+
+    //optionsState = newOptionObj;
+    Object.assign(optionsState, newOptionObj);
+
+    if (debugMode) console.log('optionsState1', optionsState)
   });
 })();
 
+// Block function if app is disabled
+if (
+  optionsState.enableApp === false
+  //|| enableApp === false
+) {
+  console.log('ChatPlus is disabled');
+} else {
 
 // Chat history
 var currentChatHistory = [];
@@ -88,14 +115,9 @@ if (authorEle && authorHref){
 }
 
 
-// Block function if app is disabled
-if (
-  //(optionsState && optionsState.enableApp === false)
-  //|| 
-  enableApp === false
-) {
-  console.log('ChatPlus is disabled');
-} else {
+
+
+
 
 //////   Chat History  //////
 
@@ -108,7 +130,10 @@ const chatHistoryMessages = document.querySelectorAll('.chat-history--message');
 
 // Retrieves user color from userColor object
 const getUserColor = (username) => {
-  if ( optionsState.colorUsernames === false || colorUsernames === false ){
+  if ( 
+    optionsState.colorUsernames === false 
+    //|| colorUsernames === false 
+  ){
     userColors[username] = usernameColors.rumbler;
   } else if (!userColors[username]) {
     userColors[username] = getRandomColor();
@@ -185,7 +210,7 @@ const getChatHistory = () => {
 
 // Get chat history on page load
 function wait() {
-  var time = 200;
+  var time = 250;
   setTimeout(function() {
   getChatHistory();
     //console.log('Executed after + ' + time + ' miliseconds.');
@@ -495,4 +520,7 @@ window.addEventListener('resize', function(event){
   }  
 }, true);
 
+
+
+  
 } 

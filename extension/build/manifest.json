@@ -1,6 +1,6 @@
 {
-  "short_name": "Chat+",
-  "name": "Chat+ Popup",
+  "short_name": "ChatPlus",
+  "name": "ChatPlus Popup",
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",

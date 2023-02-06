@@ -7,13 +7,15 @@ let optionsState = {
   debug: true,
   colorUsernames: true,
   showUsernameListOnStartup: false,
-  enableUsernameMenu: true
+  enableUsernameMenu: true,
+  popupBelow: false,
 };
 var enableApp, 
   colorUsernames, 
   debugMode, 
   showUsernameListOnStartup,
-  enableUsernameMenu;
+  enableUsernameMenu,
+  popupBelow;
 
 //var mainUserList = true;
 //var popoutUserList = false;
@@ -24,7 +26,8 @@ const saveOptionsToStorage = () => {
     debug: debugMode,
     colorUsernames: colorUsernames,
     showUsernameListOnStartup: showUsernameListOnStartup,
-    enableUsernameMenu: enableUsernameMenu
+    enableUsernameMenu: enableUsernameMenu,
+    popupBelow: popupBelow,
   } })
   .then(function (result) {
     //console.log('Options saved to storage')
@@ -266,10 +269,14 @@ const openChatUsernamesPopup = (coordinates) => {
   popup.style.position = 'absolute';
   popup.style.left = coordinates.left + 'px';
 
-  // Show popup below message input
-  //popup.style.top = coordinates.top + popupAdjustedHeight + 5 + 'px';
-  // Show popup above message input
-  popup.style.top = coordinates.top - 145 + 'px';
+  if (popupBelow || optionsState.popupBelow){
+    //Show popup below message input
+    popup.style.top = coordinates.top + popupAdjustedHeight + 5 + 'px';
+  } else {
+    // Show popup above message input
+    popup.style.top = coordinates.top - 145 + 'px';
+  }
+  
   
   // Create a list element
   const popupContent = document.createElement('ul');
@@ -693,7 +700,8 @@ const toggleChatUsernameMenu = (toggle) => {
       debug: false,
       colorUsernames: true,
       showUsernameListOnStartup: false,
-      enableUsernameMenu: false
+      enableUsernameMenu: false,
+      popupBelow: false
     };
 
     var optionsList = [
@@ -701,7 +709,8 @@ const toggleChatUsernameMenu = (toggle) => {
       "debug", 
       "colorUsernames", 
       "showUsernameListOnStartup",
-      "enableUsernameMenu"
+      "enableUsernameMenu",
+      "popupBelow"
     ];
 
     function extractProperties(names, obj) {
@@ -723,6 +732,7 @@ const toggleChatUsernameMenu = (toggle) => {
     debugMode = newOptionObj.debug;
     showUsernameListOnStartup = newOptionObj.showUsernameListOnStartup;
     enableUsernameMenu = newOptionObj.enableUsernameMenu;
+    popupBelow = newOptionObj.popupBelow;
 
     Object.assign(optionsState, newOptionObj);
     

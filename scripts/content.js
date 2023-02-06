@@ -560,7 +560,7 @@ const toggleChatUsernameMenu = (toggle) => {
     usernameMenuButton.classList.add('username-menu-button');
     usernameMenuButton.style.width = '100%';
     usernameMenuButton.style.height = '17px';
-    usernameMenuButton.style.background = 'rgb(133, 199, 66, .9)';
+    usernameMenuButton.style.background = 'rgb(133, 199, 66, .95)';
     usernameMenuButton.style.color = messageColors.rumbleDarkBlue;
     usernameMenuButton.style.zIndex = '9999';
     usernameMenuButton.style.fontSize = '.9rem';

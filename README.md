@@ -9,6 +9,9 @@ ChatPlus is a lightweight browser extension that adds features to Rumble livestr
 - (In development) Portable popout chat window
 
 ## Installation
+
+Expected to be on the Chrome Extensions store soon. Until then you can download it from this repo and install it manually in Chrome's "Manage Extensions" tab at [chrome://extensions/](chrome://extensions/).
+
 - Download this repository by clicking "Code" then "Download Zip".
 - Unzip the zip file. 
 - From the Chrome Extensions page, turn on "Developer Mode", click "Load unpacked", then select the unzipped folder.

@@ -10,11 +10,12 @@ ChatPlus is a lightweight browser extension that adds features to Rumble livestr
 
 ## Installation
 
-Expected to be on the Chrome Extensions store soon. Until then you can download it from this repo and install it manually in Chrome's "Manage Extensions" tab at chrome://extensions.
+Expected to be on the Chrome Extensions store soon. Until then you can download it from this repo and install it at Chrome extensions page.
 
 - Download this repository by clicking "Code" then "Download Zip".
 - Unzip the zip file. 
-- From the Chrome Extensions page, turn on "Developer Mode", click "Load unpacked", then select the unzipped folder.
+- Go to the Chrome Extensions page by entering chrome://extensions in the Chrome url box, or by clicking the extensions icon in the Chrome browser and selecting "Manage Extensions". 
+- From the extensions page, turn on "Developer Mode", click "Load unpacked", then select the unzipped folder.
 - Once installed, you will see the extension icon among your browser's extensions. 
 
 ## Usage

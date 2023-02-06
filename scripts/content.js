@@ -559,7 +559,7 @@ const toggleChatUsernameMenu = (toggle) => {
     
     usernameMenuButton.classList.add('username-menu-button');
     usernameMenuButton.style.width = '100%';
-    usernameMenuButton.style.height = '15px';
+    usernameMenuButton.style.height = '17px';
     usernameMenuButton.style.background = 'rgb(133, 199, 66, 1)';
     usernameMenuButton.style.color = messageColors.rumbleDarkBlue;
     usernameMenuButton.style.zIndex = '9999';
@@ -570,7 +570,8 @@ const toggleChatUsernameMenu = (toggle) => {
     usernameMenuButton.style.cursor = 'pointer';
 
     //usernameMenuButton.textContent = 'Hide';
-    usernameMenuButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>';
+    //usernameMenuButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>';
+    usernameMenuButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16"><path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/></svg>'
     
     usernameMenuButton.addEventListener('click', () => {
       toggleChatUsernameMenu(false)

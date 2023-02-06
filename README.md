@@ -19,8 +19,8 @@ Expected to be on the Chrome Extensions store soon. Until then you can download 
 - Once installed, you will see the extension icon among your browser's extensions. 
 
 ## Usage
-- Login and open a livestream on Rumble.com.
-- Type "@" to view a user list popup. Click a username in the list to add it to the chat message.
+- Open a livestream on Rumble.com.
+- Type "@" to view a user list popup while logged in. Click a username in the list to add it to the chat message.
 - Mentions with your username will be highlighted.
 - Click the extension icon in the browser's toolbar to open the options.
 

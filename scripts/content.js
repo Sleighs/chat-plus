@@ -34,7 +34,6 @@ const saveOptionsToStorage = () => {
   });
 };
 
-
 // Chat history
 var currentChatHistory = [];
 
@@ -527,9 +526,10 @@ const addChatUsernameMenu = () => {
   usernameMenuButtonText.style.height = 'fit-content';
   usernameMenuButtonText.style.marginTop = '-40px';
   usernameMenuButtonText.style.zIndex = '8999';
-  usernameMenuButtonText.style.color = 'rgb(255,255,255,0.33)';
-
-  usernameMenuButtonText.textContent = 'User List';
+  usernameMenuButtonText.style.color = 'rgb(255,255,255,0.45)';
+  
+  usernameMenuButtonText.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>';
+  //usernameMenuButtonText.textContent = 'User List';
 
   usernameMenuButton.appendChild(usernameMenuButtonText);
   usernameMenuContainer.appendChild(usernameMenuButton);
@@ -559,15 +559,18 @@ const toggleChatUsernameMenu = (toggle) => {
     
     usernameMenuButton.classList.add('username-menu-button');
     usernameMenuButton.style.width = '100%';
-    usernameMenuButton.style.height = '17px';
-    usernameMenuButton.style.background = 'rgb(133, 199, 66, .95)';
+    usernameMenuButton.style.height = '15px';
+    usernameMenuButton.style.background = 'rgb(133, 199, 66, 1)';
     usernameMenuButton.style.color = messageColors.rumbleDarkBlue;
     usernameMenuButton.style.zIndex = '9999';
-    usernameMenuButton.style.fontSize = '.9rem';
+    //usernameMenuButton.style.fontSize = '.9rem';
     usernameMenuButton.style.display = 'flex';
-    usernameMenuButton.style.justifyContent = 'center';
+    usernameMenuButton.style.justifyContent = 'flex-start';
     usernameMenuButton.style.alignItems = 'center';
-    usernameMenuButton.textContent = 'Hide';
+    usernameMenuButton.style.cursor = 'pointer';
+
+    //usernameMenuButton.textContent = 'Hide';
+    usernameMenuButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>';
     
     usernameMenuButton.addEventListener('click', () => {
       toggleChatUsernameMenu(false)
@@ -669,9 +672,11 @@ const toggleChatUsernameMenu = (toggle) => {
     usernameMenuButtonText.style.height = 'fit-content';
     usernameMenuButtonText.style.marginTop = '-40px';
     usernameMenuButtonText.style.zIndex = '8999';
-    usernameMenuButtonText.style.color = 'rgb(255,255,255,0.33)';
+    usernameMenuButtonText.style.color = 'rgb(255,255,255,0.45)';
+    usernameMenuButtonText.style.cursor = 'pointer';
 
-    usernameMenuButtonText.textContent = 'User List';
+    //usernameMenuButtonText.textContent = 'User List';
+    usernameMenuButtonText.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>';
 
     usernameMenuButton.appendChild(usernameMenuButtonText);
     usernameMenuContainer.appendChild(usernameMenuButton);

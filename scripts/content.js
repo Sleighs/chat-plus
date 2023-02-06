@@ -10,7 +10,7 @@ var optionsState = {
   popupBelow: false,
 };
 
-var enableApp, 
+var enableChatPlus, 
   colorUsernames, 
   enableUsernameMenu,
   showUsernameListOnStartup,
@@ -87,7 +87,7 @@ try {
 // Save options to storage
 const saveOptionsToStorage = () => {
   chrome.storage.sync.set({ options: {
-    enableChatPlus: enableApp,
+    enableChatPlus: enableChatPlus,
     colorUsernames: colorUsernames,
     enableUsernameMenu: enableUsernameMenu,
     showUsernameListOnStartup: showUsernameListOnStartup,
@@ -531,6 +531,8 @@ const toggleChatUsernameMenu = (toggle) => {
 
 //////   Initialize App   ///////
 
+// Check if app is enabled
+
 // Get options from storage
 (() => {
   chrome.storage.sync.get("options")
@@ -566,7 +568,7 @@ const toggleChatUsernameMenu = (toggle) => {
     if (result && result.options){
       let newOptionObj = extractProperties(optionsList, result.options);
 
-      enableApp = newOptionObj.enableChatPlus;
+      enableChatPlus = newOptionObj.enableChatPlus;
       colorUsernames = newOptionObj.colorUsernames;      
       enableUsernameMenu = newOptionObj.enableUsernameMenu;
       showUsernameListOnStartup = newOptionObj.showUsernameListOnStartup;
@@ -574,7 +576,7 @@ const toggleChatUsernameMenu = (toggle) => {
 
       Object.assign(optionsState, newOptionObj);
     } else {
-      enableApp = defaultOptions.enableChatPlus;
+      enableChatPlus = defaultOptions.enableChatPlus;
       colorUsernames = defaultOptions.colorUsernames;      
       enableUsernameMenu = defaultOptions.enableUsernameMenu;
       showUsernameListOnStartup = defaultOptions.showUsernameListOnStartup;
@@ -583,27 +585,30 @@ const toggleChatUsernameMenu = (toggle) => {
       Object.assign(optionsState, defaultOptions);
     } 
   }).then(() => {
-    // If chat exists
-    try {
-      if (document.querySelectorAll('.chat-history')){
-        // Get chat history
-        getChatHistory();
-        
-        // Add username menu
-        if (optionsState.enableUsernameMenu) {
-            addChatUsernameMenu();
-        }
 
-        // Show username list on startup if enabled
-        if (
-          optionsState.enableUsernameMenu 
-          && optionsState.showUsernameListOnStartup
-        ) {
-          toggleChatUsernameMenu(optionsState.showUsernameListOnStartup);
+    // If app is enabled
+    if (enableChatPlus) {
+      try {
+        if (document.querySelectorAll('.chat-history')){
+          // Get chat history
+          getChatHistory();
+          
+          // Add username menu
+          if (optionsState.enableUsernameMenu) {
+              addChatUsernameMenu();
+          }
+
+          // Show username list on startup if enabled
+          if (
+            optionsState.enableUsernameMenu 
+            && optionsState.showUsernameListOnStartup
+          ) {
+            toggleChatUsernameMenu(optionsState.showUsernameListOnStartup);
+          }
         }
+      } catch (err) {
+        //if (debugMode) console.log(err);
       }
-    } catch (err) {
-      //if (debugMode) console.log(err);
     }
   });
 })();
@@ -624,7 +629,7 @@ var chatObserver = new MutationObserver(function(mutations) {
 
         if (addedNode.classList.contains("chat-history--row")) {
           // Check element classlist for 'chat-history--rant' 
-          if (addedNode.classList.contains('chat-history--rant')) {
+          if (!enableChatPlus || addedNode.classList.contains('chat-history--rant')) {
             // Skip node
             return;
           }
@@ -687,63 +692,65 @@ document.addEventListener("keydown", function(event) {
     openChatUsernamesPopup();
   }*/
 
-  var usernameListPopup = document.querySelector('.chat-plus-popup');
+  if (enableChatPlus) {
+    var usernameListPopup = document.querySelector('.chat-plus-popup');
 
-  // If space bar is pressed remove username list popup
-  if (usernameListPopup && event.keyCode === 32) {
-    // Close popup
-    if (usernameListPopup) {
-      usernameListPopup.remove()
+    // If space bar is pressed remove username list popup
+    if (usernameListPopup && event.keyCode === 32) {
+      // Close popup
+      if (usernameListPopup) {
+        usernameListPopup.remove()
+      }
     }
-  }
 
-  // If backspace is pressed remove username list popup
-  if (usernameListPopup && event.keyCode === 8) {
-    // Close popup
-    if (usernameListPopup) {
-      usernameListPopup.remove()
+    // If backspace is pressed remove username list popup
+    if (usernameListPopup && event.keyCode === 8) {
+      // Close popup
+      if (usernameListPopup) {
+        usernameListPopup.remove()
+      }
     }
-  }
 
-  // If escape key is pressed hide username list
-  if (showUsernameList && event.keyCode === 27) {
-    showUsernameList = false;
-    toggleChatUsernameMenu(false)
+    // If escape key is pressed hide username list
+    if (showUsernameList && event.keyCode === 27) {
+      showUsernameList = false;
+      toggleChatUsernameMenu(false)
+    }
   }
 });
-
-
 
 // Listen for input in chat message input
 let inputElement = document.getElementById("chat-message-text-input");
 
 if (inputElement) {
   inputElement.addEventListener("input", function() {
-    let inputValue = inputElement.value;
-    
-    // Get all indexes of @
-    let atSignIndexes = [];
-    for (var i = 0; i < inputValue.length; i++) {
-      if (inputValue[i] === "@") {
-        atSignIndexes.push(i);
+    if (enableChatPlus) {
+      let inputValue = inputElement.value;
+      
+      // Get all indexes of @
+      let atSignIndexes = [];
+      for (var i = 0; i < inputValue.length; i++) {
+        if (inputValue[i] === "@") {
+          atSignIndexes.push(i);
+        }
       }
+
+      // Get caret position
+      let caretPosition = storeCaretPosition(inputElement);
+
+      // Get coordinates of input element
+      let messageCoordinates = getPageCoordinates(inputElement)
+
+      // If "@"" is found in the input and caret is next to it
+      if ( 
+        !document.querySelector('.chat-plus-popup') 
+        && atSignIndexes.includes(caretPosition - 1)
+      ) {
+        // Open username list popup
+        showUsernameList = true;
+        openChatUsernamesPopup(messageCoordinates);
+      } 
     }
-
-    // Get caret position
-    let caretPosition = storeCaretPosition(inputElement);
-
-    // Get coordinates of input element
-    let messageCoordinates = getPageCoordinates(inputElement)
-
-    // If "@"" is found in the input and caret is next to it
-    if ( 
-      !document.querySelector('.chat-plus-popup') 
-      && atSignIndexes.includes(caretPosition - 1)
-    ) {
-      // Open username list popup
-      showUsernameList = true;
-      openChatUsernamesPopup(messageCoordinates);
-    } 
   });
 }
 
@@ -776,15 +783,16 @@ window.addEventListener('resize', function(event){
 
 //////   Intervals   //////
 
-// Refresh chat history every 120 seconds
-const chatRefreshInterval = setInterval(function(){
-  //console.log('refreshing chat history');
-  getChatHistory()
-}, 120000);
+  // Refresh chat history every 120 seconds
+  const chatRefreshInterval = setInterval(function(){
+    //console.log('refreshing chat history');
+    if (enableChatPlus) {
+      getChatHistory();
+    }
+  }, 120000);
 
- // Clear interval if there is no chat history
-if (!chatHistoryList){
-  //console.log('clearing chat refresh interval')
-  clearInterval(chatRefreshInterval);
-}
-
+  // Clear interval if there is no chat history
+  if (!chatHistoryList || !enableChatPlus){
+    //console.log('clearing chat refresh interval')
+    clearInterval(chatRefreshInterval);
+  }

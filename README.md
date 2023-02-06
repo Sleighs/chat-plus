@@ -4,9 +4,9 @@ ChatPlus is a lightweight browser extension that adds features to Rumble livestr
 
 ### Features 
 - Improved username mention visibility by highlighting mentioned usernames
-- Easier username referencing with username tagging 
-- Better username recognition with username colors
-- (In development) Portable popout chat window
+- Easier username referencing with @ username tagging 
+- Username colors for better visibility
+- (In development) Popout chat window for chat portability
 
 ## Installation
 

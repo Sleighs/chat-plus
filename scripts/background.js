@@ -2,7 +2,6 @@
 
 const defaultOptions = {
   enableChatPlus: true,
-  debug: false,
   colorUsernames: true,
   showUsernameListOnStartup: false,
   enableUsernameMenu: false
@@ -13,7 +12,6 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.sync.get("options").then((result) => {
     var optionsList = [
       "enableChatPlus", 
-      "debug", 
       "colorUsernames", 
       "showUsernameListOnStartup",
       "enableUsernameMenu"

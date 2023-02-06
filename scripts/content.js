@@ -4,29 +4,25 @@
 // Options Variables
 var optionsState = {
   enableChatPlus: true,
-  debug: true,
   colorUsernames: true,
-  showUsernameListOnStartup: false,
   enableUsernameMenu: true,
+  showUsernameListOnStartup: false,
   popupBelow: false,
 };
 var enableApp, 
   colorUsernames, 
-  debugMode, 
-  showUsernameListOnStartup,
   enableUsernameMenu,
+  showUsernameListOnStartup,
   popupBelow;
 
-//var mainUserList = true;
-//var popoutUserList = false;
+var debugMode = false;
 
 const saveOptionsToStorage = () => {
   chrome.storage.sync.set({ options: {
     enableChatPlus: enableApp,
-    debug: debugMode,
     colorUsernames: colorUsernames,
-    showUsernameListOnStartup: showUsernameListOnStartup,
     enableUsernameMenu: enableUsernameMenu,
+    showUsernameListOnStartup: showUsernameListOnStartup,
     popupBelow: popupBelow,
   } })
   .then(function (result) {
@@ -73,7 +69,7 @@ const getRandomColor = () => {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-
+// Vars for logged in user and current streamer 
 var currentUser = '';
 var currentStreamer = '';
 
@@ -88,7 +84,7 @@ try {
     } 
   }
 
-  // Get current streamer from page if exists
+  // Get current streamer from author element if exists
   const authorEle = document.querySelector('.media-by--a');
 
   if (authorEle){
@@ -190,8 +186,6 @@ const getChatHistory = () => {
     });
   });
 };
-
-
 
 
 
@@ -540,19 +534,17 @@ const toggleChatUsernameMenu = (toggle) => {
   .then(function (result) {
     const defaultOptions = {
       enableChatPlus: true,
-      debug: false,
       colorUsernames: true,
-      showUsernameListOnStartup: false,
       enableUsernameMenu: false,
+      showUsernameListOnStartup: false,
       popupBelow: false
     };
 
     var optionsList = [
       "enableChatPlus", 
-      "debug", 
       "colorUsernames", 
-      "showUsernameListOnStartup",
       "enableUsernameMenu",
+      "showUsernameListOnStartup",
       "popupBelow"
     ];
 
@@ -572,25 +564,21 @@ const toggleChatUsernameMenu = (toggle) => {
       let newOptionObj = extractProperties(optionsList, result.options);
 
       enableApp = newOptionObj.enableChatPlus;
-      colorUsernames = newOptionObj.colorUsernames;
-      debugMode = newOptionObj.debug;
-      showUsernameListOnStartup = newOptionObj.showUsernameListOnStartup;
+      colorUsernames = newOptionObj.colorUsernames;      
       enableUsernameMenu = newOptionObj.enableUsernameMenu;
+      showUsernameListOnStartup = newOptionObj.showUsernameListOnStartup;
       popupBelow = newOptionObj.popupBelow;
 
       Object.assign(optionsState, newOptionObj);
     } else {
       enableApp = defaultOptions.enableChatPlus;
-      colorUsernames = defaultOptions.colorUsernames;
-      debugMode = defaultOptions.debug;
-      showUsernameListOnStartup = defaultOptions.showUsernameListOnStartup;
+      colorUsernames = defaultOptions.colorUsernames;      
       enableUsernameMenu = defaultOptions.enableUsernameMenu;
+      showUsernameListOnStartup = defaultOptions.showUsernameListOnStartup;
       popupBelow = defaultOptions.popupBelow;
 
       Object.assign(optionsState, defaultOptions);
     } 
-
-    if (debugMode) console.log('init optionsState', optionsState);
   }).then(() => {
     // If chat exists
     try {
@@ -614,8 +602,6 @@ const toggleChatUsernameMenu = (toggle) => {
     } catch (err) {
       //if (debugMode) console.log(err);
     }
-
-    //if (debugMode) console.log('optionsState init2', optionsState);
   });
 })();
 

@@ -1,4 +1,5 @@
-////////   Background Initialization   ////////
+////////   Installation   ////////
+
 const defaultOptions = {
   enableChatPlus: true,
   debug: false,
@@ -18,6 +19,7 @@ chrome.runtime.onInstalled.addListener(() => {
       "enableUsernameMenu"
     ];
 
+    // Creates a new options object from the stored options and the default options
     function extractProperties(names, obj) {
       let extracted = {};
       names.forEach(name => {
@@ -30,12 +32,20 @@ chrome.runtime.onInstalled.addListener(() => {
       return extracted;
     }
 
-    var newOptionObj = extractProperties(optionsList, result.options);
-  
-    chrome.storage.sync.set({ options: newOptionObj })
-      .then(() => {
-        console.log("Installed - set options", newOptionObj);
-      });
+    if ( result && result.options ) {
+      let newOptionObj = extractProperties(optionsList, result.options);
+      
+      // Stores the options object in chrome.storage.sync
+      chrome.storage.sync.set({ options: newOptionObj })
+        .then(() => {
+          console.log("Installed - set options", newOptionObj);
+        });
+    } else {
+      chrome.storage.sync.set({ options: defaultOptions })
+        .then(() => {
+          console.log("Installed - default options", defaultOptions);
+        });
+    }
   });
 });
 

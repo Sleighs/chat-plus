@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "ChatPlus for Rumble (Beta)",
-  "version": "0.1.0",
-  "description": "Adds features to Rumble livestream chat.",
+  "name": "ChatPlus for Rumble",
+  "version": "0.1.2",
+  "description": "ChatPlus adds features to Rumble livestream chat, including user tagging, colors and mention highlights.",
   "action": {
     "default_icon": {
       "16": "images/icon-16.png",

@@ -9,6 +9,7 @@ var optionsState = {
   showUsernameListOnStartup: false,
   popupBelow: false,
 };
+
 var enableApp, 
   colorUsernames, 
   enableUsernameMenu,
@@ -16,19 +17,7 @@ var enableApp,
   popupBelow;
 
 var debugMode = false;
-
-const saveOptionsToStorage = () => {
-  chrome.storage.sync.set({ options: {
-    enableChatPlus: enableApp,
-    colorUsernames: colorUsernames,
-    enableUsernameMenu: enableUsernameMenu,
-    showUsernameListOnStartup: showUsernameListOnStartup,
-    popupBelow: popupBelow,
-  } })
-  .then(function (result) {
-    //console.log('Options saved to storage')
-  });
-};
+var showUsernameList = false;
 
 // Chat history
 var currentChatHistory = [];
@@ -94,6 +83,20 @@ try {
 } catch (error) {
   //if (debugMode) console.log('Error getting current user or streamer', error);
 }
+
+// Save options to storage
+const saveOptionsToStorage = () => {
+  chrome.storage.sync.set({ options: {
+    enableChatPlus: enableApp,
+    colorUsernames: colorUsernames,
+    enableUsernameMenu: enableUsernameMenu,
+    showUsernameListOnStartup: showUsernameListOnStartup,
+    popupBelow: popupBelow,
+  } })
+  .then(function (result) {
+    //console.log('Options saved to storage')
+  });
+};
 
 
 
@@ -235,7 +238,7 @@ const openChatUsernamesPopup = (coordinates) => {
   popup.style['-ms-overflow-style'] = 'none';
   popup.style.backgroundColor = '#061726';
   popup.style.borderRadius = '5px';
-  popup.style.zIndex = '9999';
+  popup.style.zIndex = '199';
   popup.style.padding = '0 7px';
   popup.style.outline = '1px solid rgba(136,136,136,.25)';
   popup.style.outlineOffset = '0px';
@@ -258,7 +261,7 @@ const openChatUsernamesPopup = (coordinates) => {
   popupContent.style.position = 'relative';
   popupContent.style.width = '100%';
   popupContent.style.height = '100%';
-  popupContent.style.zIndex = '9999';
+  popupContent.style.zIndex = '199';
   popupContent.style.overflow = 'auto';
   popup.appendChild(popupContent);
 
@@ -324,7 +327,7 @@ const addChatUsernameMenu = () => {
   usernameMenuContainer.style.height = '100%';
   usernameMenuContainer.style.boxSizing = 'border-box';
   usernameMenuContainer.style.overflow = 'hidden';
-  usernameMenuContainer.style.zIndex = '9998';
+  usernameMenuContainer.style.zIndex = '190';
   usernameMenuContainer.style.borderLeft = `solid 1pt rgb(255,255,255,0)`;
   usernameMenuContainer.style.display = 'flex';
   usernameMenuContainer.style.flexDirection = 'column';
@@ -338,7 +341,7 @@ const addChatUsernameMenu = () => {
   usernameMenuButton.style.height = '100%';
   usernameMenuButton.style.color = messageColors.rumble;
   usernameMenuButton.style.boxSizing = 'border-box';
-  usernameMenuButton.style.zIndex = '9999';
+  usernameMenuButton.style.zIndex = '195';
   usernameMenuButton.style.writingMode = 'vertical-rl';
   usernameMenuButton.style.display = 'flex';
   usernameMenuButton.style.justifyContent = 'center';
@@ -356,7 +359,7 @@ const addChatUsernameMenu = () => {
   usernameMenuButtonText.style.width = '100%';
   usernameMenuButtonText.style.height = 'fit-content';
   usernameMenuButtonText.style.marginTop = '-40px';
-  usernameMenuButtonText.style.zIndex = '8999';
+  usernameMenuButtonText.style.zIndex = '189';
   usernameMenuButtonText.style.color = 'rgb(255,255,255,0.45)';
   
   usernameMenuButtonText.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>';
@@ -393,7 +396,7 @@ const toggleChatUsernameMenu = (toggle) => {
     usernameMenuButton.style.height = '17px';
     usernameMenuButton.style.background = 'rgb(133, 199, 66, 1)';
     usernameMenuButton.style.color = messageColors.rumbleDarkBlue;
-    usernameMenuButton.style.zIndex = '9999';
+    usernameMenuButton.style.zIndex = '195';
     //usernameMenuButton.style.fontSize = '.9rem';
     usernameMenuButton.style.display = 'flex';
     usernameMenuButton.style.justifyContent = 'flex-start';
@@ -417,7 +420,7 @@ const toggleChatUsernameMenu = (toggle) => {
     usernameMenuList.style.position = 'relative';
     usernameMenuList.style.width = '100%';
     usernameMenuList.style.height = '100%';
-    usernameMenuList.style.zIndex = '9999';
+    usernameMenuList.style.zIndex = '195';
     usernameMenuList.style.overflow = 'scroll';
     usernameMenuList.style.padding = '7px';
     usernameMenuList.style.boxSizing = 'border-box';
@@ -446,7 +449,7 @@ const toggleChatUsernameMenu = (toggle) => {
       usernameTextElement.style.listStyle = 'none';
       usernameTextElement.style.cursor = 'pointer';
       usernameTextElement.style.fontWeight = 'bold';
-      usernameTextElement.style.zIndex = '99990';
+      usernameTextElement.style.zIndex = '195';
       usernameTextElement.innerHTML = user;
 
       // Add username to list
@@ -486,7 +489,7 @@ const toggleChatUsernameMenu = (toggle) => {
     usernameMenuButton.style.width = '100%';
     usernameMenuButton.style.height = '100%';
     usernameMenuButton.style.boxSizing = 'border-box';
-    usernameMenuButton.style.zIndex = '9999';
+    usernameMenuButton.style.zIndex = '195';
     usernameMenuButton.style.writingMode = 'vertical-rl';
     usernameMenuButton.style.display = 'flex';
     usernameMenuButton.style.justifyContent = 'center';
@@ -503,7 +506,7 @@ const toggleChatUsernameMenu = (toggle) => {
     usernameMenuButtonText.style.width = '100%';
     usernameMenuButtonText.style.height = 'fit-content';
     usernameMenuButtonText.style.marginTop = '-40px';
-    usernameMenuButtonText.style.zIndex = '8999';
+    usernameMenuButtonText.style.zIndex = '190';
     usernameMenuButtonText.style.color = 'rgb(255,255,255,0.45)';
     usernameMenuButtonText.style.cursor = 'pointer';
 
@@ -596,7 +599,7 @@ const toggleChatUsernameMenu = (toggle) => {
           optionsState.enableUsernameMenu 
           && optionsState.showUsernameListOnStartup
         ) {
-          toggleChatUsernameMenu(optionsState.showUsernameList);
+          toggleChatUsernameMenu(optionsState.showUsernameListOnStartup);
         }
       }
     } catch (err) {
@@ -618,6 +621,7 @@ var chatObserver = new MutationObserver(function(mutations) {
       // Loop through the added nodes to find new messages
       for (var i = 0; i < mutation.addedNodes.length; i++) {
         var addedNode = mutation.addedNodes[i];
+
         if (addedNode.classList.contains("chat-history--row")) {
           // Check element classlist for 'chat-history--rant' 
           if (addedNode.classList.contains('chat-history--rant')) {
@@ -654,6 +658,17 @@ var chatObserver = new MutationObserver(function(mutations) {
             date: Date.now(),
           });
         }
+
+        // Check if the added node has element id 'chat--num-unread-messages' to position on top of the username menu
+        if (document.getElementById("chat--num-unread-messages") && showUsernameList) {
+          // Set the z-index and opacity of the unread message count
+          document.getElementById('chat--num-unread-messages').style.zIndex = '199';
+          document.getElementById('chat--num-unread-messages').style.opacity = '1';
+        } else if (document.getElementById("chat--num-unread-messages")) {
+          // Set the z-index and opacity of the unread message count
+          document.getElementById('chat--num-unread-messages').style.zIndex = '';
+          document.getElementById('chat--num-unread-messages').style.opacity = '';
+        }
       }
     }
   });
@@ -678,7 +693,6 @@ document.addEventListener("keydown", function(event) {
   if (usernameListPopup && event.keyCode === 32) {
     // Close popup
     if (usernameListPopup) {
-      showUsernameList = false;
       usernameListPopup.remove()
     }
   }
@@ -687,11 +701,18 @@ document.addEventListener("keydown", function(event) {
   if (usernameListPopup && event.keyCode === 8) {
     // Close popup
     if (usernameListPopup) {
-      showUsernameList = false;
       usernameListPopup.remove()
     }
   }
+
+  // If escape key is pressed hide username list
+  if (showUsernameList && event.keyCode === 27) {
+    showUsernameList = false;
+    toggleChatUsernameMenu(false)
+  }
 });
+
+
 
 // Listen for input in chat message input
 let inputElement = document.getElementById("chat-message-text-input");
@@ -766,3 +787,4 @@ if (!chatHistoryList){
   //console.log('clearing chat refresh interval')
   clearInterval(chatRefreshInterval);
 }
+

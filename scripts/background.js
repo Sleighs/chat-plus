@@ -4,7 +4,7 @@ const defaultOptions = {
   debug: false,
   colorUsernames: true,
   showUsernameListOnStartup: false,
-  enableUsernameMenu: true
+  enableUsernameMenu: false
 };
 let options = {};
 

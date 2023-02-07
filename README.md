@@ -6,7 +6,9 @@ ChatPlus is a lightweight browser extension that adds features to livestream cha
 - Improved username mention visibility by highlighting mentioned usernames
 - Easier username referencing with @ username tagging 
 - Username colors for better visibility
-- (In development) Popout chat window for chat portability
+- Play Video on page load
+- (In development) Full window chat for portability
+
 
 ## Installation
 

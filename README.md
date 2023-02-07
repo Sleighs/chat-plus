@@ -1,4 +1,4 @@
-<p style="text-align: center;"># ChatPlus: Livestream Chat Extension for Rumble</p>
+<h1 style="text-align: center;">ChatPlus: Livestream Chat Extension for Rumble</h1>
 
 <p align="center">
   <img src="https://i.imgur.com/aMMQ0UX.png" />

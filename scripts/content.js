@@ -1,29 +1,149 @@
 
 //////   Define Variables   //////
 
-// Options Variables
-var optionsState = {
+// Default options
+let optionsState = {
   enableChatPlus: true,
   colorUsernames: true,
   enableUsernameMenu: true,
   showUsernameListOnStartup: false,
   popupBelow: false,
+  playVideoOnPageLoad: false
 };
 
-var enableChatPlus, 
+// Undefined option vars
+let enableChatPlus, 
   colorUsernames, 
   enableUsernameMenu,
   showUsernameListOnStartup,
-  popupBelow;
+  popupBelow,
+  playVideoOnPageLoad;
 
-var debugMode = false;
-var showUsernameList = false;
+// Vars that remain in scope
+let debugMode = false;
+let showUsernameList = false;
+let streamerMode = false;
+
+// Save options to storage
+const saveOptionsToStorage = () => {
+  chrome.storage.sync.set({ options: {
+    enableChatPlus: enableChatPlus,
+    colorUsernames: colorUsernames,
+    enableUsernameMenu: enableUsernameMenu,
+    showUsernameListOnStartup: showUsernameListOnStartup,
+    popupBelow: popupBelow,
+    playVideoOnPageLoad: playVideoOnPageLoad
+  } })
+  .then(function (result) {
+    //if (debugMode) console.log('Options saved to storage')
+  });
+};
+
+
+
+
+
+//////   Initialize App   ///////
+
+// Get options from storage and initialize extension
+(() => {
+  chrome.storage.sync.get("options")
+  .then(function (result) {
+    const defaultOptions = {
+      enableChatPlus: true,
+      colorUsernames: true,
+      enableUsernameMenu: false,
+      showUsernameListOnStartup: false,
+      popupBelow: false,
+      playVideoOnPageLoad: false
+    };
+
+    const optionsList = [
+      "enableChatPlus", 
+      "colorUsernames", 
+      "enableUsernameMenu",
+      "showUsernameListOnStartup",
+      "popupBelow",
+      "playVideoOnPageLoad"
+    ];
+
+    function extractProperties(names, obj) {
+      let extracted = {};
+      names.forEach(name => {
+        if (name in obj) {
+          extracted[name] = obj[name];
+        } else {
+          extracted[name] = defaultOptions[name];
+        }
+      });
+      return extracted;
+    };
+
+    // Get options from storage
+    if (result && result.options){
+      // Create new object with the wanted properties, filling in defaults for missing ones
+      let newOptionObj = extractProperties(optionsList, result.options);
+
+      enableChatPlus = newOptionObj.enableChatPlus;
+      colorUsernames = newOptionObj.colorUsernames;      
+      enableUsernameMenu = newOptionObj.enableUsernameMenu;
+      showUsernameListOnStartup = newOptionObj.showUsernameListOnStartup;
+      popupBelow = newOptionObj.popupBelow;
+      playVideoOnPageLoad = newOptionObj.playVideoOnPageLoad;
+
+      Object.assign(optionsState, newOptionObj);
+    } else {
+      enableChatPlus = defaultOptions.enableChatPlus;
+      colorUsernames = defaultOptions.colorUsernames;      
+      enableUsernameMenu = defaultOptions.enableUsernameMenu;
+      showUsernameListOnStartup = defaultOptions.showUsernameListOnStartup;
+      popupBelow = defaultOptions.popupBelow;
+      playVideoOnPageLoad = defaultOptions.playVideoOnPageLoad;
+
+      Object.assign(optionsState, defaultOptions);
+    } 
+  }).then(() => {
+    // If app is enabled
+    if (enableChatPlus) {
+      try {
+        // Play video on page load if enabled
+        if (playVideoOnPageLoad){
+          let videoEle = document.querySelectorAll('video');
+          if (videoEle.length > 0) {
+            videoEle.forEach((ele, i) => {
+              ele.click();
+              ele.play();
+            })
+          }
+        }
+
+        if (document.querySelectorAll('.chat-history')){
+          // Get chat history
+          getChatHistory();
+          
+          // Add username menu
+          if (enableUsernameMenu) {
+              addChatUsernameMenu();
+          }
+        }
+      } catch (err) {
+        //if (debugMode) console.log(err);
+      }
+    }    
+  });  
+})();
+
+
+
+
+
+//////   Chat History  //////
 
 // Chat history
-var currentChatHistory = [];
+let currentChatHistory = [];
 
 // Text colors
-var usernameColors = {
+let usernameColors = {
   rumbler: '#88a0b8',
   divaPink: '#FF63B4', 
   magenta: '#BD03E5',
@@ -40,7 +160,7 @@ var usernameColors = {
   dreamyBlue: '#2DA3FB',
 }
 
-var messageColors = { 
+let messageColors = { 
   chatPlus: '#E0E9F2',
   rumble: '#d6e0ea',
   white: '#FFFFFF',
@@ -59,8 +179,8 @@ const getRandomColor = () => {
 }
 
 // Vars for logged in user and current streamer 
-var currentUser = '';
-var currentStreamer = '';
+let currentUser = '';
+let currentStreamer = '';
 
 try {
   // Get current user from page if logged in
@@ -81,28 +201,9 @@ try {
     currentStreamer = authorHref.replace('/c/', '');
   }
 } catch (error) {
-  //if (debugMode) console.log('Error getting current user or streamer', error);
+  //if (debugMode) 
+  console.log('Error getting current user or streamer', error);
 }
-
-// Save options to storage
-const saveOptionsToStorage = () => {
-  chrome.storage.sync.set({ options: {
-    enableChatPlus: enableChatPlus,
-    colorUsernames: colorUsernames,
-    enableUsernameMenu: enableUsernameMenu,
-    showUsernameListOnStartup: showUsernameListOnStartup,
-    popupBelow: popupBelow,
-  } })
-  .then(function (result) {
-    //console.log('Options saved to storage')
-  });
-};
-
-
-
-
-
-//////   Chat History  //////
 
 // Get chat elements
 const chatHistoryEle = document.querySelectorAll('.chat-history');
@@ -113,21 +214,17 @@ const chatHistoryMessages = document.querySelectorAll('.chat-history--message');
 
 // Retrieves user color from userColor object
 const getUserColor = (username) => {
-  if ( 
-    optionsState.colorUsernames === false
-    //|| colorUsernames === false 
-  ){
+  if (colorUsernames === false ){
     userColors[username] = usernameColors.rumbler;
   } else if (!userColors[username]) {
     userColors[username] = getRandomColor();
   }
-  //console.log('colorUsername, userColors[username], optionsState.colorUsernames', colorUsernames, optionsState.colorUsernames, userColors[username])
   return userColors[username];
 }
 
 // Highlight each term in a string, for usernames in messages
 function highlightString(text, searchTerm, color, backgroundColor) {
-  // Get inde of search term
+  // Get index of search term
   var index = text.toLowerCase().indexOf(searchTerm.toLowerCase());
 
   // Get original matched text
@@ -153,6 +250,7 @@ function highlightString(text, searchTerm, color, backgroundColor) {
 
 const getChatHistory = () => {
   currentChatHistory = [];
+
   chatHistoryRows.forEach((element, index) => {
     // Check element classlist for 'chat-history--rant' and skip row
     if (element.classList.contains('chat-history--rant')) {
@@ -247,7 +345,7 @@ const openChatUsernamesPopup = (coordinates) => {
   popup.style.position = 'absolute';
   popup.style.left = coordinates.left + 'px';
 
-  if (popupBelow || optionsState.popupBelow){
+  if (popupBelow){
     //Show popup below message input
     popup.style.top = coordinates.top + popupAdjustedHeight + 5 + 'px';
   } else {
@@ -379,7 +477,12 @@ const toggleChatUsernameMenu = (toggle) => {
 
   if (toggle) {
     // Update dimensions
-    usernameMenuContainer.style.width = '105px';
+
+    if (streamerMode){
+      usernameMenuContainer.style.width = '18%';
+    } else {
+      usernameMenuContainer.style.width = '105px';
+    }
     usernameMenuContainer.style.height = '100%';
     usernameMenuContainer.style.borderLeft = `solid 1pt rgb(255,255,255,0.25)`;
     
@@ -444,8 +547,12 @@ const toggleChatUsernameMenu = (toggle) => {
     for (let user in sortedUserColors) {
       const usernameTextElement = document.createElement('li');
       
+      if (streamerMode){
+        usernameTextElement.style.fontSize = '1.05rem';
+      } else {
+        usernameTextElement.style.fontSize = '.9rem';
+      }
       usernameTextElement.style.color = sortedUserColors[user];
-      usernameTextElement.style.fontSize = '.9rem';
       usernameTextElement.style.listStyle = 'none';
       usernameTextElement.style.cursor = 'pointer';
       usernameTextElement.style.fontWeight = 'bold';
@@ -528,90 +635,42 @@ const toggleChatUsernameMenu = (toggle) => {
 
 
 
+//////   Options Menu   //////
 
-//////   Initialize App   ///////
+const toggleStreamerMode = (toggle) => {
+  streamerMode = toggle;
 
-// Check if app is enabled
+  if (toggle) {
+    // Hide comments
+    document.getElementById("video-comments").style.display = 'none';
+    // Hide video player
+    document.querySelector(".main-content").style.display = 'none';
+    // Hide recommended videos
+    document.querySelector(".mediaList-list").style.display = 'none';
+    // Hide header
+    document.querySelector(".header").style.display = 'none';
+    
+    var sidebarEle = document.querySelector(".sidebar");  
 
-// Get options from storage
-(() => {
-  chrome.storage.sync.get("options")
-  .then(function (result) {
-    const defaultOptions = {
-      enableChatPlus: true,
-      colorUsernames: true,
-      enableUsernameMenu: false,
-      showUsernameListOnStartup: false,
-      popupBelow: false
-    };
-
-    var optionsList = [
-      "enableChatPlus", 
-      "colorUsernames", 
-      "enableUsernameMenu",
-      "showUsernameListOnStartup",
-      "popupBelow"
-    ];
-
-    function extractProperties(names, obj) {
-      let extracted = {};
-      names.forEach(name => {
-        if (name in obj) {
-          extracted[name] = obj[name];
-        } else {
-          extracted[name] = defaultOptions[name];
-        }
-      });
-      return extracted;
-    };
-
-    if (result && result.options){
-      let newOptionObj = extractProperties(optionsList, result.options);
-
-      enableChatPlus = newOptionObj.enableChatPlus;
-      colorUsernames = newOptionObj.colorUsernames;      
-      enableUsernameMenu = newOptionObj.enableUsernameMenu;
-      showUsernameListOnStartup = newOptionObj.showUsernameListOnStartup;
-      popupBelow = newOptionObj.popupBelow;
-
-      Object.assign(optionsState, newOptionObj);
+    // Page width is 900px
+    if (window.innerWidth > 899) {
+      sidebarEle.style.width = '92%';
     } else {
-      enableChatPlus = defaultOptions.enableChatPlus;
-      colorUsernames = defaultOptions.colorUsernames;      
-      enableUsernameMenu = defaultOptions.enableUsernameMenu;
-      showUsernameListOnStartup = defaultOptions.showUsernameListOnStartup;
-      popupBelow = defaultOptions.popupBelow;
-
-      Object.assign(optionsState, defaultOptions);
-    } 
-  }).then(() => {
-
-    // If app is enabled
-    if (enableChatPlus) {
-      try {
-        if (document.querySelectorAll('.chat-history')){
-          // Get chat history
-          getChatHistory();
-          
-          // Add username menu
-          if (optionsState.enableUsernameMenu) {
-              addChatUsernameMenu();
-          }
-
-          // Show username list on startup if enabled
-          if (
-            optionsState.enableUsernameMenu 
-            && optionsState.showUsernameListOnStartup
-          ) {
-            toggleChatUsernameMenu(optionsState.showUsernameListOnStartup);
-          }
-        }
-      } catch (err) {
-        //if (debugMode) console.log(err);
-      }
+      sidebarEle.style.width = '100%';
     }
-  });
-})();
+  } else if (!toggle){
+    window.location.reload()
+  }
+
+  if (!enableUsernameMenu){
+    addChatUsernameMenu();
+  }
+
+  if (!showUsernameList){
+    toggleChatUsernameMenu(true);
+  }
+
+}
 
 
 
@@ -775,6 +834,18 @@ window.addEventListener('resize', function(event){
     showUsernameList = false;
     usernameListPopup.remove()
   }  
+
+
+ // Update size of streamer mode chat window 
+  var sidebarEle = document.querySelector(".sidebar");  
+ 
+  if (sidebarEle && streamerMode){
+    if (window.innerWidth > 899) {
+      sidebarEle.style.width = '92%';
+    } else {
+      sidebarEle.style.width = '100%';
+    }
+  }
 }, true);
 
 
@@ -783,16 +854,56 @@ window.addEventListener('resize', function(event){
 
 //////   Intervals   //////
 
-  // Refresh chat history every 120 seconds
-  const chatRefreshInterval = setInterval(function(){
-    //console.log('refreshing chat history');
-    if (enableChatPlus) {
-      getChatHistory();
-    }
-  }, 120000);
-
-  // Clear interval if there is no chat history
-  if (!chatHistoryList || !enableChatPlus){
-    //console.log('clearing chat refresh interval')
-    clearInterval(chatRefreshInterval);
+// Refresh chat history every 120 seconds
+const chatRefreshInterval = setInterval(function(){
+  //console.log('refreshing chat history');
+  if (enableChatPlus) {
+    getChatHistory();
   }
+}, 120000);
+
+// Clear interval if there is no chat history
+if (!chatHistoryList || !enableChatPlus){
+  //console.log('clearing chat refresh interval')
+  clearInterval(chatRefreshInterval);
+}
+
+
+
+
+
+//////   Test Functions   //////
+
+// Append test button to chat window
+const testBtn = document.createElement('div');
+testBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-fullscreen" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg>';
+
+testBtn.style.color = 'white';
+testBtn.style.border = 'solid 3pt orange';
+//testBtn.style.maxWidth = '150px';
+testBtn.style.width = '100px';
+testBtn.style.height = '100px';
+testBtn.style.position = 'absolute';
+testBtn.style.wordWrap = 'break-word';
+testBtn.style.zIndex = '100000'
+
+if (chatHistoryEle[0]){
+// get dimensions of chat history element
+let chatHistoryDimensions = chatHistoryEle[0].getBoundingClientRect()
+
+testBtn.style.top = (chatHistoryDimensions.top - 20) + 'px';
+testBtn.style.right = (chatHistoryDimensions.right - 100) + 'px';
+
+console.log('chatHistoryDimensions', chatHistoryDimensions)
+
+chatHistoryEle[0].appendChild(testBtn);
+
+
+testBtn.addEventListener('click', ()=>{
+  toggleStreamerMode(!streamerMode)
+
+  console.log('rect history dimensions', chatHistoryEle[0].getBoundingClientRect())
+
+});
+
+}

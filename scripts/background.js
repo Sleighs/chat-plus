@@ -4,17 +4,22 @@ const defaultOptions = {
   enableChatPlus: true,
   colorUsernames: true,
   showUsernameListOnStartup: false,
-  enableUsernameMenu: false
+  enableUsernameMenu: false,
+  popupBelow: false,
+  playVideoOnPageLoad: false
 };
+
 let options = {};
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.sync.get("options").then((result) => {
-    var optionsList = [
+    let optionsList = [
       "enableChatPlus", 
       "colorUsernames", 
       "showUsernameListOnStartup",
-      "enableUsernameMenu"
+      "enableUsernameMenu",
+      "popupBelow",
+      "playVideoOnPageLoad"
     ];
 
     // Creates a new options object from the stored options and the default options

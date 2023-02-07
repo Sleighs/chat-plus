@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/static/css/main.5177f08f.css",
+    "main.js": "/static/js/main.ab8eaf8b.js",
+    "static/media/Georama.ttf": "/static/media/Georama.a1da2b667666f4499e8a.ttf",
+    "index.html": "/index.html",
+    "main.5177f08f.css.map": "/static/css/main.5177f08f.css.map",
+    "main.ab8eaf8b.js.map": "/static/js/main.ab8eaf8b.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.5177f08f.css",
+    "static/js/main.ab8eaf8b.js"
+  ]
+}

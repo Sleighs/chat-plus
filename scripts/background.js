@@ -6,7 +6,8 @@ const defaultOptions = {
   showUsernameListOnStartup: false,
   enableUsernameMenu: false,
   popupBelow: false,
-  playVideoOnPageLoad: false
+  playVideoOnPageLoad: false,
+  hideFullWindowChatButton: false,
 };
 
 let options = {};
@@ -19,7 +20,8 @@ chrome.runtime.onInstalled.addListener(() => {
       "showUsernameListOnStartup",
       "enableUsernameMenu",
       "popupBelow",
-      "playVideoOnPageLoad"
+      "playVideoOnPageLoad",
+      "hideFullWindowChatButton"
     ];
 
     // Creates a new options object from the stored options and the default options

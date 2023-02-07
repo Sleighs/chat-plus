@@ -8,7 +8,8 @@ let optionsState = {
   enableUsernameMenu: true,
   showUsernameListOnStartup: false,
   popupBelow: false,
-  playVideoOnPageLoad: false
+  playVideoOnPageLoad: false,
+  hideFullWindowChatButton: false,
 };
 
 // Undefined option vars
@@ -17,7 +18,8 @@ let enableChatPlus,
   enableUsernameMenu,
   showUsernameListOnStartup,
   popupBelow,
-  playVideoOnPageLoad;
+  playVideoOnPageLoad,
+  hideFullWindowChatButton;
 
 // Vars that remain in scope
 let debugMode = false;
@@ -383,7 +385,7 @@ const toggleChatUsernameMenu = (toggle) => {
     // Update dimensions
 
     if (streamerMode){
-      usernameMenuContainer.style.width = '18%';
+      usernameMenuContainer.style.width = '16.5%';
     } else {
       usernameMenuContainer.style.width = '105px';
     }
@@ -539,12 +541,20 @@ const toggleChatUsernameMenu = (toggle) => {
 
 
 
-//////   Options Menu   //////
+//////   In Page Options   //////
 
 const toggleStreamerMode = (toggle) => {
   streamerMode = toggle;
 
   if (toggle) {
+    if (!enableUsernameMenu){
+      addChatUsernameMenu();
+    }
+  
+    if (!showUsernameList){
+      toggleChatUsernameMenu(true);
+    }
+
     // Hide comments
     document.getElementById("video-comments").style.display = 'none';
     // Hide video player
@@ -553,14 +563,33 @@ const toggleStreamerMode = (toggle) => {
     document.querySelector(".mediaList-list").style.display = 'none';
     // Hide header
     document.querySelector(".header").style.display = 'none';
-    
+    // Hide footer
+    document.querySelector(".foot").style.display = 'none';    
+
+    // Get main html element
+    var mainEle = document.querySelector("main");
+    mainEle.style.padding = 0;
+    mainEle.style.margin = 0;
+    mainEle.style.maxHeight = '100vh';
+
+    // Get main child
+    var mainChildEle = document.querySelector(".constrained");
+    mainChildEle.style.padding = 0;
+    mainChildEle.style.margin = 0;
+
     var sidebarEle = document.querySelector(".sidebar");  
+    sidebarEle.style.fontSize = '1.2rem';
+
+    var usernameMenuEle = document.querySelector('.username-menu-list');
+    if (document.querySelector('.username-menu-list')) {
+      usernameMenuEle.style.fontSize = '1.25rem';
+    }
 
     // Page width is 900px
     if (window.innerWidth > 899) {
-      sidebarEle.style.width = '92%';
+      sidebarEle.style.width = '93.75%';
     } else {
-      sidebarEle.style.width = '100%';
+      sidebarEle.style.width = '99.25%';
     }
 
     // Pause all video elements
@@ -569,19 +598,50 @@ const toggleStreamerMode = (toggle) => {
     videoElements.forEach((videoElement) => {
       videoElement.pause();
     });
+
+    // Update icon
+    document.getElementById('fullWindowChatBtn').title = 'Exit mode and refresh'
+    document.getElementById('fullWindowChatBtn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>'
   } else if (!toggle){
     window.location.reload()
-  }
-
-  if (!enableUsernameMenu){
-    addChatUsernameMenu();
-  }
-
-  if (!showUsernameList){
-    toggleChatUsernameMenu(true);
-  }
+  }  
 }
 
+const addFullWindowBtn = () => {
+  // Create button for full screen chat 
+  const fullWindowChatBtn = document.createElement('div');
+
+  fullWindowChatBtn.id = 'fullWindowChatBtn';
+  fullWindowChatBtn.innerHTML = 
+  //'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-window" viewBox="0 0 16 16"><path d="M2.5 4a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm2-.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm1 .5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/><path d="M2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2zm13 2v2H1V3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zM2 14a1 1 0 0 1-1-1V6h14v7a1 1 0 0 1-1 1H2z"/></svg>';
+  //'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-window-fullscreen" viewBox="0 0 16 16"><path d="M3 3.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Zm1.5 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Zm1 .5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1Z"/><path d="M.5 1a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 .5.5h15a.5.5 0 0 0 .5-.5v-13a.5.5 0 0 0-.5-.5H.5ZM1 5V2h14v3H1Zm0 1h14v8H1V6Z"/></svg>';
+  '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-fullscreen" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg>';
+  fullWindowChatBtn.title = 'Full Window Chat';
+
+  fullWindowChatBtn.style.color = messageColors.rumble;
+  fullWindowChatBtn.style.opacity = .45;
+  fullWindowChatBtn.style.width = '30px';
+  fullWindowChatBtn.style.height = '30px';
+  fullWindowChatBtn.style.position = 'absolute';
+  fullWindowChatBtn.style.wordWrap = 'break-word';
+  fullWindowChatBtn.style.display = 'flex';
+  fullWindowChatBtn.style.alignItems = 'center';
+  fullWindowChatBtn.style.justifyContent = 'center';
+  fullWindowChatBtn.style.zIndex = '195';
+  fullWindowChatBtn.style.cursor = 'pointer';
+
+
+  if (chatHistoryEle[0]){
+    fullWindowChatBtn.style.top = '-43px';
+    fullWindowChatBtn.style.right = '12px';
+
+    chatHistoryEle[0].appendChild(fullWindowChatBtn);
+
+    fullWindowChatBtn.addEventListener('click', ()=>{
+      toggleStreamerMode(!streamerMode)
+    });
+  }
+}
 
 
 
@@ -598,7 +658,8 @@ const toggleStreamerMode = (toggle) => {
       enableUsernameMenu: false,
       showUsernameListOnStartup: false,
       popupBelow: false,
-      playVideoOnPageLoad: false
+      playVideoOnPageLoad: false,
+      hideFullWindowChatButton: false
     };
 
     const optionsList = [
@@ -607,7 +668,8 @@ const toggleStreamerMode = (toggle) => {
       "enableUsernameMenu",
       "showUsernameListOnStartup",
       "popupBelow",
-      "playVideoOnPageLoad"
+      "playVideoOnPageLoad",
+      "hideFullWindowChatButton"
     ];
 
     function extractProperties(names, obj) {
@@ -633,6 +695,7 @@ const toggleStreamerMode = (toggle) => {
       showUsernameListOnStartup = newOptionObj.showUsernameListOnStartup;
       popupBelow = newOptionObj.popupBelow;
       playVideoOnPageLoad = newOptionObj.playVideoOnPageLoad;
+      hideFullWindowChatButton = newOptionObj.hideFullWindowChatButton;
 
       Object.assign(optionsState, newOptionObj);
     } else {
@@ -642,6 +705,7 @@ const toggleStreamerMode = (toggle) => {
       showUsernameListOnStartup = defaultOptions.showUsernameListOnStartup;
       popupBelow = defaultOptions.popupBelow;
       playVideoOnPageLoad = defaultOptions.playVideoOnPageLoad;
+      hideFullWindowChatButton = defaultOptions.hideFullWindowChatButton;
 
       Object.assign(optionsState, defaultOptions);
     } 
@@ -668,6 +732,11 @@ const toggleStreamerMode = (toggle) => {
           if (enableUsernameMenu) {
               addChatUsernameMenu();
           }
+        }
+
+        // Handle "Hide Full Window Chat Button" option
+        if (!hideFullWindowChatButton){
+          addFullWindowBtn();
         }
       } catch (err) {
         //if (debugMode) console.log(err);
@@ -830,7 +899,7 @@ document.addEventListener("click", function(event) {
   }
 });
 
-// Listen for resize event
+// Listen for window resize 
 window.addEventListener('resize', function(event){
   var usernameListPopup = document.querySelector('.chat-plus-popup');
 
@@ -845,9 +914,9 @@ window.addEventListener('resize', function(event){
  
   if (sidebarEle && streamerMode){
     if (window.innerWidth > 899) {
-      sidebarEle.style.width = '92%';
+      sidebarEle.style.width = '93.75%';
     } else {
-      sidebarEle.style.width = '100%';
+      sidebarEle.style.width = '99.5%';
     }
   }
 }, true);
@@ -871,6 +940,8 @@ if (!chatHistoryList || !enableChatPlus){
   //console.log('clearing chat refresh interval')
   clearInterval(chatRefreshInterval);
 }
+
+
 
 
 

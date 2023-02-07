@@ -1,18 +1,15 @@
-<h1 style="text-align: center;">ChatPlus: Livestream Chat Extension for Rumble</h1>
-
 <p align="center">
   <img src="https://i.imgur.com/aMMQ0UX.png" />
 </p>
+
 
 ChatPlus is a lightweight browser extension that adds features to livestream chats on Rumble.com. The goal for this extension is to improve the Rumble chat experience for viewers and streamers. 
 
 ### Features 
 - Highlighed usernames mentions 
 - Easy @ username tagging
-- Username colors that promote visibility
-
-### Features Coming in v1.2
 - Full window chat mode
+- Username colors that promote visibility
 - Option to play Rumble videos when the page loads
 
 ## Installation

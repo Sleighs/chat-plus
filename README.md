@@ -7,7 +7,7 @@ ChatPlus is a lightweight browser extension that adds features to livestream cha
 - Easy @ username tagging
 - Username colors that promote visibility
 
-### Coming in v1.2
+### Features Coming in v1.2
 - Full window chat mode
 - Option to play Rumble videos when the page loads
 

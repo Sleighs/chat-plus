@@ -554,35 +554,51 @@ const toggleStreamerMode = (toggle) => {
     if (!showUsernameList){
       toggleChatUsernameMenu(true);
     }
-
+    
     // Hide comments
-    document.getElementById("video-comments").style.display = 'none';
+    if (document.getElementById("video-comments")) document.getElementById("video-comments").style.display = 'none';
     // Hide video player
-    document.querySelector(".main-content").style.display = 'none';
+    if (document.querySelector(".main-content")) document.querySelector(".main-content").style.display = 'none';
     // Hide recommended videos
-    document.querySelector(".mediaList-list").style.display = 'none';
+    if (document.querySelector(".mediaList-list")) document.querySelector(".mediaList-list").style.display = 'none';
     // Hide header
-    document.querySelector(".header").style.display = 'none';
+    if (document.querySelector(".header")) document.querySelector(".header").style.display = 'none';
     // Hide footer
-    document.querySelector(".foot").style.display = 'none';    
+    if (document.querySelector(".foot")) document.querySelector(".foot").style.display = 'none';    
 
-    // Get main html element
-    var mainEle = document.querySelector("main");
-    mainEle.style.padding = 0;
-    mainEle.style.margin = 0;
-    mainEle.style.maxHeight = '100vh';
+    try {
+      // Pause all video elements
+      const videoElements = document.querySelectorAll("video");
 
-    // Get main child
-    var mainChildEle = document.querySelector(".constrained");
-    mainChildEle.style.padding = 0;
-    mainChildEle.style.margin = 0;
+      videoElements.forEach((videoElement) => {
+        videoElement.pause();
+      });
+    } catch (error) {
+      //if (debugMode) console.log(error);
+    }
 
-    var sidebarEle = document.querySelector(".sidebar");  
-    sidebarEle.style.fontSize = '1.2rem';
+    try {
+      // Get main html element
+      var mainEle = document.querySelector("main");
+      mainEle.style.padding = 0;
+      mainEle.style.margin = 0;
+      mainEle.style.maxHeight = '100vh';
 
-    var usernameMenuEle = document.querySelector('.username-menu-list');
-    if (document.querySelector('.username-menu-list')) {
-      usernameMenuEle.style.fontSize = '1.25rem';
+      // Get main child
+      var mainChildEle = document.querySelector(".constrained");
+      mainChildEle.style.padding = 0;
+      mainChildEle.style.margin = 0;
+
+      var sidebarEle = document.querySelector(".sidebar");  
+      sidebarEle.style.fontSize = '1.2rem';
+
+      var usernameMenuEle = document.querySelector('.username-menu-list');
+      if (document.querySelector('.username-menu-list')) {
+        usernameMenuEle.style.fontSize = '1.25rem';
+      }
+
+    } catch (error){
+      //if (debugMode) console.log(error);
     }
 
     // Page width is 900px
@@ -601,7 +617,7 @@ const toggleStreamerMode = (toggle) => {
 
     // Update icon
     document.getElementById('fullWindowChatBtn').title = 'Exit mode and refresh'
-    document.getElementById('fullWindowChatBtn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>'
+    document.getElementById('fullWindowChatBtn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>'    
   } else if (!toggle){
     window.location.reload()
   }  
@@ -612,14 +628,11 @@ const addFullWindowBtn = () => {
   const fullWindowChatBtn = document.createElement('div');
 
   fullWindowChatBtn.id = 'fullWindowChatBtn';
-  fullWindowChatBtn.innerHTML = 
-  //'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-window" viewBox="0 0 16 16"><path d="M2.5 4a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm2-.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm1 .5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/><path d="M2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2zm13 2v2H1V3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zM2 14a1 1 0 0 1-1-1V6h14v7a1 1 0 0 1-1 1H2z"/></svg>';
-  //'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-window-fullscreen" viewBox="0 0 16 16"><path d="M3 3.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Zm1.5 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Zm1 .5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1Z"/><path d="M.5 1a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 .5.5h15a.5.5 0 0 0 .5-.5v-13a.5.5 0 0 0-.5-.5H.5ZM1 5V2h14v3H1Zm0 1h14v8H1V6Z"/></svg>';
-  '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-fullscreen" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg>';
+  fullWindowChatBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-arrows-fullscreen" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg>';
   fullWindowChatBtn.title = 'Full Window Chat';
 
   fullWindowChatBtn.style.color = messageColors.rumble;
-  fullWindowChatBtn.style.opacity = .45;
+  fullWindowChatBtn.style.opacity = .25;
   fullWindowChatBtn.style.width = '30px';
   fullWindowChatBtn.style.height = '30px';
   fullWindowChatBtn.style.position = 'absolute';
@@ -632,8 +645,8 @@ const addFullWindowBtn = () => {
 
 
   if (chatHistoryEle[0]){
-    fullWindowChatBtn.style.top = '-43px';
-    fullWindowChatBtn.style.right = '12px';
+    fullWindowChatBtn.style.top = '-42px';
+    fullWindowChatBtn.style.right = '14px';
 
     chatHistoryEle[0].appendChild(fullWindowChatBtn);
 
@@ -713,33 +726,63 @@ const addFullWindowBtn = () => {
     // If app is enabled
     if (enableChatPlus) {
       try {
+        let count = 0;
+        function playVideoContent(){
+          count++;
+          let videos = document.querySelectorAll('video');
+
+          videos.forEach((video)=>{
+            video.play();
+            if (video.paused){
+              video.load();
+              
+              //console.log('video paused, trying again... (' + count + ')');
+              
+              if (video.paused) {
+                playVideoContent();
+              }
+            } else {
+              //console.log('video playing... (' + count + ')');
+              if (document.querySelectorAll('.streamed-on').length > 0) {
+                video.autofocus = true;
+
+                if (video.paused) {
+                  //video.focus();
+                  //video.click();
+                  video.play();
+                  //if (video.paused) video.play();
+                }
+              }
+              return;
+            }
+          });
+        }
+
         // Play video on page load if enabled
-        if (playVideoOnPageLoad){
-          let videoEle = document.querySelectorAll('video');
-          if (videoEle.length > 0) {
-            videoEle.forEach((ele, i) => {
-              ele.click();
-              ele.play();
-            })
-          }
-        }
-
-        if (document.querySelectorAll('.chat-history')){
-          // Get chat history
-          getChatHistory();
-          
-          // Add username menu
-          if (enableUsernameMenu) {
-              addChatUsernameMenu();
-          }
-        }
-
-        // Handle "Hide Full Window Chat Button" option
-        if (!hideFullWindowChatButton){
-          addFullWindowBtn();
+        if (
+          playVideoOnPageLoad 
+          && (document.querySelectorAll('.streamed-on').length === 0) 
+        ) {
+          //console.log('playing video...', document.querySelectorAll('.streamed-on'));
+          playVideoContent();
         }
       } catch (err) {
-        //if (debugMode) console.log(err);
+        console.log(err);
+      }
+
+      if (document.querySelector('.chat-history')){
+        // Get chat history
+        getChatHistory();
+
+        // Add username menu
+        if (enableUsernameMenu) {
+            addChatUsernameMenu();
+        }
+      }
+
+      // Handle "Hide Full Window Chat Button" option
+      if (!hideFullWindowChatButton){
+        addFullWindowBtn();
       }
     }    
   });  

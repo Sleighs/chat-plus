@@ -10,6 +10,7 @@ let optionsState = {
   popupBelow: false,
   playVideoOnPageLoad: false,
   hideFullWindowChatButton: false,
+  //refeshChatUsernameList: false,
 };
 
 // Undefined option vars
@@ -321,6 +322,79 @@ const openChatUsernamesPopup = (coordinates) => {
 
 ///////   Main Chat Username List   ///////
 
+const buildUsernameList = () => {
+  // Get username menu container
+  let usernameMenuList = document.querySelector('.username-menu-list');
+  
+  // Clear username list is exists
+  if (usernameMenuList){
+    while (usernameMenuList.firstChild) {
+      usernameMenuList.removeChild(usernameMenuList.firstChild);
+    }
+  } else {
+    // Make new list
+    usernameMenuList = document.createElement('ul');
+
+    // Create username list element    
+    usernameMenuList.classList.add('username-menu-list');
+    usernameMenuList.style.position = 'relative';
+    usernameMenuList.style.width = '100%';
+    usernameMenuList.style.height = '100%';
+    usernameMenuList.style.zIndex = '195';
+    usernameMenuList.style.overflow = 'scroll';
+    usernameMenuList.style.padding = '7px';
+    usernameMenuList.style.boxSizing = 'border-box';
+  }
+  
+  // Sort userColors object by username
+  function sortObjectByPropName(obj) {
+    const sorted = {};
+    Object.keys(obj)
+      .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+      .forEach(key => {
+        sorted[key] = obj[key];
+      });
+    return sorted;
+  }
+  const sortedUserColors = sortObjectByPropName(userColors);
+
+  // Loop through sortedUserColors object and add usernames to popup content
+  for (let user in sortedUserColors) {
+    const usernameTextElement = document.createElement('li');
+    
+    if (streamerMode){
+      usernameTextElement.style.fontSize = '1.05rem';
+    } else {
+      usernameTextElement.style.fontSize = '.9rem';
+    }
+    usernameTextElement.style.color = sortedUserColors[user];
+    usernameTextElement.style.listStyle = 'none';
+    usernameTextElement.style.cursor = 'pointer';
+    usernameTextElement.style.fontWeight = 'bold';
+    usernameTextElement.style.zIndex = '195';
+    usernameTextElement.innerHTML = user;
+
+    // Add username to list
+    usernameMenuList.appendChild(usernameTextElement);
+
+    usernameTextElement.addEventListener('click', () => {
+      // Add username to chat message input
+      let messageEle = document.getElementById('chat-message-text-input')
+      let messageVal = messageEle.value;
+      const input = document.querySelector("input[type='text']");
+      const caretPosition = storeCaretPosition(messageEle);
+
+      document.getElementById('chat-message-text-input').value = insertUsername(user, messageVal, caretPosition);
+            
+      // Focus on chat message input
+      document.getElementById('chat-message-text-input').focus();
+    });
+  }
+
+  return usernameMenuList;
+}
+
+// Add username list to page
 const addChatUsernameMenu = () => {
   // Create container element
   const usernameMenuContainer = document.createElement('div');
@@ -393,97 +467,76 @@ const toggleChatUsernameMenu = (toggle) => {
     usernameMenuContainer.style.borderLeft = `solid 1pt rgb(255,255,255,0.25)`;
     
     // Remove children from username menu container
-    while (usernameMenuContainer.firstChild) {
-      usernameMenuContainer.removeChild(usernameMenuContainer.firstChild);
+    if (usernameMenuContainer){
+      while (usernameMenuContainer.firstChild) {
+        usernameMenuContainer.removeChild(usernameMenuContainer.firstChild);
+      }
     }
 
-    // Add a close menu button 
-    const usernameMenuButton = document.createElement('div');
+    // Create button container
+    const usernameMenuButtonContainer = document.createElement('div');
+
+    usernameMenuButtonContainer.classList.add('username-menu-button-container');
+    usernameMenuButtonContainer.style.width = '100%';
+    usernameMenuButtonContainer.style.height = '17px';
+    usernameMenuButtonContainer.style.background = 'rgb(133, 199, 66, 1)';
+    usernameMenuButtonContainer.style.display = 'flex';
+    usernameMenuButtonContainer.style.alignItems = 'center';
+    usernameMenuButtonContainer.style.justifyContent = 'space-between';
     
+    // Create close button
+    const usernameMenuButton = document.createElement('div');
+
     usernameMenuButton.classList.add('username-menu-button');
-    usernameMenuButton.style.width = '100%';
+    usernameMenuButton.style.width = '40%';
     usernameMenuButton.style.height = '17px';
     usernameMenuButton.style.background = 'rgb(133, 199, 66, 1)';
     usernameMenuButton.style.color = messageColors.rumbleDarkBlue;
-    usernameMenuButton.style.zIndex = '195';
+    usernameMenuButton.style.zIndex = '199';
     //usernameMenuButton.style.fontSize = '.9rem';
     usernameMenuButton.style.display = 'flex';
-    usernameMenuButton.style.justifyContent = 'flex-start';
+    usernameMenuButton.style.justifyContent = 'center';
     usernameMenuButton.style.alignItems = 'center';
     usernameMenuButton.style.cursor = 'pointer';
 
     //usernameMenuButton.textContent = 'Close';
     //usernameMenuButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>';
-    usernameMenuButton.innerHTML = '<span>&nbsp;</span><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16"><path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/></svg>'
+    usernameMenuButton.innerHTML = '<span>&nbsp;</span><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16"><path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/></svg>'
     
     usernameMenuButton.addEventListener('click', () => {
-      toggleChatUsernameMenu(false)
+        toggleChatUsernameMenu(false)
     });
 
-    usernameMenuContainer.appendChild(usernameMenuButton);
-
-    // Create username list element
-    const usernameMenuList = document.createElement('ul');
+    // Add a Refresh menu button 
+    const usernameMenuRefreshButton = document.createElement('div');
     
-    usernameMenuList.classList.add('username-menu-list');
-    usernameMenuList.style.position = 'relative';
-    usernameMenuList.style.width = '100%';
-    usernameMenuList.style.height = '100%';
-    usernameMenuList.style.zIndex = '195';
-    usernameMenuList.style.overflow = 'scroll';
-    usernameMenuList.style.padding = '7px';
-    usernameMenuList.style.boxSizing = 'border-box';
+    usernameMenuRefreshButton.classList.add('username-menu-button');
+    usernameMenuRefreshButton.style.width = '40%';
+    usernameMenuRefreshButton.style.height = '17px';
+    usernameMenuRefreshButton.style.background = 'rgb(133, 199, 66, 1)';
+    usernameMenuRefreshButton.style.color = messageColors.rumbleDarkBlue;
+    usernameMenuRefreshButton.style.zIndex = '199';
+    //usernameMenuButton.style.fontSize = '.9rem';
+    usernameMenuRefreshButton.style.display = 'flex';
+    usernameMenuRefreshButton.style.justifyContent = 'center';
+    usernameMenuRefreshButton.style.alignItems = 'center';
+    usernameMenuRefreshButton.style.cursor = 'pointer';
 
-    // Add list element to container
-    usernameMenuContainer.appendChild(usernameMenuList);
+    usernameMenuRefreshButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>'  
 
-    // Sort userColors object by username
-    function sortObjectByPropName(obj) {
-      const sorted = {};
-      Object.keys(obj)
-        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
-        .forEach(key => {
-          sorted[key] = obj[key];
-        });
-      return sorted;
-    }
-    const sortedUserColors = sortObjectByPropName(userColors);
+    usernameMenuRefreshButton.addEventListener('click', () => {
+      usernameMenuContainer.appendChild(buildUsernameList());
+    });
 
-    // Loop through sortedUserColors object and add usernames to popup content
-    for (let user in sortedUserColors) {
-      const usernameTextElement = document.createElement('li');
-      
-      if (streamerMode){
-        usernameTextElement.style.fontSize = '1.05rem';
-      } else {
-        usernameTextElement.style.fontSize = '.9rem';
-      }
-      usernameTextElement.style.color = sortedUserColors[user];
-      usernameTextElement.style.listStyle = 'none';
-      usernameTextElement.style.cursor = 'pointer';
-      usernameTextElement.style.fontWeight = 'bold';
-      usernameTextElement.style.zIndex = '195';
-      usernameTextElement.innerHTML = user;
+    // Add buttons to wrapper
+    usernameMenuButtonContainer.appendChild(usernameMenuButton);
+    usernameMenuButtonContainer.appendChild(usernameMenuRefreshButton);
 
-      // Add username to list
-      usernameMenuList.appendChild(usernameTextElement);
-
-      usernameTextElement.addEventListener('click', () => {
-        // Add username to chat message input
-        let messageEle = document.getElementById('chat-message-text-input')
-        let messageVal = messageEle.value;
-        const input = document.querySelector("input[type='text']");
-        const caretPosition = storeCaretPosition(messageEle);
-
-        document.getElementById('chat-message-text-input').value = insertUsername(user, messageVal, caretPosition);
-              
-        // Focus on chat message input
-        document.getElementById('chat-message-text-input').focus();
-      });
-    }
+    // Add button wrapper to list container
+    usernameMenuContainer.appendChild(usernameMenuButtonContainer);
 
     // Add list to container
-    usernameMenuContainer.appendChild(usernameMenuList);
+    usernameMenuContainer.appendChild(buildUsernameList());
   } else {
     // Update Dimensions
     usernameMenuContainer.style.width = '16px';
@@ -581,25 +634,49 @@ const toggleStreamerMode = (toggle) => {
     }
 
     try {
-      // Get main html element
-      var mainEle = document.querySelector("main");
+      // Get window dimensions
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+
+      // Get main element
+      let mainEle = document.querySelector("main");
       mainEle.style.padding = 0;
       mainEle.style.margin = 0;
       mainEle.style.maxHeight = '100vh';
 
       // Get main child
-      var mainChildEle = document.querySelector(".constrained");
+      let mainChildEle = document.querySelector(".constrained");
       mainChildEle.style.padding = 0;
       mainChildEle.style.margin = 0;
 
-      var sidebarEle = document.querySelector(".sidebar");  
-      sidebarEle.style.fontSize = '1.2rem';
 
-      var usernameMenuEle = document.querySelector('.username-menu-list');
+      let mainSideEle = document.querySelector(".main-and-sidebar");
+      //mainSideEle.style.height = '90%';
+
+      let asideEle = document.querySelector("aside");
+      //asideEle.style.width = '100vw';
+
+
+      let sidebarEle = document.querySelector(".sidebar");  
+      sidebarEle.style.fontSize = '1.2rem';
+      sidebarEle.style.padding = 0;
+      sidebarEle.style.position = 'relative';
+
+
+      let chatContainerEle = document.querySelector(".chat");
+      chatContainerEle.style.position = 'relative';
+      chatContainerEle.style.margin = 0;
+      //chatContainerEle.style.height = '90%';
+
+      let usernameMenuEle = document.querySelector('.username-menu-list');
       if (document.querySelector('.username-menu-list')) {
         usernameMenuEle.style.fontSize = '1.25rem';
       }
 
+      
+      document.querySelector("#chat-history-list").style.maxHeight = '90vh';
+
+      sidebarEle.style.width = '99.25%';
       // Page width is 900px
       if (window.innerWidth > 899) {
         sidebarEle.style.width = '93.75%';
@@ -607,10 +684,13 @@ const toggleStreamerMode = (toggle) => {
         sidebarEle.style.width = '99.25%';
       }
 
-      // Update icon
-      //document.getElementById('fullWindowChatBtn').title = 'Exit mode and refresh'
-      //document.getElementById('fullWindowChatBtn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>'  
-      
+      // Bring chat to front
+      document.querySelector('#chat-main-menu').style.zIndex = '199';
+
+      var chatMessageEle = document.querySelector('#chat-message-form');
+      chatMessageEle.style.padding = 0;
+      chatMessageEle.style.height ='95%';
+
       document.getElementById('fullWindowChatBtn').innerText = 'Restore Normal Chat';
     } catch (error){
       //if (debugMode) console.log(error);
@@ -651,33 +731,6 @@ const addFullWindowBtn = () => {
 
   // Updated to Rumble 2/7/2023 update
 
-  /*
-    cursor: pointer;
-    background-color: transparent;
-    border-style: none;
-    font-family: inherit;
-    font-weight: inherit;
-    font-size: inherit;
-    text-decoration: inherit;
-    font-style: inherit;
-    line-height: inherit;
-    border-width: 2px;
-    padding-left: 1.5rem;
-
-    padding-right: 1.5rem;
-
-
-    text-align: left;
-    white-space: normal;
-    width: 100%;
-    color: #D6E0EA;
-
-    padding: 8px 1rem;
-    max-width: 100%;
-    outline-offset: -3px;
-
-    highlight on hover
-  */
 
   fullWindowChatBtn.addClassName = 'cmi';
   fullWindowChatBtn.innerText = 'Full Window Chat';
@@ -823,30 +876,32 @@ const addFullWindowBtn = () => {
           let isStream = false;
           let videos = document.querySelectorAll('video');
 
-          if (
-            document.querySelectorAll('.streamed-on').length > 0
-            || document.querySelectorAll('.watching-now').length > 0
-          ) {
-            isStream = true;
-          }
-
-          videos.forEach((video) => {
-            if (isStream) {
-              video.autoplay = true;
-              // Set timeout to allow video to play after a few seconds, 
-                // Manual override
-              setTimeout(() => {
-                video.play();
-                video.click();
-              }, 2500);
-            } else {
-              video.play();
+          if (videos.length > 0) {
+            if (
+              document.querySelectorAll('.streamed-on').length > 0
+              || document.querySelectorAll('.watching-now').length > 0
+            ) {
+              isStream = true;
             }
-          });
+
+            videos.forEach((video) => {
+              if (isStream) {
+                video.autoplay = true;
+                // Set timeout to allow video to play after a few seconds, 
+                  // Manual override
+                setTimeout(() => {
+                  video.play();
+                  video.click();
+                }, 2500);
+              } else {
+                video.play();
+              }
+            });
+          }
         }
 
         // Play video on page load if enabled
-        if (playVideoOnPageLoad ) {
+        if (playVideoOnPageLoad && document.querySelectorAll('video').length > 0) {
           playVideoContent();
         }
       } catch (err) {
@@ -1058,6 +1113,11 @@ const chatRefreshInterval = setInterval(function(){
   //if (debugMode) console.log('refreshing chat history');
   if (enableChatPlus) {
     getChatHistory();
+  }
+
+  if (showUsernameList){
+    // Get new chat usersname for list
+    document.querySelector('.username-menu-container').appendChild(buildUsernameList());
   }
 }, 120000);
 

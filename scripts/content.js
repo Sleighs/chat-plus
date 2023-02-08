@@ -684,21 +684,30 @@ const toggleStreamerMode = (toggle) => {
       mainEle.style.padding = 0;
       mainEle.style.margin = 0;
       mainEle.style.maxHeight = '100vh';
+      mainEle.style.height = '100%';
+      mainEle.style.position = 'relative';
+
+      let mainAndSidebarEle = document.querySelector(".main-and-sidebar");
+      mainAndSidebarEle.style.height = '100%';
+      mainAndSidebarEle.style.position = 'relative';
 
       // Get main child
       let mainChildEle = document.querySelector(".constrained");
       mainChildEle.style.padding = 0;
       mainChildEle.style.margin = 0;
+      mainChildEle.style.height = '100%';
+      mainChildEle.style.position = 'relative';
 
       let sidebarEle = document.querySelector(".sidebar");  
       sidebarEle.style.fontSize = '1.2rem';
       sidebarEle.style.padding = 0;
       sidebarEle.style.position = 'relative';
-
+      //sidebarEle.style.height = '100%';
 
       let chatContainerEle = document.querySelector(".chat");
       chatContainerEle.style.position = 'relative';
       chatContainerEle.style.margin = 0;
+      chatContainerEle.style.height = '100%';
 
       let usernameMenuEle = document.querySelector('.username-menu-list');
       if (document.querySelector('.username-menu-list')) {
@@ -767,6 +776,7 @@ const addFullWindowBtn = () => {
   fullWindowChatBtn.style.width = '100%';
   fullWindowChatBtn.style.maxWidth = '100%';
   fullWindowChatBtn.style.outlineOffset = '-3px';
+  fullWindowChatBtn.style.userSelect = 'none';
   
   // Add hover effect
   fullWindowChatBtn.addEventListener('mouseover', ()=>{

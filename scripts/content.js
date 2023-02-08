@@ -68,6 +68,7 @@ let usernameColors = {
   marinerTeal: '#48A4A0',
   coolBlue: '#07F7F7',
   dreamyBlue: '#2DA3FB',
+  bunnyWhite: '#E0E9F2',
 }
 
 let messageColors = { 
@@ -292,6 +293,16 @@ const openChatUsernamesPopup = (coordinates) => {
     usernameTextElement.style.fontWeight = 'bold';
     usernameTextElement.innerHTML = user;
     popupContent.appendChild(usernameTextElement);
+
+    // Add hover effect
+    usernameTextElement.addEventListener('mouseover', () => {
+      usernameTextElement.style.backgroundColor = 'rgba(255,255,255,.1)';
+    });
+    // Remove hover effect
+    usernameTextElement.addEventListener('mouseout', () => {
+      usernameTextElement.style.backgroundColor = 'transparent';
+    });
+
     usernameTextElement.addEventListener('click', () => {
       // Add username to chat message input
       let messageEle = document.getElementById('chat-message-text-input')
@@ -342,8 +353,8 @@ const buildUsernameList = () => {
     usernameMenuList.style.height = '100%';
     usernameMenuList.style.zIndex = '195';
     usernameMenuList.style.overflow = 'scroll';
-    usernameMenuList.style.padding = '7px';
     usernameMenuList.style.boxSizing = 'border-box';
+    usernameMenuList.style.padding = '6px0';
   }
   
   // Sort userColors object by username
@@ -361,6 +372,15 @@ const buildUsernameList = () => {
   // Loop through sortedUserColors object and add usernames to popup content
   for (let user in sortedUserColors) {
     const usernameTextElement = document.createElement('li');
+
+    // Add hover effect
+    usernameTextElement.addEventListener('mouseover', () => {
+      usernameTextElement.style.backgroundColor = 'rgba(255,255,255,.1)';
+    });
+    // Remove hover effect
+    usernameTextElement.addEventListener('mouseout', () => {
+      usernameTextElement.style.backgroundColor = 'transparent';
+    });
     
     if (streamerMode){
       usernameTextElement.style.fontSize = '1.05rem';
@@ -372,6 +392,7 @@ const buildUsernameList = () => {
     usernameTextElement.style.cursor = 'pointer';
     usernameTextElement.style.fontWeight = 'bold';
     usernameTextElement.style.zIndex = '195';
+    usernameTextElement.style.padding = '0 6px';
     usernameTextElement.innerHTML = user;
 
     // Add username to list
@@ -397,11 +418,20 @@ const buildUsernameList = () => {
 // Add username list to page
 const addChatUsernameMenu = () => {
   // Create container element
-  const usernameMenuContainer = document.createElement('div');
+  let usernameMenuContainer = document.createElement('div');
+
+  // Add hover effect
+  usernameMenuContainer.addEventListener('mouseover', () => {
+    if (!showUsernameList) usernameMenuContainer.style.backgroundColor = 'rgba(255,255,255,.1)';
+  });
+  // Remove hover effect
+  usernameMenuContainer.addEventListener('mouseout', () => {
+    if (!showUsernameList) usernameMenuContainer.style.backgroundColor = 'transparent';
+  });
   
   usernameMenuContainer.classList.add('username-menu-container');
   usernameMenuContainer.style.position = 'relative';
-  usernameMenuContainer.style.width = '16px';
+  usernameMenuContainer.style.width = '15px';
   usernameMenuContainer.style.height = '100%';
   usernameMenuContainer.style.boxSizing = 'border-box';
   usernameMenuContainer.style.overflow = 'hidden';
@@ -411,6 +441,7 @@ const addChatUsernameMenu = () => {
   usernameMenuContainer.style.flexDirection = 'column';
   usernameMenuContainer.style.justifyContent = 'center';
   usernameMenuContainer.style.alignItems = 'center';
+  usernameMenuContainer.style.cursor = 'pointer';
   
   // Add toggle button element to container
   const usernameMenuButton = document.createElement('div');
@@ -420,13 +451,14 @@ const addChatUsernameMenu = () => {
   usernameMenuButton.style.color = messageColors.rumble;
   usernameMenuButton.style.boxSizing = 'border-box';
   usernameMenuButton.style.zIndex = '195';
-  usernameMenuButton.style.writingMode = 'vertical-rl';
+  //usernameMenuButton.style.writingMode = 'vertical-rl';
   usernameMenuButton.style.display = 'flex';
   usernameMenuButton.style.justifyContent = 'center';
+  usernameMenuButton.style.alignItems = 'center';
+  usernameMenuButton.style.textAlign = 'center';
   usernameMenuButton.style.cursor = 'pointer';
-  usernameMenuButton.style.transition = 'all 0.2s ease-in-out';
-
   usernameMenuButton.addEventListener('click', () => {
+    usernameMenuContainer.style.backgroundColor = 'transparent';
     toggleChatUsernameMenu(true)
   });
 
@@ -436,16 +468,14 @@ const addChatUsernameMenu = () => {
   usernameMenuButtonText.classList.add('username-menu-button-text');
   usernameMenuButtonText.style.width = '100%';
   usernameMenuButtonText.style.height = 'fit-content';
-  usernameMenuButtonText.style.marginTop = '-40px';
+  usernameMenuButtonText.style.marginTop = '-20px';
   usernameMenuButtonText.style.zIndex = '189';
   usernameMenuButtonText.style.color = 'rgb(255,255,255,0.45)';
-  
   usernameMenuButtonText.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>';
-  //usernameMenuButtonText.textContent = 'User List';
 
+  // Add text element to button
   usernameMenuButton.appendChild(usernameMenuButtonText);
   usernameMenuContainer.appendChild(usernameMenuButton);
-
   // Add container to page
   chatHistoryEle[0].appendChild(usernameMenuContainer);
 };
@@ -453,17 +483,18 @@ const addChatUsernameMenu = () => {
 // Add username list menu to page
 const toggleChatUsernameMenu = (toggle) => {
   // Container element
-  const usernameMenuContainer = document.querySelector('.username-menu-container');
+  let usernameMenuContainer = document.querySelector('.username-menu-container');
 
   if (toggle) {
     // Update dimensions
 
     if (streamerMode){
-      usernameMenuContainer.style.width = '16.5%';
+      usernameMenuContainer.style.width = '17%';
     } else {
       usernameMenuContainer.style.width = '105px';
     }
     usernameMenuContainer.style.height = '100%';
+    usernameMenuContainer.style.backgroundColor = 'transparent';
     usernameMenuContainer.style.borderLeft = `solid 1pt rgb(255,255,255,0.25)`;
     
     // Remove children from username menu container
@@ -472,6 +503,8 @@ const toggleChatUsernameMenu = (toggle) => {
         usernameMenuContainer.removeChild(usernameMenuContainer.firstChild);
       }
     }
+
+    usernameMenuContainer.style.alignItems = 'flex-start';
 
     // Create button container
     const usernameMenuButtonContainer = document.createElement('div');
@@ -485,61 +518,52 @@ const toggleChatUsernameMenu = (toggle) => {
     usernameMenuButtonContainer.style.justifyContent = 'space-between';
     
     // Create close button
-    const usernameMenuButton = document.createElement('div');
+    const usernameMenuCloseButton = document.createElement('div');
+    usernameMenuCloseButton.classList.add('username-menu-list-button');
+    usernameMenuCloseButton.title = 'Close List';
+    usernameMenuCloseButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-dash-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/></svg>'
 
-    usernameMenuButton.classList.add('username-menu-button');
-    usernameMenuButton.style.width = '40%';
-    usernameMenuButton.style.height = '17px';
-    usernameMenuButton.style.background = 'rgb(133, 199, 66, 1)';
-    usernameMenuButton.style.color = messageColors.rumbleDarkBlue;
-    usernameMenuButton.style.zIndex = '199';
-    //usernameMenuButton.style.fontSize = '.9rem';
-    usernameMenuButton.style.display = 'flex';
-    usernameMenuButton.style.justifyContent = 'center';
-    usernameMenuButton.style.alignItems = 'center';
-    usernameMenuButton.style.cursor = 'pointer';
-
-    //usernameMenuButton.textContent = 'Close';
-    //usernameMenuButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>';
-    usernameMenuButton.innerHTML = '<span>&nbsp;</span><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16"><path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/></svg>'
-    
-    usernameMenuButton.addEventListener('click', () => {
-        toggleChatUsernameMenu(false)
-    });
+    usernameMenuCloseButton.classList.add('username-menu-button');
+    usernameMenuCloseButton.style.width = '45%';
+    usernameMenuCloseButton.style.height = '17px';
+    usernameMenuCloseButton.style.background = 'rgb(133, 199, 66, 1)';
+    usernameMenuCloseButton.style.color = messageColors.rumbleDarkBlue;
+    usernameMenuCloseButton.style.zIndex = '199';
+    usernameMenuCloseButton.style.display = 'flex';
+    usernameMenuCloseButton.style.justifyContent = 'center';
+    usernameMenuCloseButton.style.alignItems = 'center';
+    usernameMenuCloseButton.style.cursor = 'pointer';
+    usernameMenuCloseButton.onclick = function(){
+      //usernameMenuContainer.style.backgroundColor = 'transparent';
+      toggleChatUsernameMenu(false);
+    };
 
     // Add a Refresh menu button 
     const usernameMenuRefreshButton = document.createElement('div');
-    
-    usernameMenuRefreshButton.classList.add('username-menu-button');
-    usernameMenuRefreshButton.style.width = '40%';
+    usernameMenuRefreshButton.classList.add('username-menu-list-button');
+    usernameMenuRefreshButton.title = 'Refresh List';
+    usernameMenuRefreshButton.style.width = '45%';
     usernameMenuRefreshButton.style.height = '17px';
     usernameMenuRefreshButton.style.background = 'rgb(133, 199, 66, 1)';
     usernameMenuRefreshButton.style.color = messageColors.rumbleDarkBlue;
     usernameMenuRefreshButton.style.zIndex = '199';
-    //usernameMenuButton.style.fontSize = '.9rem';
     usernameMenuRefreshButton.style.display = 'flex';
     usernameMenuRefreshButton.style.justifyContent = 'center';
     usernameMenuRefreshButton.style.alignItems = 'center';
     usernameMenuRefreshButton.style.cursor = 'pointer';
-
-    usernameMenuRefreshButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>'  
-
-    usernameMenuRefreshButton.addEventListener('click', () => {
-      usernameMenuContainer.appendChild(buildUsernameList());
-    });
+    usernameMenuRefreshButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>';  
+    usernameMenuRefreshButton.onclick = function(){usernameMenuContainer.appendChild(buildUsernameList());};
 
     // Add buttons to wrapper
-    usernameMenuButtonContainer.appendChild(usernameMenuButton);
+    usernameMenuButtonContainer.appendChild(usernameMenuCloseButton);
     usernameMenuButtonContainer.appendChild(usernameMenuRefreshButton);
-
     // Add button wrapper to list container
     usernameMenuContainer.appendChild(usernameMenuButtonContainer);
-
     // Add list to container
     usernameMenuContainer.appendChild(buildUsernameList());
   } else {
     // Update Dimensions
-    usernameMenuContainer.style.width = '16px';
+    usernameMenuContainer.style.width = '15px';
     usernameMenuContainer.style.height = '100%';
     usernameMenuContainer.style.borderLeft = `solid 1pt rgb(255,255,255,0)`;
 
@@ -556,10 +580,12 @@ const toggleChatUsernameMenu = (toggle) => {
     usernameMenuButton.style.height = '100%';
     usernameMenuButton.style.boxSizing = 'border-box';
     usernameMenuButton.style.zIndex = '195';
-    usernameMenuButton.style.writingMode = 'vertical-rl';
+    //usernameMenuButton.style.writingMode = 'vertical-rl';
     usernameMenuButton.style.display = 'flex';
     usernameMenuButton.style.justifyContent = 'center';
     usernameMenuButton.style.cursor = 'pointer';
+    usernameMenuButton.style.alignItems = 'center';
+    usernameMenuButton.style.textAlign = 'center';
     
     usernameMenuButton.addEventListener('click', () => {
       toggleChatUsernameMenu(true)
@@ -709,29 +735,9 @@ const toggleStreamerMode = (toggle) => {
 
 const addFullWindowBtn = () => {
   // Create button for full screen chat 
-  //const fullWindowChatBtn = document.createElement('div');
   const fullWindowChatBtn = document.createElement('button');
 
   fullWindowChatBtn.id = 'fullWindowChatBtn';
-  //fullWindowChatBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-arrows-fullscreen" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg>';
-  //fullWindowChatBtn.title = 'Full Window Chat';
-
-  /*
-  fullWindowChatBtn.style.color = messageColors.rumble;
-  fullWindowChatBtn.style.opacity = .25;
-  fullWindowChatBtn.style.width = '30px';
-  fullWindowChatBtn.style.height = '30px';
-  fullWindowChatBtn.style.wordWrap = 'break-word';
-  fullWindowChatBtn.style.display = 'flex';
-  fullWindowChatBtn.style.alignItems = 'center';
-  fullWindowChatBtn.style.justifyContent = 'center';
-  fullWindowChatBtn.style.zIndex = '195';
-  fullWindowChatBtn.style.cursor = 'pointer';
-  */
-
-  // Updated to Rumble 2/7/2023 update
-
-
   fullWindowChatBtn.addClassName = 'cmi';
   fullWindowChatBtn.innerText = 'Full Window Chat';
 
@@ -766,14 +772,6 @@ const addFullWindowBtn = () => {
   });
 
   if (chatHistoryEle[0]){
-    // Styling for previus Rumble version
-    //fullWindowChatBtn.style.position = 'absolute';
-    //fullWindowChatBtn.style.top = '-42px';
-    //fullWindowChatBtn.style.right = '14px';
-    // Previous Rumble version 
-    //chatHistoryEle[0].appendChild(fullWindowChatBtn);
-    //document.querySelector('.chat--header').appendChild(fullWindowChatBtn);
-
     // Check data-chat-visible attribute
     //var chatVisibilityDataAtr = document.querySelector('#chat-toggle-chat-visibility').getAttribute('data-chat-visible');
     var chatVisibilityDataset = document.querySelector('#chat-toggle-chat-visibility').dataset.chatVisible;
@@ -868,7 +866,7 @@ const addFullWindowBtn = () => {
 
       Object.assign(optionsState, defaultOptions);
     } 
-  }).then(() => {
+  //}).then(() => {
     // If app is enabled
     if (enableChatPlus) {
       try {
@@ -892,7 +890,7 @@ const addFullWindowBtn = () => {
                 setTimeout(() => {
                   video.play();
                   video.click();
-                }, 2500);
+                }, 2000);
               } else {
                 video.play();
               }
@@ -908,6 +906,7 @@ const addFullWindowBtn = () => {
         //if (debugMode) console.log(err);
       }
 
+      // Check if chat exists
       if (document.querySelector('.chat-history')){
         // Get chat history
         getChatHistory();
@@ -916,11 +915,14 @@ const addFullWindowBtn = () => {
         if (enableUsernameMenu) {
             addChatUsernameMenu();
         }
-      }
 
-      // Handle "Hide Full Window Chat Button" option
-      if (!hideFullWindowChatButton){
-        addFullWindowBtn();
+        // Handle "Hide Full Window Chat Button" option
+        if (!hideFullWindowChatButton){
+          addFullWindowBtn();
+        }
+
+        // Observe chat for changes to its child elements to detect new messages
+        chatObserver.observe(document.querySelector('#chat-history-list'), { childList: true });
       }
     }    
   });  
@@ -991,11 +993,6 @@ var chatObserver = new MutationObserver(function(mutations) {
     }
   });
 });
-
-// Observe chat for changes to its child elements to detect new messages
-if (chatHistoryList){
-  chatObserver.observe(document.querySelector('#chat-history-list'), { childList: true });
-}
 
 // Listen for "@" keypress to open popup
 document.addEventListener("keydown", function(event) {
@@ -1089,8 +1086,7 @@ window.addEventListener('resize', function(event){
     usernameListPopup.remove()
   }  
 
-
- // Update size of streamer mode chat window 
+  // Update size of streamer mode chat window 
   var sidebarEle = document.querySelector(".sidebar");  
  
   if (sidebarEle && streamerMode){

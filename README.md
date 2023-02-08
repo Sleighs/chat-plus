@@ -41,7 +41,7 @@ Alternatively, you can download the package zip file and install it in Chrome Ex
 
 ## Usage
 
-Access the options menu by clicking the extension icon in the browser toolbar .
+Access the options menu by clicking the extension icon in the browser toolbar.
 
 **Highlighted Mentions** - Mentions with your username will be highlighted as they come.
 

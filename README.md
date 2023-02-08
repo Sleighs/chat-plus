@@ -3,7 +3,7 @@
 </p>
 
 
-ChatPlus is a lightweight browser extension that adds features to livestream chats on Rumble.com. The goal for this extension is to improve the Rumble chat experience for viewers and streamers. 
+Introducing ChatPlus, a lightweight suite of feature to enhance the livestream user experience on Rumble.com. The goal for this extension is to improve the Rumble chat experience for viewers and streamers. 
 
 ChatPlus is developed independently, and is not officially endorsed by or affiliated with Rumble.
 

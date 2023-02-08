@@ -23,10 +23,13 @@ Expected to be on the Chrome Extensions store soon. Until then you can download 
 - Once installed, you will see the extension icon among your browser's extensions. 
 
 ## Usage
-- Open a livestream on Rumble.com.
-- Type "@" to view a user list popup while logged in. Click a username in the list to add it to the chat message.
-- Mentions with your username will be highlighted.
-- Click the extension icon in the browser's toolbar to open the options.
+
+For options click the extension icon in the browser's toolbar to open the options.
+
+**"@" Username Tagging ** - Type "@" to view a user list popup while logged in. Click a username in the list to add it to the chat message.
+**Username Mentions** - Mentions with your username will be highlighted.
+**Full Window Chat** - Select "Full Window Chat" from the Rumble chat options menu to change the chat view.
+**Play videos automatically** - Select "Page videos automatically on page load" from options menu to enable.
 
 ## Support
 - ChatPlus is currently in beta testing and any suggestions or reported bugs are greatly appreciated. 

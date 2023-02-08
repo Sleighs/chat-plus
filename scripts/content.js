@@ -245,7 +245,6 @@ const openChatUsernamesPopup = (coordinates) => {
   popup.style.backgroundColor = '#061726';
   popup.style.borderRadius = '5px';
   popup.style.zIndex = '199';
-  popup.style.padding = '0 7px';
   popup.style.outline = '1px solid rgba(136,136,136,.25)';
   popup.style.outlineOffset = '0px';
 
@@ -291,6 +290,7 @@ const openChatUsernamesPopup = (coordinates) => {
     usernameTextElement.style.listStyle = 'none';
     usernameTextElement.style.cursor = 'pointer';
     usernameTextElement.style.fontWeight = 'bold';
+    usernameTextElement.style.padding = '0 7px';
     usernameTextElement.innerHTML = user;
     popupContent.appendChild(usernameTextElement);
 
@@ -383,9 +383,9 @@ const buildUsernameList = () => {
     });
     
     if (streamerMode){
-      usernameTextElement.style.fontSize = '1.05rem';
+      usernameTextElement.style.fontSize = '1.1rem';
     } else {
-      usernameTextElement.style.fontSize = '.9rem';
+      usernameTextElement.style.fontSize = '.95rem';
     }
     usernameTextElement.style.color = sortedUserColors[user];
     usernameTextElement.style.listStyle = 'none';
@@ -524,10 +524,11 @@ const toggleChatUsernameMenu = (toggle) => {
     let usernameMenuCloseButton = document.createElement('div');
     usernameMenuCloseButton.classList.add('username-menu-list-button');
     usernameMenuCloseButton.title = 'Close List';
-    usernameMenuCloseButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-dash-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/></svg>'
+    usernameMenuCloseButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-dash-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/></svg>';
+    //'<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>';
 
     usernameMenuCloseButton.classList.add('username-menu-button');
-    usernameMenuCloseButton.style.width = '34%';
+    usernameMenuCloseButton.style.width = '38%';
     usernameMenuCloseButton.style.height = '17px';
     usernameMenuCloseButton.style.color = messageColors.rumbleDarkBlue;
     usernameMenuCloseButton.style.zIndex = '199';
@@ -549,7 +550,7 @@ const toggleChatUsernameMenu = (toggle) => {
     let usernameMenuRefreshButton = document.createElement('div');
     usernameMenuRefreshButton.classList.add('username-menu-list-button');
     usernameMenuRefreshButton.title = 'Refresh List';
-    usernameMenuRefreshButton.style.width = '34%';
+    usernameMenuRefreshButton.style.width = '38%';
     usernameMenuRefreshButton.style.height = '17px';
     usernameMenuRefreshButton.style.color = messageColors.rumbleDarkBlue;
     usernameMenuRefreshButton.style.zIndex = '199';

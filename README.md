@@ -6,7 +6,7 @@
 
 <p align=""> 
   Introducing ChatPlus, a browser extension that enhances your Rumble livestream experience. 
-  ChatPlus improves mention visibility with username highlighting, allows for easier chat conversatsions with recent chatter mentioning, lets users view livestream chats a full window and more.   
+  ChatPlus improves mention visibility with username highlighting, allows for easier chat conversatsions with recent chatter mentioning, lets users view livestream chats in a full window area and more!   
 </p>
 
 <br/>

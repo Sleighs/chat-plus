@@ -25,6 +25,7 @@ let enableChatPlus,
 let debugMode = false;
 let showUsernameList = false;
 let streamerMode = false;
+let showFullWindowChat = false;
 
 // Save options to storage
 const saveOptionsToStorage = () => {
@@ -109,8 +110,7 @@ try {
     currentStreamer = authorHref.replace('/c/', '');
   }
 } catch (error) {
-  //if (debugMode) 
-  console.log('Error getting current user or streamer', error);
+  //if (debugMode) console.log('Error getting current user or streamer', error);
 }
 
 // Get chat elements
@@ -606,6 +606,12 @@ const toggleStreamerMode = (toggle) => {
       } else {
         sidebarEle.style.width = '99.25%';
       }
+
+      // Update icon
+      //document.getElementById('fullWindowChatBtn').title = 'Exit mode and refresh'
+      //document.getElementById('fullWindowChatBtn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>'  
+      
+      document.getElementById('fullWindowChatBtn').innerText = 'Restore Normal Chat';
     } catch (error){
       //if (debugMode) console.log(error);
     }
@@ -616,13 +622,6 @@ const toggleStreamerMode = (toggle) => {
     videoElements.forEach((videoElement) => {
       videoElement.pause();
     });
-
-    // Update icon
-    //document.getElementById('fullWindowChatBtn').title = 'Exit mode and refresh'
-    //document.getElementById('fullWindowChatBtn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>'  
-    
-    document.getElementById('fullWindowChatBtn').innerText = 'Close Window Chat';
-
   } else if (!toggle){
     window.location.reload()
   }  
@@ -633,7 +632,7 @@ const addFullWindowBtn = () => {
   //const fullWindowChatBtn = document.createElement('div');
   const fullWindowChatBtn = document.createElement('button');
 
-  //fullWindowChatBtn.id = 'fullWindowChatBtn';
+  fullWindowChatBtn.id = 'fullWindowChatBtn';
   //fullWindowChatBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-arrows-fullscreen" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg>';
   //fullWindowChatBtn.title = 'Full Window Chat';
 
@@ -714,17 +713,38 @@ const addFullWindowBtn = () => {
   });
 
   if (chatHistoryEle[0]){
+    // Styling for previus Rumble version
     //fullWindowChatBtn.style.position = 'absolute';
     //fullWindowChatBtn.style.top = '-42px';
     //fullWindowChatBtn.style.right = '14px';
-
+    // Previous Rumble version 
     //chatHistoryEle[0].appendChild(fullWindowChatBtn);
     //document.querySelector('.chat--header').appendChild(fullWindowChatBtn);
-    document.querySelector('#chat-main-menu').appendChild(fullWindowChatBtn);
+
+    // Check data-chat-visible attribute
+    //var chatVisibilityDataAtr = document.querySelector('#chat-toggle-chat-visibility').getAttribute('data-chat-visible');
+    var chatVisibilityDataset = document.querySelector('#chat-toggle-chat-visibility').dataset.chatVisible;
+
+    if (chatVisibilityDataset){
+      document.querySelector('#chat-main-menu').appendChild(fullWindowChatBtn);
+    }
     
     fullWindowChatBtn.addEventListener('click', ()=>{
       toggleStreamerMode(!streamerMode)
     });
+
+    // Listen for chat visibility toggle to add/remove full window chat button
+      // This is used to prevent expanding the hidden chat
+    if (document.querySelector('#chat-toggle-chat-visibility')) {
+      document.querySelector('#chat-toggle-chat-visibility').addEventListener('click', function(e){
+        if (!showFullWindowChat) {
+          document.querySelector('#chat-main-menu').removeChild(fullWindowChatBtn);
+        } else {
+          document.querySelector('#chat-main-menu').appendChild(fullWindowChatBtn);
+        }
+        showFullWindowChat = !showFullWindowChat
+      });
+    }
   }
 }
 
@@ -830,7 +850,7 @@ const addFullWindowBtn = () => {
           playVideoContent();
         }
       } catch (err) {
-        console.log(err);
+        //if (debugMode) console.log(err);
       }
 
       if (document.querySelector('.chat-history')){
@@ -1035,7 +1055,7 @@ window.addEventListener('resize', function(event){
 
 // Refresh chat history every 120 seconds
 const chatRefreshInterval = setInterval(function(){
-  //console.log('refreshing chat history');
+  //if (debugMode) console.log('refreshing chat history');
   if (enableChatPlus) {
     getChatHistory();
   }
@@ -1043,11 +1063,7 @@ const chatRefreshInterval = setInterval(function(){
 
 // Clear interval if there is no chat history
 if (!chatHistoryList || !enableChatPlus){
-  //console.log('clearing chat refresh interval')
+  //if (debugMode) console.log('clearing chat refresh interval')
   clearInterval(chatRefreshInterval);
 }
-
-
-
-
 

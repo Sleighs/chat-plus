@@ -48,4 +48,4 @@ Access the options menu by clicking the extension icon in the browser toolbar .
 
 ### Privacy Policy
 
-*At ChatPlus we are committed to protecting your privacy. We do not collect, store or share website data or personal contact information, including your name, email address, postal address, phone number, and other contact details. This Privacy Policy does not apply to Rumble.com or any third-party websites or advertisers.*
+*At ChatPlus we are committed to protecting your privacy. We do not collect, store or share website data or personal contact information, including your name, email address, postal address, phone number, and other contact details. This Privacy Policy does not apply to Rumble or any third-party websites or advertisers.*

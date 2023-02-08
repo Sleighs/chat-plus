@@ -9,6 +9,10 @@
   ChatPlus improves mention visibility with username highlighting, allows for easier chat conversatsions with recent chatter mentioning, lets users view livestream chats a full window and more.   
 </p>
 
+<br/>
+
+<p align="center">ChatPlus is developed independently, and is not officially endorsed by or affiliated with Rumble.</p>
+
 ### Features 
 
 Whether watching or streaming, ChatPlus offers a lightweight set of features to make Rumble more user-friendly, including:
@@ -18,10 +22,6 @@ Whether watching or streaming, ChatPlus offers a lightweight set of features to 
 - Full size chat option
 - Username colors that promote visibility
 - Option to automatically play videos
-
-<br/>
-
-<p align="">ChatPlus is developed independently, and is not officially endorsed by or affiliated with Rumble.</p>
 
 ## Installation
 

@@ -726,44 +726,34 @@ const addFullWindowBtn = () => {
     // If app is enabled
     if (enableChatPlus) {
       try {
-        let count = 0;
         function playVideoContent(){
-          count++;
+          let isStream = false;
           let videos = document.querySelectorAll('video');
 
-          videos.forEach((video)=>{
-            video.play();
-            if (video.paused){
-              video.load();
-              
-              //console.log('video paused, trying again... (' + count + ')');
-              
-              if (video.paused) {
-                playVideoContent();
-              }
-            } else {
-              //console.log('video playing... (' + count + ')');
-              if (document.querySelectorAll('.streamed-on').length > 0) {
-                video.autofocus = true;
+          if (
+            document.querySelectorAll('.streamed-on').length > 0
+            || document.querySelectorAll('.watching-now').length > 0
+          ) {
+            isStream = true;
+          }
 
-                if (video.paused) {
-                  //video.focus();
-                  //video.click();
-                  video.play();
-                  //if (video.paused) video.play();
-                }
-              }
-              return;
+          videos.forEach((video) => {
+            if (isStream) {
+              video.autoplay = true;
+              // Set timeout to allow video to play after a few seconds, 
+                // Manual override
+              setTimeout(() => {
+                video.play();
+                video.click();
+              }, 2500);
+            } else {
+              video.play();
             }
           });
         }
 
         // Play video on page load if enabled
-        if (
-          playVideoOnPageLoad 
-          && (document.querySelectorAll('.streamed-on').length === 0) 
-        ) {
-          //console.log('playing video...', document.querySelectorAll('.streamed-on'));
+        if (playVideoOnPageLoad ) {
           playVideoContent();
         }
       } catch (err) {

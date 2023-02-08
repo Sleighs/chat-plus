@@ -478,6 +478,9 @@ const addChatUsernameMenu = () => {
   usernameMenuContainer.appendChild(usernameMenuButton);
   // Add container to page
   chatHistoryEle[0].appendChild(usernameMenuContainer);
+
+  // Bring chat menu to front
+  document.querySelector('#chat-main-menu').style.zIndex = '199';
 };
 
 // Add username list menu to page
@@ -518,33 +521,36 @@ const toggleChatUsernameMenu = (toggle) => {
     usernameMenuButtonContainer.style.justifyContent = 'space-between';
     
     // Create close button
-    const usernameMenuCloseButton = document.createElement('div');
+    let usernameMenuCloseButton = document.createElement('div');
     usernameMenuCloseButton.classList.add('username-menu-list-button');
     usernameMenuCloseButton.title = 'Close List';
     usernameMenuCloseButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-dash-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/></svg>'
 
     usernameMenuCloseButton.classList.add('username-menu-button');
-    usernameMenuCloseButton.style.width = '45%';
+    usernameMenuCloseButton.style.width = '34%';
     usernameMenuCloseButton.style.height = '17px';
-    usernameMenuCloseButton.style.background = 'rgb(133, 199, 66, 1)';
     usernameMenuCloseButton.style.color = messageColors.rumbleDarkBlue;
     usernameMenuCloseButton.style.zIndex = '199';
     usernameMenuCloseButton.style.display = 'flex';
     usernameMenuCloseButton.style.justifyContent = 'center';
     usernameMenuCloseButton.style.alignItems = 'center';
     usernameMenuCloseButton.style.cursor = 'pointer';
-    usernameMenuCloseButton.onclick = function(){
-      //usernameMenuContainer.style.backgroundColor = 'transparent';
-      toggleChatUsernameMenu(false);
-    };
+    usernameMenuCloseButton.onclick = function(){toggleChatUsernameMenu(false);};
+    // Add hover effect
+    usernameMenuCloseButton.addEventListener('mouseover', () => {
+      usernameMenuCloseButton.style.background = 'rgb(0,0,0,0.25)';
+    });
+    // Remove hover effect
+    usernameMenuCloseButton.addEventListener('mouseout', () => {
+      usernameMenuCloseButton.style.background = 'transparent';
+    });
 
     // Add a Refresh menu button 
-    const usernameMenuRefreshButton = document.createElement('div');
+    let usernameMenuRefreshButton = document.createElement('div');
     usernameMenuRefreshButton.classList.add('username-menu-list-button');
     usernameMenuRefreshButton.title = 'Refresh List';
-    usernameMenuRefreshButton.style.width = '45%';
+    usernameMenuRefreshButton.style.width = '34%';
     usernameMenuRefreshButton.style.height = '17px';
-    usernameMenuRefreshButton.style.background = 'rgb(133, 199, 66, 1)';
     usernameMenuRefreshButton.style.color = messageColors.rumbleDarkBlue;
     usernameMenuRefreshButton.style.zIndex = '199';
     usernameMenuRefreshButton.style.display = 'flex';
@@ -553,6 +559,14 @@ const toggleChatUsernameMenu = (toggle) => {
     usernameMenuRefreshButton.style.cursor = 'pointer';
     usernameMenuRefreshButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>';  
     usernameMenuRefreshButton.onclick = function(){usernameMenuContainer.appendChild(buildUsernameList());};
+    // Add hover effect
+    usernameMenuRefreshButton.addEventListener('mouseover', () => {
+      usernameMenuRefreshButton.style.background = 'rgb(0, 0, 0, 0.5)';
+    });
+    // Remove hover effect
+    usernameMenuRefreshButton.addEventListener('mouseout', () => {
+      usernameMenuRefreshButton.style.background = 'transparent';
+    });
 
     // Add buttons to wrapper
     usernameMenuButtonContainer.appendChild(usernameMenuCloseButton);
@@ -675,14 +689,6 @@ const toggleStreamerMode = (toggle) => {
       mainChildEle.style.padding = 0;
       mainChildEle.style.margin = 0;
 
-
-      let mainSideEle = document.querySelector(".main-and-sidebar");
-      //mainSideEle.style.height = '90%';
-
-      let asideEle = document.querySelector("aside");
-      //asideEle.style.width = '100vw';
-
-
       let sidebarEle = document.querySelector(".sidebar");  
       sidebarEle.style.fontSize = '1.2rem';
       sidebarEle.style.padding = 0;
@@ -692,15 +698,15 @@ const toggleStreamerMode = (toggle) => {
       let chatContainerEle = document.querySelector(".chat");
       chatContainerEle.style.position = 'relative';
       chatContainerEle.style.margin = 0;
-      //chatContainerEle.style.height = '90%';
 
       let usernameMenuEle = document.querySelector('.username-menu-list');
       if (document.querySelector('.username-menu-list')) {
         usernameMenuEle.style.fontSize = '1.25rem';
       }
 
-      
-      document.querySelector("#chat-history-list").style.maxHeight = '90vh';
+      // Change chat dimensions
+      document.querySelector('#chat-history-list').style.maxHeight = '90vh';
+      document.querySelector('.username-menu-container').style.width = '17%';
 
       sidebarEle.style.width = '99.25%';
       // Page width is 900px

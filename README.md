@@ -25,7 +25,13 @@ Whether watching or streaming, ChatPlus offers a lightweight set of features to 
 
 ## Installation
 
-Expected to be on the Chrome Web Store soon. Until then you can download it here and install it in Chrome extensions management tab.
+### Chrome Web Store 
+
+ChatPlus is available in the Chrome Web Store. Check out the [ChatPlus for Rumble](https://chrome.google.com/webstore/detail/chatplus-for-rumble/odlcomopigapcpmlpmmmhlhegajembio?hl=en&authuser=0) extension page.
+
+### Manual Install
+
+Alternatively, you can download the package zip file and install it in Chrome Extensions management tab.
 
 - Download the ChatPlus zip file [here](https://drive.google.com/file/d/1uQztTrUwIt_CuqE_ZA4mNUQlCsK-QlQ3/view?usp=sharing) from Google Drive or download this repository by clicking "Code" then "Download Zip".
 - Unzip the zip file. 

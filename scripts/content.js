@@ -565,6 +565,9 @@ const toggleStreamerMode = (toggle) => {
     if (document.querySelector(".header")) document.querySelector(".header").style.display = 'none';
     // Hide footer
     if (document.querySelector(".foot")) document.querySelector(".foot").style.display = 'none';    
+    // Hide chat visibility button
+    if (document.querySelector("#chat-main-menu")) document.querySelector("#chat-toggle-chat-visibility").style.display = 'none';
+
 
     try {
       // Pause all video elements
@@ -596,16 +599,15 @@ const toggleStreamerMode = (toggle) => {
       if (document.querySelector('.username-menu-list')) {
         usernameMenuEle.style.fontSize = '1.25rem';
       }
-
+      
+      // Page width is 900px
+      if (window.innerWidth > 899) {
+        sidebarEle.style.width = '93.75%';
+      } else {
+        sidebarEle.style.width = '99.25%';
+      }
     } catch (error){
       //if (debugMode) console.log(error);
-    }
-
-    // Page width is 900px
-    if (window.innerWidth > 899) {
-      sidebarEle.style.width = '93.75%';
-    } else {
-      sidebarEle.style.width = '99.25%';
     }
 
     // Pause all video elements
@@ -616,8 +618,11 @@ const toggleStreamerMode = (toggle) => {
     });
 
     // Update icon
-    document.getElementById('fullWindowChatBtn').title = 'Exit mode and refresh'
-    document.getElementById('fullWindowChatBtn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>'    
+    //document.getElementById('fullWindowChatBtn').title = 'Exit mode and refresh'
+    //document.getElementById('fullWindowChatBtn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>'  
+    
+    document.getElementById('fullWindowChatBtn').innerText = 'Close Window Chat';
+
   } else if (!toggle){
     window.location.reload()
   }  
@@ -625,36 +630,95 @@ const toggleStreamerMode = (toggle) => {
 
 const addFullWindowBtn = () => {
   // Create button for full screen chat 
-  const fullWindowChatBtn = document.createElement('div');
+  //const fullWindowChatBtn = document.createElement('div');
+  const fullWindowChatBtn = document.createElement('button');
 
-  fullWindowChatBtn.id = 'fullWindowChatBtn';
-  fullWindowChatBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-arrows-fullscreen" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg>';
-  fullWindowChatBtn.title = 'Full Window Chat';
+  //fullWindowChatBtn.id = 'fullWindowChatBtn';
+  //fullWindowChatBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-arrows-fullscreen" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg>';
+  //fullWindowChatBtn.title = 'Full Window Chat';
 
+  /*
   fullWindowChatBtn.style.color = messageColors.rumble;
   fullWindowChatBtn.style.opacity = .25;
   fullWindowChatBtn.style.width = '30px';
   fullWindowChatBtn.style.height = '30px';
-  fullWindowChatBtn.style.position = 'absolute';
   fullWindowChatBtn.style.wordWrap = 'break-word';
   fullWindowChatBtn.style.display = 'flex';
   fullWindowChatBtn.style.alignItems = 'center';
   fullWindowChatBtn.style.justifyContent = 'center';
   fullWindowChatBtn.style.zIndex = '195';
   fullWindowChatBtn.style.cursor = 'pointer';
+  */
 
+  // Updated to Rumble 2/7/2023 update
+
+  /*
+    cursor: pointer;
+    background-color: transparent;
+    border-style: none;
+    font-family: inherit;
+    font-weight: inherit;
+    font-size: inherit;
+    text-decoration: inherit;
+    font-style: inherit;
+    line-height: inherit;
+    border-width: 2px;
+    padding-left: 1.5rem;
+
+    padding-right: 1.5rem;
+
+
+    text-align: left;
+    white-space: normal;
+    width: 100%;
+    color: #D6E0EA;
+
+    padding: 8px 1rem;
+    max-width: 100%;
+    outline-offset: -3px;
+
+    highlight on hover
+  */
+
+  fullWindowChatBtn.addClassName = 'cmi';
+  fullWindowChatBtn.innerText = 'Full Window Chat';
+
+  fullWindowChatBtn.style.color = '#D6E0EA';
+  fullWindowChatBtn.style.cursor = 'pointer';
+  fullWindowChatBtn.style.backgroundColor = 'transparent';
+  fullWindowChatBtn.style.borderStyle = 'none';
+  fullWindowChatBtn.style.fontFamily = 'inherit';
+  fullWindowChatBtn.style.fontWeight = 'inherit';
+  fullWindowChatBtn.style.fontSize = 'inherit';
+  fullWindowChatBtn.style.textDecoration = 'inherit';
+  fullWindowChatBtn.style.fontStyle = 'inherit';
+  fullWindowChatBtn.style.lineHeight = 'inherit';
+  fullWindowChatBtn.style.borderWidth = '2px';
+  fullWindowChatBtn.style.padding = '8px 1rem';
+  fullWindowChatBtn.style.paddingLeft = '1.5rem';
+  fullWindowChatBtn.style.paddingRight = '1.5rem';
+  fullWindowChatBtn.style.textAlign = 'left';
+  fullWindowChatBtn.style.whiteSpace = 'normal';
+  fullWindowChatBtn.style.width = '100%';
+  fullWindowChatBtn.style.maxWidth = '100%';
+  fullWindowChatBtn.style.outlineOffset = '-3px';
+  
 
   if (chatHistoryEle[0]){
-    fullWindowChatBtn.style.top = '-42px';
-    fullWindowChatBtn.style.right = '14px';
+    //fullWindowChatBtn.style.position = 'absolute';
+    //fullWindowChatBtn.style.top = '-42px';
+    //fullWindowChatBtn.style.right = '14px';
 
-    chatHistoryEle[0].appendChild(fullWindowChatBtn);
-
+    //chatHistoryEle[0].appendChild(fullWindowChatBtn);
+    //document.querySelector('.chat--header').appendChild(fullWindowChatBtn);
+    document.querySelector('#chat-main-menu').appendChild(fullWindowChatBtn);
+    
     fullWindowChatBtn.addEventListener('click', ()=>{
       toggleStreamerMode(!streamerMode)
     });
   }
 }
+
 
 
 

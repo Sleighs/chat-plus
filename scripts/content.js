@@ -599,7 +599,7 @@ const toggleStreamerMode = (toggle) => {
       if (document.querySelector('.username-menu-list')) {
         usernameMenuEle.style.fontSize = '1.25rem';
       }
-      
+
       // Page width is 900px
       if (window.innerWidth > 899) {
         sidebarEle.style.width = '93.75%';
@@ -703,6 +703,15 @@ const addFullWindowBtn = () => {
   fullWindowChatBtn.style.maxWidth = '100%';
   fullWindowChatBtn.style.outlineOffset = '-3px';
   
+  // Add hover effect
+  fullWindowChatBtn.addEventListener('mouseover', ()=>{
+    fullWindowChatBtn.style.backgroundColor = 'rgb(214, 224, 234, .025)';
+  });
+
+  // Remove hover effect
+  fullWindowChatBtn.addEventListener('mouseout', ()=>{
+    fullWindowChatBtn.style.backgroundColor = 'transparent';
+  });
 
   if (chatHistoryEle[0]){
     //fullWindowChatBtn.style.position = 'absolute';

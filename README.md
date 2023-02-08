@@ -24,7 +24,7 @@ Expected to be on the Chrome Extensions store soon. Until then you can download 
 
 ## Usage
 
-For options click the extension icon in the browser's toolbar to open the options.
+Access the options menu by clicking the extension icon in the browser toolbar .
 
 **Username Mentions** - Mentions with your username will be highlighted.
 

@@ -25,7 +25,7 @@ Whether watching or streaming, ChatPlus offers a lightweight set of features to 
 
 ## Installation
 
-Expected to be on the Chrome Extensions store soon. Until then you can download it from this repo and install it at Chrome extensions page.
+Expected to be on the Chrome Web Store soon. Until then you can download it here and install it in Chrome extensions management tab.
 
 - Download the ChatPlus zip file [here](https://drive.google.com/file/d/1uQztTrUwIt_CuqE_ZA4mNUQlCsK-QlQ3/view?usp=sharing) from Google Drive or download this repository by clicking "Code" then "Download Zip".
 - Unzip the zip file. 

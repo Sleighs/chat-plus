@@ -11,7 +11,7 @@
 
 <br/>
 
-<p align="center">ChatPlus is developed independently, and is not officially endorsed by or affiliated with Rumble.</p>
+<p align="">ChatPlus is developed independently, and is not officially endorsed by or affiliated with Rumble.</p>
 
 ### Features 
 

@@ -16,7 +16,7 @@ ChatPlus is a lightweight browser extension that adds features to livestream cha
 
 Expected to be on the Chrome Extensions store soon. Until then you can download it from this repo and install it at Chrome extensions page.
 
-- Download the ChatPlus zip file [here](https://drive.google.com/file/d/1-obI7flXcgqhkDY8gkGo6PwQDhaVTbQ6/view?usp=sharing) from Google Drive or download this repository by clicking "Code" then "Download Zip".
+- Download the ChatPlus zip file [here](https://drive.google.com/file/d/1HMUDVhFU8ekbMNvYmWq7prxe2ksBsoH-/view?usp=sharing) from Google Drive or download this repository by clicking "Code" then "Download Zip".
 - Unzip the zip file. 
 - Go to the Chrome Extensions page by entering chrome://extensions in the Chrome url box, or by clicking the extensions icon in the Chrome browser and selecting "Manage Extensions". 
 - From the extensions page, turn on "Developer Mode", click "Load unpacked", then select the unzipped folder.

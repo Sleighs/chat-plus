@@ -26,9 +26,9 @@ Expected to be on the Chrome Extensions store soon. Until then you can download 
 
 For options click the extension icon in the browser's toolbar to open the options.
 
-** @ Username Tagging ** - Type "@" to view a user list popup while logged in. Click a username in the list to add it to the chat message.
-
 **Username Mentions** - Mentions with your username will be highlighted.
+
+**Username Tagging** - Type "@" to view a user list popup while logged in. Click a username in the list to add it to the chat message.
 
 **Full Window Chat** - Select "Full Window Chat" from the Rumble chat options menu to change the chat view.
 

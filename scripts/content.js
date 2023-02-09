@@ -509,6 +509,7 @@ const addChatUsernameMenu = () => {
   usernameMenuContainer.classList.add('username-menu-container');
   usernameMenuContainer.style.position = 'absolute';//'relative';
   usernameMenuContainer.style.width = '15px';
+  usernameMenuContainer.style.maxWidth = '15px';
   usernameMenuContainer.style.height = '100%';
   usernameMenuContainer.style.boxSizing = 'border-box';
   usernameMenuContainer.style.overflow = 'hidden';
@@ -536,6 +537,7 @@ const addChatUsernameMenu = () => {
   
   // Create toggle button element for container 1
   let usernameMenuButton = document.createElement('div');
+  //usernameMenuButton.title = 'Toggle Recent Users';
   usernameMenuButton.classList.add('username-menu-button');
   usernameMenuButton.style.width = '100%';
   usernameMenuButton.style.height = '100%';
@@ -553,9 +555,11 @@ const addChatUsernameMenu = () => {
 
     // Change button icon
     if (!showUsernameList){
-      document.querySelector('.username-menu-button-text').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>`;    
+      document.querySelector('.username-menu-button-text').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>`;    
+      //usernameMenuButton.title = 'Show Recent Users';
     } else {
-      document.querySelector('.username-menu-button-text').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>`    
+      document.querySelector('.username-menu-button-text').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>`    
+      //usernameMenuButton.title = 'Hide Recent Users';
     }
   });
 
@@ -571,8 +575,8 @@ const addChatUsernameMenu = () => {
   usernameMenuButtonText.style.transform = 'rotate(180deg)';
   usernameMenuButtonText.style.fontWeight = 'bold';
   usernameMenuButtonText.style.textAlign = 'center';
-  usernameMenuButtonText.style.opacity = '0.26';
-  usernameMenuButtonText.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>`;
+  usernameMenuButtonText.style.opacity = '0.3';
+  usernameMenuButtonText.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>`;
   
   // Create button container
   let usernameMenuButtonContainer = document.createElement('div');
@@ -760,7 +764,6 @@ const buildUsernameList = (appended) => {
 
 // Add username list menu to page
 const toggleChatUsernameMenu = (toggle) => {
-  // Container elements
   let usernameMenuContainer2 = document.querySelector('.username-menu-container2');
     
   if (toggle) {

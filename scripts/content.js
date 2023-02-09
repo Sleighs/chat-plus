@@ -1,7 +1,7 @@
 //////   Define Variables   //////
 
-// Define api
-let api = chrome; // || browser;
+// Define browser API
+//let API = chrome || browser;
 
 // Default options
 let optionsState = {
@@ -64,11 +64,11 @@ let messageColors = {
 }
 
 // For assigned colors
-let userColors = {}
+let userColors = {};
 
 // Save options to storage
 /*const saveOptionsToStorage = () => {
-  api.storage.sync.set({ options: {
+  chrome.storage.sync.set({ options: {
     enableChatPlus: enableChatPlus,
     colorUsernames: colorUsernames,
     enableUsernameMenu: enableUsernameMenu,
@@ -88,8 +88,8 @@ let userColors = {}
 //////   Initialize App   ///////
 
 // Get options from storage and initialize extension
-(async () =>{
-  await api.storage.sync.get("options")
+(async () => {
+  await chrome.storage.sync.get("options")
   .then(function (result) {
     const defaultOptions = {
       enableChatPlus: true,
@@ -809,10 +809,6 @@ const toggleStreamerMode = (toggle) => {
     }
 
     try {
-      // Get window dimensions
-      const windowWidth = window.innerWidth;
-      const windowHeight = window.innerHeight;
-
       // Get main element
       let mainEle = document.querySelector("main");
       mainEle.style.padding = 0;

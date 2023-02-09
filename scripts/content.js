@@ -1,8 +1,5 @@
 //////   Define Variables   //////
 
-// Define browser API
-//let API = chrome || browser;
-
 // Default options
 let optionsState = {
   enableChatPlus: true,
@@ -11,7 +8,8 @@ let optionsState = {
   showUsernameListOnStartup: false,
   popupBelow: false,
   playVideoOnPageLoad: false,
-  hideFullWindowChatButton: false
+  hideFullWindowChatButton: false,
+  showListUserCount: true,
 };
 
 // Undefined option vars
@@ -21,7 +19,8 @@ let enableChatPlus,
   showUsernameListOnStartup,
   popupBelow,
   playVideoOnPageLoad,
-  hideFullWindowChatButton;
+  hideFullWindowChatButton,
+  showListUserCount;
 
 // Vars that remain in scope
 let debugMode = false;
@@ -35,6 +34,7 @@ let currentStreamer = '';
 
 // Chat history
 let currentChatHistory = [];
+var userCount = 0;
 
 // Text colors
 let usernameColors = {
@@ -74,7 +74,9 @@ let userColors = {};
     enableUsernameMenu: enableUsernameMenu,
     showUsernameListOnStartup: showUsernameListOnStartup,
     popupBelow: popupBelow,
-    playVideoOnPageLoad: playVideoOnPageLoad
+    playVideoOnPageLoad: playVideoOnPageLoad,
+    showListUserCount: showListUserCount
+    
   } })
   .then(function (result) {
     //if (debugMode) console.log('Options saved to storage')
@@ -98,7 +100,8 @@ let userColors = {};
       showUsernameListOnStartup: false,
       popupBelow: false,
       playVideoOnPageLoad: false,
-      hideFullWindowChatButton: false
+      hideFullWindowChatButton: false,
+      showListUserCount: false,
     };
 
     const optionsList = [
@@ -108,7 +111,8 @@ let userColors = {};
       "showUsernameListOnStartup",
       "popupBelow",
       "playVideoOnPageLoad",
-      "hideFullWindowChatButton"
+      "hideFullWindowChatButton",
+      "showListUserCount"
     ];
 
     function extractProperties(names, obj) {
@@ -135,6 +139,7 @@ let userColors = {};
       popupBelow = newOptionObj.popupBelow;
       playVideoOnPageLoad = newOptionObj.playVideoOnPageLoad;
       hideFullWindowChatButton = newOptionObj.hideFullWindowChatButton;
+      showListUserCount = newOptionObj.showListUserCount;
 
       Object.assign(optionsState, newOptionObj);
     } else {
@@ -145,6 +150,7 @@ let userColors = {};
       popupBelow = defaultOptions.popupBelow;
       playVideoOnPageLoad = defaultOptions.playVideoOnPageLoad;
       hideFullWindowChatButton = defaultOptions.hideFullWindowChatButton;
+      showListUserCount = defaultOptions.showListUserCount;
 
       Object.assign(optionsState, defaultOptions);
     } 
@@ -263,6 +269,16 @@ const getUserColor = (username) => {
     userColors[username] = getRandomColor();
   }
   return userColors[username];
+}
+
+function getUserCount(userList){
+  let count = 0;
+  for (let user in userList) {
+    if (userList.hasOwnProperty(user)) {
+      count++;
+    }
+  }
+  return count;
 }
 
 // Highlight each term in a string, for usernames in messages
@@ -504,7 +520,7 @@ const buildUsernameList = () => {
 
   // Loop through sortedUserColors object and add usernames to popup content
   for (let user in sortedUserColors) {
-    const usernameTextElement = document.createElement('li');
+    let usernameTextElement = document.createElement('li');
 
     // Add hover effect
     usernameTextElement.addEventListener('mouseover', () => {
@@ -622,8 +638,7 @@ const toggleChatUsernameMenu = (toggle) => {
   let usernameMenuContainer = document.querySelector('.username-menu-container');
 
   if (toggle) {
-    // Update dimensions
-
+    // Update container style
     if (streamerMode){
       usernameMenuContainer.style.width = '17%';
     } else {
@@ -632,7 +647,8 @@ const toggleChatUsernameMenu = (toggle) => {
     usernameMenuContainer.style.height = '100%';
     usernameMenuContainer.style.backgroundColor = 'transparent';
     usernameMenuContainer.style.borderLeft = `solid 1pt rgb(255,255,255,0.25)`;
-    
+    usernameMenuContainer.style.alignItems = 'flex-start';
+
     // Remove children from username menu container
     if (usernameMenuContainer){
       while (usernameMenuContainer.firstChild) {
@@ -640,11 +656,8 @@ const toggleChatUsernameMenu = (toggle) => {
       }
     }
 
-    usernameMenuContainer.style.alignItems = 'flex-start';
-
     // Create button container
     let usernameMenuButtonContainer = document.createElement('div');
-
     usernameMenuButtonContainer.classList.add('username-menu-button-container');
     usernameMenuButtonContainer.style.width = '100%';
     usernameMenuButtonContainer.style.height = '17px';
@@ -657,11 +670,9 @@ const toggleChatUsernameMenu = (toggle) => {
     let usernameMenuCloseButton = document.createElement('div');
     usernameMenuCloseButton.classList.add('username-menu-list-button');
     usernameMenuCloseButton.title = 'Close List';
-    usernameMenuCloseButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-dash-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/></svg>';
-    //'<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>';
-
+    usernameMenuCloseButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16"><path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/></svg>';
     usernameMenuCloseButton.classList.add('username-menu-button');
-    usernameMenuCloseButton.style.width = '38%';
+    usernameMenuCloseButton.style.width = '27%';
     usernameMenuCloseButton.style.height = '17px';
     usernameMenuCloseButton.style.color = messageColors.rumbleDarkBlue;
     usernameMenuCloseButton.style.zIndex = '199';
@@ -681,18 +692,30 @@ const toggleChatUsernameMenu = (toggle) => {
 
     // Add a Refresh menu button 
     let usernameMenuRefreshButton = document.createElement('div');
-    usernameMenuRefreshButton.classList.add('username-menu-list-button');
+    usernameMenuRefreshButton.classList.add('username-menu-refresh-button');
     usernameMenuRefreshButton.title = 'Refresh List';
-    usernameMenuRefreshButton.style.width = '38%';
+    usernameMenuRefreshButton.style.width = '42%';
     usernameMenuRefreshButton.style.height = '17px';
     usernameMenuRefreshButton.style.color = messageColors.rumbleDarkBlue;
+    usernameMenuRefreshButton.style.fontSize = '0.82rem';
     usernameMenuRefreshButton.style.zIndex = '199';
     usernameMenuRefreshButton.style.display = 'flex';
     usernameMenuRefreshButton.style.justifyContent = 'center';
     usernameMenuRefreshButton.style.alignItems = 'center';
     usernameMenuRefreshButton.style.cursor = 'pointer';
-    usernameMenuRefreshButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>';  
-    usernameMenuRefreshButton.onclick = function(){usernameMenuContainer.appendChild(buildUsernameList());};
+    usernameMenuRefreshButton.innerHTML = (
+      showListUserCount 
+        ? `<span>${getUserCount(userColors)}</span>`
+        : `<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
+    );
+    usernameMenuRefreshButton.onclick = function(){
+      usernameMenuContainer.appendChild(buildUsernameList());
+      usernameMenuRefreshButton.innerHTML = (
+        showListUserCount 
+          ? `<span>${getUserCount(userColors)}</span>`
+          : `<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
+      );
+    };
     // Add hover effect
     usernameMenuRefreshButton.addEventListener('mouseover', () => {
       usernameMenuRefreshButton.style.background = 'rgb(0, 0, 0, 0.5)';
@@ -701,9 +724,31 @@ const toggleChatUsernameMenu = (toggle) => {
     usernameMenuRefreshButton.addEventListener('mouseout', () => {
       usernameMenuRefreshButton.style.background = 'transparent';
     });
+    // Add flash effect
+    usernameMenuRefreshButton.addEventListener('click', () => {
+      setTimeout(() => {
+        usernameMenuRefreshButton.style.background = 'rgb(7, 247, 247, 0.5)';
+        setTimeout(() => {
+          usernameMenuRefreshButton.style.background = 'transparent';
+        }, 500);
+      }, 100);
+    });
+
+    /*let usernameMenuUserCount = document.createElement('div');
+    usernameMenuUserCount.classList.add('username-menu-user-count');
+    usernameMenuUserCount.style.width = '40%';
+    usernameMenuUserCount.style.height = '17px';
+    usernameMenuUserCount.style.color = messageColors.rumbleDarkBlue;
+    usernameMenuUserCount.style.zIndex = '195';
+    usernameMenuUserCount.style.display = 'flex';
+    usernameMenuUserCount.style.justifyContent = 'center';
+    usernameMenuUserCount.style.alignItems = 'center';
+    usernameMenuUserCount.style.textAlign = 'pointer';*/
+
 
     // Add buttons to wrapper
     usernameMenuButtonContainer.appendChild(usernameMenuCloseButton);
+    //usernameMenuButtonContainer.appendChild(usernameMenuUserCount);
     usernameMenuButtonContainer.appendChild(usernameMenuRefreshButton);
     // Add button wrapper to list container
     usernameMenuContainer.appendChild(usernameMenuButtonContainer);
@@ -722,26 +767,22 @@ const toggleChatUsernameMenu = (toggle) => {
 
     // Add toggle button element to container
     let usernameMenuButton = document.createElement('div');
-    
     usernameMenuButton.classList.add('username-menu-button');
     usernameMenuButton.style.width = '100%';
     usernameMenuButton.style.height = '100%';
     usernameMenuButton.style.boxSizing = 'border-box';
     usernameMenuButton.style.zIndex = '195';
-    //usernameMenuButton.style.writingMode = 'vertical-rl';
     usernameMenuButton.style.display = 'flex';
     usernameMenuButton.style.justifyContent = 'center';
     usernameMenuButton.style.cursor = 'pointer';
     usernameMenuButton.style.alignItems = 'center';
     usernameMenuButton.style.textAlign = 'center';
-    
     usernameMenuButton.addEventListener('click', () => {
       toggleChatUsernameMenu(true)
     });
 
     // Create text element
     let usernameMenuButtonText = document.createElement('div');
-
     usernameMenuButtonText.classList.add('username-menu-button-text');
     usernameMenuButtonText.style.width = '100%';
     usernameMenuButtonText.style.height = 'fit-content';
@@ -749,11 +790,11 @@ const toggleChatUsernameMenu = (toggle) => {
     usernameMenuButtonText.style.zIndex = '190';
     usernameMenuButtonText.style.color = 'rgb(255,255,255,0.45)';
     usernameMenuButtonText.style.cursor = 'pointer';
-
-    //usernameMenuButtonText.textContent = 'User List';
     usernameMenuButtonText.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>';
-
+    
+    // Add text element to button
     usernameMenuButton.appendChild(usernameMenuButtonText);
+    // Add button to container
     usernameMenuContainer.appendChild(usernameMenuButton);
   }
 
@@ -1136,7 +1177,13 @@ var setIntervals = function() {
     }
 
     if (showUsernameList){
-      // Get new chat usersname for list
+      // Get new chat usernames for list
+      document.querySelector('.username-menu-refresh-button').innerHTML = (
+        showListUserCount 
+          ? `<span>${getUserCount(userColors)}</span>`
+          : `<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
+      );
+
       document.querySelector('.username-menu-container').appendChild(buildUsernameList());
     }
 

@@ -1,8 +1,5 @@
 ////////   Installation   ////////
 
-// Define browser API
-//let API = chrome; // || browser;
-
 // Default options
 const defaultOptions = {
   enableChatPlus: true,
@@ -12,6 +9,7 @@ const defaultOptions = {
   popupBelow: false,
   playVideoOnPageLoad: false,
   hideFullWindowChatButton: false,
+  showListUserCount: false,
 };
 
 // Options stored in chrome.storage.sync
@@ -27,7 +25,8 @@ chrome.runtime.onInstalled.addListener(() => {
       "enableUsernameMenu",
       "popupBelow",
       "playVideoOnPageLoad",
-      "hideFullWindowChatButton"
+      "hideFullWindowChatButton",
+      "showListUserCount"
     ];
 
     // Creates a new options object from the stored options and the default options

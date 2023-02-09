@@ -1,5 +1,7 @@
-
 //////   Define Variables   //////
+
+// Define api
+let api = chrome; // || browser;
 
 // Default options
 let optionsState = {
@@ -9,8 +11,7 @@ let optionsState = {
   showUsernameListOnStartup: false,
   popupBelow: false,
   playVideoOnPageLoad: false,
-  hideFullWindowChatButton: false,
-  //refeshChatUsernameList: false,
+  hideFullWindowChatButton: false
 };
 
 // Undefined option vars
@@ -27,6 +28,10 @@ let debugMode = false;
 let showUsernameList = false;
 let streamerMode = false;
 let showFullWindowChat = false;
+
+// Vars for logged in user and current streamer 
+let currentUser = '';
+let currentStreamer = '';
 
 // Chat history
 let currentChatHistory = [];
@@ -46,8 +51,7 @@ let usernameColors = {
   grassGreen: '#05C305',
   marinerTeal: '#48A4A0',
   coolBlue: '#07F7F7',
-  dreamyBlue: '#2DA3FB',
-  bunnyWhite: '#E0E9F2',
+  dreamyBlue: '#2DA3FB'
 }
 
 let messageColors = { 
@@ -62,13 +66,9 @@ let messageColors = {
 // For assigned colors
 let userColors = {}
 
-// Vars for logged in user and current streamer 
-let currentUser = '';
-let currentStreamer = '';
-
 // Save options to storage
-const saveOptionsToStorage = () => {
-  chrome.storage.sync.set({ options: {
+/*const saveOptionsToStorage = () => {
+  api.storage.sync.set({ options: {
     enableChatPlus: enableChatPlus,
     colorUsernames: colorUsernames,
     enableUsernameMenu: enableUsernameMenu,
@@ -79,14 +79,17 @@ const saveOptionsToStorage = () => {
   .then(function (result) {
     //if (debugMode) console.log('Options saved to storage')
   });
-};
+};*/
+
+
+
 
 
 //////   Initialize App   ///////
 
 // Get options from storage and initialize extension
 (async () =>{
-  await chrome.storage.sync.get("options")
+  await api.storage.sync.get("options")
   .then(function (result) {
     const defaultOptions = {
       enableChatPlus: true,
@@ -145,7 +148,7 @@ const saveOptionsToStorage = () => {
 
       Object.assign(optionsState, defaultOptions);
     } 
-  //}).then(() => {
+
     // If app is enabled
     if (enableChatPlus) {
       // Check if chat exists
@@ -167,7 +170,7 @@ const saveOptionsToStorage = () => {
         chatObserver.observe(document.querySelector('#chat-history-list'), { childList: true });
 
         setListeners();
-        //setIntervals();
+        setIntervals();
       }
 
       // Autoplay video on page load
@@ -192,7 +195,7 @@ const saveOptionsToStorage = () => {
                 setTimeout(() => {
                   video.play();
                   video.click();
-                }, 2000);
+                }, 1500);
               } else {
                 video.play();
               }
@@ -225,8 +228,8 @@ const getRandomColor = () => {
 
 try {
   // Get current user from page if logged in
-  const rantEle = document.querySelectorAll('.chat-history--rant-head');
-  const usernameEle = document.querySelectorAll('.chat-history--rant-username');
+  let rantEle = document.querySelectorAll('.chat-history--rant-head');
+  let usernameEle = document.querySelectorAll('.chat-history--rant-username');
 
   if (rantEle && usernameEle) {
     if (usernameEle.length > 0) {
@@ -246,11 +249,11 @@ try {
 }
 
 // Get chat elements
-const chatHistoryEle = document.querySelectorAll('.chat-history');
-const chatHistoryList = document.getElementById('chat-history-list');
-const chatHistoryRows = document.querySelectorAll('.chat-history--row');
-const chatHistoryNames = document.querySelectorAll('.chat-history--username');
-const chatHistoryMessages = document.querySelectorAll('.chat-history--message');
+let chatHistoryEle = document.querySelectorAll('.chat-history');
+let chatHistoryList = document.getElementById('chat-history-list');
+let chatHistoryRows = document.querySelectorAll('.chat-history--row');
+let chatHistoryNames = document.querySelectorAll('.chat-history--username');
+let chatHistoryMessages = document.querySelectorAll('.chat-history--message');
 
 // Retrieves user color from userColor object
 const getUserColor = (username) => {
@@ -357,11 +360,11 @@ function insertUsername(username, message, caretPos) {
 // Open popup with username list
 const openChatUsernamesPopup = (coordinates) => {
   // Create element for popup
-  const popup = document.createElement('div');
+  let popup = document.createElement('div');
 
   // Get dimensions of the message input
-  var popupAdjustedHeight = document.getElementById("chat-message-text-input").clientHeight;
-  var popupAdjustedWidth = document.getElementById("chat-message-text-input").clientWidth;
+  let popupAdjustedHeight = document.getElementById("chat-message-text-input").clientHeight;
+  let popupAdjustedWidth = document.getElementById("chat-message-text-input").clientWidth;
 
   popup.classList.add('chat-plus-popup');
   popup.style.position = 'relative';
@@ -391,7 +394,7 @@ const openChatUsernamesPopup = (coordinates) => {
   }
   
   // Create a list element
-  const popupContent = document.createElement('ul');
+  let popupContent = document.createElement('ul');
   popupContent.classList.add('chat-plus-popup-content');
   popupContent.style.position = 'relative';
   popupContent.style.width = '100%';
@@ -410,11 +413,11 @@ const openChatUsernamesPopup = (coordinates) => {
       });
     return sorted;
   }
-  const sortedUserColors = sortObjectByPropName(userColors);
+  let sortedUserColors = sortObjectByPropName(userColors);
 
   // Loop through sortedUserColors object and add usernames to popup content
   for (let user in sortedUserColors) {
-    const usernameTextElement = document.createElement('li');
+    let usernameTextElement = document.createElement('li');
     usernameTextElement.style.color = sortedUserColors[user];
     usernameTextElement.style.fontSize = '1.1rem';
     usernameTextElement.style.listStyle = 'none';
@@ -538,7 +541,7 @@ const buildUsernameList = () => {
       document.getElementById('chat-message-text-input').value = insertUsername(user, messageVal, caretPosition);
             
       // Focus on chat message input
-      document.getElementById('chat-message-text-input').focus();
+      //document.getElementById('chat-message-text-input').focus();
     });
   }
 
@@ -574,7 +577,7 @@ const addChatUsernameMenu = () => {
   usernameMenuContainer.style.cursor = 'pointer';
   
   // Add toggle button element to container
-  const usernameMenuButton = document.createElement('div');
+  let usernameMenuButton = document.createElement('div');
   usernameMenuButton.classList.add('username-menu-button');
   usernameMenuButton.style.width = '100%';
   usernameMenuButton.style.height = '100%';
@@ -593,7 +596,7 @@ const addChatUsernameMenu = () => {
   });
 
   // Create text element
-  const usernameMenuButtonText = document.createElement('div');
+  let usernameMenuButtonText = document.createElement('div');
 
   usernameMenuButtonText.classList.add('username-menu-button-text');
   usernameMenuButtonText.style.width = '100%';
@@ -640,7 +643,7 @@ const toggleChatUsernameMenu = (toggle) => {
     usernameMenuContainer.style.alignItems = 'flex-start';
 
     // Create button container
-    const usernameMenuButtonContainer = document.createElement('div');
+    let usernameMenuButtonContainer = document.createElement('div');
 
     usernameMenuButtonContainer.classList.add('username-menu-button-container');
     usernameMenuButtonContainer.style.width = '100%';
@@ -718,7 +721,7 @@ const toggleChatUsernameMenu = (toggle) => {
     }
 
     // Add toggle button element to container
-    const usernameMenuButton = document.createElement('div');
+    let usernameMenuButton = document.createElement('div');
     
     usernameMenuButton.classList.add('username-menu-button');
     usernameMenuButton.style.width = '100%';
@@ -737,7 +740,7 @@ const toggleChatUsernameMenu = (toggle) => {
     });
 
     // Create text element
-    const usernameMenuButtonText = document.createElement('div');
+    let usernameMenuButtonText = document.createElement('div');
 
     usernameMenuButtonText.classList.add('username-menu-button-text');
     usernameMenuButtonText.style.width = '100%';
@@ -761,6 +764,7 @@ const toggleChatUsernameMenu = (toggle) => {
     saveOptionsToStorage()
   }*/
 };
+
 
 
 
@@ -881,7 +885,7 @@ const toggleStreamerMode = (toggle) => {
 
 const addFullWindowBtn = () => {
   // Create button for full screen chat 
-  const fullWindowChatBtn = document.createElement('button');
+  let fullWindowChatBtn = document.createElement('button');
 
   fullWindowChatBtn.id = 'fullWindowChatBtn';
   fullWindowChatBtn.addClassName = 'cmi';
@@ -1016,7 +1020,6 @@ var chatObserver = new MutationObserver(function(mutations) {
 
 
 var setListeners = function() {
-    
   // Listen for "@" keypress to open popup
   document.addEventListener("keydown", function(event) {
     // If "2" key is pressed and shift key is held down
@@ -1147,6 +1150,4 @@ var setIntervals = function() {
       clearInterval(chatRefreshInterval);
     }
   }, 120000);
-
-  chatRefreshInterval();
 }

@@ -9,7 +9,7 @@ const defaultOptions = {
   popupBelow: false,
   playVideoOnPageLoad: false,
   hideFullWindowChatButton: false,
-  showListUserCount: false,
+  showListUserCount: false
 };
 
 // Options stored in chrome.storage.sync

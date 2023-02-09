@@ -9,7 +9,7 @@ let optionsState = {
   popupBelow: false,
   playVideoOnPageLoad: false,
   hideFullWindowChatButton: false,
-  showListUserCount: true,
+  showListUserCount: false
 };
 
 // Undefined option vars
@@ -168,9 +168,10 @@ let userColors = {};
         }
 
         // Handle "Hide Full Window Chat Button" option
-        if (!hideFullWindowChatButton){
+        //if (!hideFullWindowChatButton){
           addFullWindowBtn();
-        }
+        //}
+        addUserListBtn();
 
         // Observe chat for changes to its child elements to detect new messages
         chatObserver.observe(document.querySelector('#chat-history-list'), { childList: true });
@@ -482,7 +483,201 @@ const openChatUsernamesPopup = (coordinates) => {
 
 ///////   Main Chat Username List   ///////
 
-const buildUsernameList = () => {
+// Add username list tab to chat window
+const addChatUsernameMenu = () => {
+  // Create container element
+  let usernameMenuContainer = document.createElement('div');
+  let usernameMenuContainer2 = document.createElement('div');
+
+  // Add hover effect to container 1
+  usernameMenuContainer.addEventListener('mouseover', () => {
+    usernameMenuContainer.style.backgroundColor = 'rgba(255,255,255,.1)';
+  });
+  // Remove hover effect
+  usernameMenuContainer.addEventListener('mouseout', () => {
+    usernameMenuContainer.style.backgroundColor = 'transparent';
+  });
+  
+  // Add width to container 2
+  if (streamerMode){
+    usernameMenuContainer2.style.width = '17%';
+  } else {
+    usernameMenuContainer2.style.width = '105px';
+  }
+
+  // Create first container for toggle button
+  usernameMenuContainer.classList.add('username-menu-container');
+  usernameMenuContainer.style.position = 'absolute';//'relative';
+  usernameMenuContainer.style.width = '15px';
+  usernameMenuContainer.style.height = '100%';
+  usernameMenuContainer.style.boxSizing = 'border-box';
+  usernameMenuContainer.style.overflow = 'hidden';
+  usernameMenuContainer.style.zIndex = '190';
+  usernameMenuContainer.style.borderLeft = `solid 1pt rgb(255,255,255,0)`;
+  usernameMenuContainer.style.display = 'flex';
+  usernameMenuContainer.style.flexDirection = 'column';
+  usernameMenuContainer.style.justifyContent = 'center';
+  usernameMenuContainer.style.alignItems = 'center';
+  usernameMenuContainer.style.cursor = 'pointer';
+  usernameMenuContainer.style.top = '0';
+  usernameMenuContainer.style.left = '0';
+
+  // Create second container for list
+  usernameMenuContainer2.classList.add('username-menu-container2');
+  usernameMenuContainer2.style.height = '100%';
+  usernameMenuContainer2.style.position = 'relative';
+  usernameMenuContainer2.style.backgroundColor = 'transparent';
+  usernameMenuContainer2.style.borderLeft = `solid 1pt rgb(255,255,255,0.25)`;
+  usernameMenuContainer2.style.display = 'none';
+  usernameMenuContainer2.style.flexDirection = 'column';
+  usernameMenuContainer2.style.alignItems = 'flex-start';
+  usernameMenuContainer2.style.justifyContent = 'center';
+  usernameMenuContainer2.style.zIndex = '190';
+  
+  // Create toggle button element for container 1
+  let usernameMenuButton = document.createElement('div');
+  usernameMenuButton.classList.add('username-menu-button');
+  usernameMenuButton.style.width = '100%';
+  usernameMenuButton.style.height = '100%';
+  usernameMenuButton.style.color = messageColors.rumble;
+  usernameMenuButton.style.boxSizing = 'border-box';
+  usernameMenuButton.style.zIndex = '195';
+  usernameMenuButton.style.display = 'flex';
+  usernameMenuButton.style.justifyContent = 'center';
+  usernameMenuButton.style.alignItems = 'center';
+  usernameMenuButton.style.textAlign = 'center';
+  usernameMenuButton.style.cursor = 'pointer';
+  usernameMenuButton.addEventListener('click', () => {
+    // Toggle username list
+    toggleChatUsernameMenu(showUsernameList ? false : true);
+
+    // Change button icon
+    if (!showUsernameList){
+      document.querySelector('.username-menu-button-text').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>`;    
+    } else {
+      document.querySelector('.username-menu-button-text').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>`    
+    }
+  });
+
+  // Create text element for toggle button 
+  let usernameMenuButtonText = document.createElement('div');
+  usernameMenuButtonText.classList.add('username-menu-button-text');
+  usernameMenuButtonText.style.width = 'fit-content';
+  usernameMenuButtonText.style.height = 'fit-content';
+  usernameMenuButtonText.style.marginTop = '-20px';
+  usernameMenuButtonText.style.zIndex = '189';
+  usernameMenuButtonText.style.color = 'rgb(255,255,255,0.45)';
+  usernameMenuButtonText.style.writingMode = 'vertical-rl';
+  usernameMenuButtonText.style.transform = 'rotate(180deg)';
+  usernameMenuButtonText.style.fontWeight = 'bold';
+  usernameMenuButtonText.style.textAlign = 'center';
+  usernameMenuButtonText.style.opacity = '0.26';
+  usernameMenuButtonText.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>`;
+  
+  // Create button container
+  let usernameMenuButtonContainer = document.createElement('div');
+  usernameMenuButtonContainer.classList.add('username-menu-button-container');
+  usernameMenuButtonContainer.style.width = '100%';
+  usernameMenuButtonContainer.style.height = '17px';
+  usernameMenuButtonContainer.style.background = 'rgb(133, 199, 66, 1)';
+  usernameMenuButtonContainer.style.display = 'flex';
+  usernameMenuButtonContainer.style.alignItems = 'center';
+  usernameMenuButtonContainer.style.justifyContent = 'space-between';
+  
+  // Create close button
+  let usernameMenuCloseButton = document.createElement('div');
+  usernameMenuCloseButton.classList.add('username-menu-list-button');
+  usernameMenuCloseButton.title = 'Close List';
+  usernameMenuCloseButton.classList.add('username-menu-button');
+  usernameMenuCloseButton.style.width = '27%';
+  usernameMenuCloseButton.style.height = '17px';
+  usernameMenuCloseButton.style.color = messageColors.rumbleDarkBlue;
+  usernameMenuCloseButton.style.zIndex = '199';
+  usernameMenuCloseButton.style.display = 'flex';
+  usernameMenuCloseButton.style.justifyContent = 'center';
+  usernameMenuCloseButton.style.alignItems = 'center';
+  usernameMenuCloseButton.style.cursor = 'pointer';  
+  usernameMenuCloseButton.style.opacity = '0.5';
+  usernameMenuCloseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">T<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/></svg>`;
+  usernameMenuCloseButton.onclick = function(){
+    toggleChatUsernameMenu(false);
+  };
+  // Add hover effect
+  usernameMenuCloseButton.addEventListener('mouseover', () => {
+    usernameMenuCloseButton.style.background = 'rgb(0,0,0,0.25)';
+  });
+  // Remove hover effect
+  usernameMenuCloseButton.addEventListener('mouseout', () => {
+    usernameMenuCloseButton.style.background = 'transparent';
+  });
+
+  // Add a Refresh menu button 
+  let usernameMenuRefreshButton = document.createElement('div');
+  usernameMenuRefreshButton.classList.add('username-menu-refresh-button');
+  usernameMenuRefreshButton.title = 'Refresh List';
+  usernameMenuRefreshButton.style.width = '42%';
+  usernameMenuRefreshButton.style.height = '17px';
+  usernameMenuRefreshButton.style.color = messageColors.rumbleDarkBlue;
+  usernameMenuRefreshButton.style.fontSize = '0.82rem';
+  usernameMenuRefreshButton.style.zIndex = '199';
+  usernameMenuRefreshButton.style.display = 'flex';
+  usernameMenuRefreshButton.style.justifyContent = 'center';
+  usernameMenuRefreshButton.style.alignItems = 'center';
+  usernameMenuRefreshButton.style.cursor = 'pointer';
+  usernameMenuRefreshButton.style.opacity = '0.75';
+  usernameMenuRefreshButton.innerHTML = (
+    showListUserCount 
+      ? `<span>${getUserCount(userColors)}</span>`
+      : `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
+  );
+  usernameMenuRefreshButton.onclick = function(){
+    // Build new username list
+    buildUsernameList(false)
+
+    // Update user count
+    usernameMenuRefreshButton.innerHTML = (
+      showListUserCount 
+        ? `<span>${getUserCount(userColors)}</span>`
+        : `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
+    );
+  };
+  // Add hover effect
+  usernameMenuRefreshButton.addEventListener('mouseover', () => {
+    usernameMenuRefreshButton.style.background = 'rgb(0, 0, 0, 0.25)';
+  });
+  // Remove hover effect
+  usernameMenuRefreshButton.addEventListener('mouseout', () => {
+    usernameMenuRefreshButton.style.background = 'transparent';
+  });
+  // Add flash effect
+  usernameMenuRefreshButton.addEventListener('click', () => {
+    setTimeout(() => {
+      usernameMenuRefreshButton.style.background = 'rgb(7, 247, 247, 0.5)';
+      setTimeout(() => {
+        usernameMenuRefreshButton.style.background = 'transparent';
+      }, 500);
+    }, 100);
+  });
+
+  // Add buttons to wrapper
+  usernameMenuButtonContainer.appendChild(usernameMenuCloseButton);
+  usernameMenuButtonContainer.appendChild(usernameMenuRefreshButton);
+  // Add button wrapper to list container
+  usernameMenuContainer2.appendChild(usernameMenuButtonContainer);
+  usernameMenuContainer2.appendChild(buildUsernameList(true));
+  
+  // Add text element to button
+  usernameMenuButton.appendChild(usernameMenuButtonText);
+  usernameMenuContainer.appendChild(usernameMenuButton);
+  // Add container to page
+  chatHistoryEle[0].appendChild(usernameMenuContainer);
+  chatHistoryEle[0].appendChild(usernameMenuContainer2);
+
+  // Bring chat menu to front
+  document.querySelector('#chat-main-menu').style.zIndex = '199';
+};
+
+const buildUsernameList = (appended) => {
   // Get username menu container
   let usernameMenuList = document.querySelector('.username-menu-list');
   
@@ -555,247 +750,36 @@ const buildUsernameList = () => {
       const caretPosition = storeCaretPosition(messageEle);
 
       document.getElementById('chat-message-text-input').value = insertUsername(user, messageVal, caretPosition);
-            
-      // Focus on chat message input
-      //document.getElementById('chat-message-text-input').focus();
     });
   }
 
-  return usernameMenuList;
+  if (appended) {
+    return usernameMenuList;
+  }
 }
-
-// Add username list to page
-const addChatUsernameMenu = () => {
-  // Create container element
-  let usernameMenuContainer = document.createElement('div');
-
-  // Add hover effect
-  usernameMenuContainer.addEventListener('mouseover', () => {
-    if (!showUsernameList) usernameMenuContainer.style.backgroundColor = 'rgba(255,255,255,.1)';
-  });
-  // Remove hover effect
-  usernameMenuContainer.addEventListener('mouseout', () => {
-    if (!showUsernameList) usernameMenuContainer.style.backgroundColor = 'transparent';
-  });
-  
-  usernameMenuContainer.classList.add('username-menu-container');
-  usernameMenuContainer.style.position = 'relative';
-  usernameMenuContainer.style.width = '15px';
-  usernameMenuContainer.style.height = '100%';
-  usernameMenuContainer.style.boxSizing = 'border-box';
-  usernameMenuContainer.style.overflow = 'hidden';
-  usernameMenuContainer.style.zIndex = '190';
-  usernameMenuContainer.style.borderLeft = `solid 1pt rgb(255,255,255,0)`;
-  usernameMenuContainer.style.display = 'flex';
-  usernameMenuContainer.style.flexDirection = 'column';
-  usernameMenuContainer.style.justifyContent = 'center';
-  usernameMenuContainer.style.alignItems = 'center';
-  usernameMenuContainer.style.cursor = 'pointer';
-  
-  // Add toggle button element to container
-  let usernameMenuButton = document.createElement('div');
-  usernameMenuButton.classList.add('username-menu-button');
-  usernameMenuButton.style.width = '100%';
-  usernameMenuButton.style.height = '100%';
-  usernameMenuButton.style.color = messageColors.rumble;
-  usernameMenuButton.style.boxSizing = 'border-box';
-  usernameMenuButton.style.zIndex = '195';
-  //usernameMenuButton.style.writingMode = 'vertical-rl';
-  usernameMenuButton.style.display = 'flex';
-  usernameMenuButton.style.justifyContent = 'center';
-  usernameMenuButton.style.alignItems = 'center';
-  usernameMenuButton.style.textAlign = 'center';
-  usernameMenuButton.style.cursor = 'pointer';
-  usernameMenuButton.addEventListener('click', () => {
-    usernameMenuContainer.style.backgroundColor = 'transparent';
-    toggleChatUsernameMenu(true)
-  });
-
-  // Create text element
-  let usernameMenuButtonText = document.createElement('div');
-
-  usernameMenuButtonText.classList.add('username-menu-button-text');
-  usernameMenuButtonText.style.width = '100%';
-  usernameMenuButtonText.style.height = 'fit-content';
-  usernameMenuButtonText.style.marginTop = '-20px';
-  usernameMenuButtonText.style.zIndex = '189';
-  usernameMenuButtonText.style.color = 'rgb(255,255,255,0.45)';
-  usernameMenuButtonText.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>';
-
-  // Add text element to button
-  usernameMenuButton.appendChild(usernameMenuButtonText);
-  usernameMenuContainer.appendChild(usernameMenuButton);
-  // Add container to page
-  chatHistoryEle[0].appendChild(usernameMenuContainer);
-
-  // Bring chat menu to front
-  document.querySelector('#chat-main-menu').style.zIndex = '199';
-};
 
 // Add username list menu to page
 const toggleChatUsernameMenu = (toggle) => {
-  // Container element
-  let usernameMenuContainer = document.querySelector('.username-menu-container');
-
+  // Container elements
+  let usernameMenuContainer2 = document.querySelector('.username-menu-container2');
+    
   if (toggle) {
-    // Update container style
+    // Set display to flex
+    usernameMenuContainer2.style.display = 'flex';
+
+    // Add width
     if (streamerMode){
-      usernameMenuContainer.style.width = '17%';
+      usernameMenuContainer2.style.width = '17%';
     } else {
-      usernameMenuContainer.style.width = '105px';
-    }
-    usernameMenuContainer.style.height = '100%';
-    usernameMenuContainer.style.backgroundColor = 'transparent';
-    usernameMenuContainer.style.borderLeft = `solid 1pt rgb(255,255,255,0.25)`;
-    usernameMenuContainer.style.alignItems = 'flex-start';
-
-    // Remove children from username menu container
-    if (usernameMenuContainer){
-      while (usernameMenuContainer.firstChild) {
-        usernameMenuContainer.removeChild(usernameMenuContainer.firstChild);
-      }
+      usernameMenuContainer2.style.width = '105px';
     }
 
-    // Create button container
-    let usernameMenuButtonContainer = document.createElement('div');
-    usernameMenuButtonContainer.classList.add('username-menu-button-container');
-    usernameMenuButtonContainer.style.width = '100%';
-    usernameMenuButtonContainer.style.height = '17px';
-    usernameMenuButtonContainer.style.background = 'rgb(133, 199, 66, 1)';
-    usernameMenuButtonContainer.style.display = 'flex';
-    usernameMenuButtonContainer.style.alignItems = 'center';
-    usernameMenuButtonContainer.style.justifyContent = 'space-between';
-    
-    // Create close button
-    let usernameMenuCloseButton = document.createElement('div');
-    usernameMenuCloseButton.classList.add('username-menu-list-button');
-    usernameMenuCloseButton.title = 'Close List';
-    usernameMenuCloseButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16"><path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/></svg>';
-    usernameMenuCloseButton.classList.add('username-menu-button');
-    usernameMenuCloseButton.style.width = '27%';
-    usernameMenuCloseButton.style.height = '17px';
-    usernameMenuCloseButton.style.color = messageColors.rumbleDarkBlue;
-    usernameMenuCloseButton.style.zIndex = '199';
-    usernameMenuCloseButton.style.display = 'flex';
-    usernameMenuCloseButton.style.justifyContent = 'center';
-    usernameMenuCloseButton.style.alignItems = 'center';
-    usernameMenuCloseButton.style.cursor = 'pointer';
-    usernameMenuCloseButton.onclick = function(){toggleChatUsernameMenu(false);};
-    // Add hover effect
-    usernameMenuCloseButton.addEventListener('mouseover', () => {
-      usernameMenuCloseButton.style.background = 'rgb(0,0,0,0.25)';
-    });
-    // Remove hover effect
-    usernameMenuCloseButton.addEventListener('mouseout', () => {
-      usernameMenuCloseButton.style.background = 'transparent';
-    });
-
-    // Add a Refresh menu button 
-    let usernameMenuRefreshButton = document.createElement('div');
-    usernameMenuRefreshButton.classList.add('username-menu-refresh-button');
-    usernameMenuRefreshButton.title = 'Refresh List';
-    usernameMenuRefreshButton.style.width = '42%';
-    usernameMenuRefreshButton.style.height = '17px';
-    usernameMenuRefreshButton.style.color = messageColors.rumbleDarkBlue;
-    usernameMenuRefreshButton.style.fontSize = '0.82rem';
-    usernameMenuRefreshButton.style.zIndex = '199';
-    usernameMenuRefreshButton.style.display = 'flex';
-    usernameMenuRefreshButton.style.justifyContent = 'center';
-    usernameMenuRefreshButton.style.alignItems = 'center';
-    usernameMenuRefreshButton.style.cursor = 'pointer';
-    usernameMenuRefreshButton.innerHTML = (
-      showListUserCount 
-        ? `<span>${getUserCount(userColors)}</span>`
-        : `<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
-    );
-    usernameMenuRefreshButton.onclick = function(){
-      usernameMenuContainer.appendChild(buildUsernameList());
-      usernameMenuRefreshButton.innerHTML = (
-        showListUserCount 
-          ? `<span>${getUserCount(userColors)}</span>`
-          : `<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
-      );
-    };
-    // Add hover effect
-    usernameMenuRefreshButton.addEventListener('mouseover', () => {
-      usernameMenuRefreshButton.style.background = 'rgb(0, 0, 0, 0.5)';
-    });
-    // Remove hover effect
-    usernameMenuRefreshButton.addEventListener('mouseout', () => {
-      usernameMenuRefreshButton.style.background = 'transparent';
-    });
-    // Add flash effect
-    usernameMenuRefreshButton.addEventListener('click', () => {
-      setTimeout(() => {
-        usernameMenuRefreshButton.style.background = 'rgb(7, 247, 247, 0.5)';
-        setTimeout(() => {
-          usernameMenuRefreshButton.style.background = 'transparent';
-        }, 500);
-      }, 100);
-    });
-
-    /*let usernameMenuUserCount = document.createElement('div');
-    usernameMenuUserCount.classList.add('username-menu-user-count');
-    usernameMenuUserCount.style.width = '40%';
-    usernameMenuUserCount.style.height = '17px';
-    usernameMenuUserCount.style.color = messageColors.rumbleDarkBlue;
-    usernameMenuUserCount.style.zIndex = '195';
-    usernameMenuUserCount.style.display = 'flex';
-    usernameMenuUserCount.style.justifyContent = 'center';
-    usernameMenuUserCount.style.alignItems = 'center';
-    usernameMenuUserCount.style.textAlign = 'pointer';*/
-
-
-    // Add buttons to wrapper
-    usernameMenuButtonContainer.appendChild(usernameMenuCloseButton);
-    //usernameMenuButtonContainer.appendChild(usernameMenuUserCount);
-    usernameMenuButtonContainer.appendChild(usernameMenuRefreshButton);
-    // Add button wrapper to list container
-    usernameMenuContainer.appendChild(usernameMenuButtonContainer);
-    // Add list to container
-    usernameMenuContainer.appendChild(buildUsernameList());
+    // Gets new user list
+    buildUsernameList(false);
+    //usernameMenuContainer2.appendChild(buildUsernameList());
   } else {
-    // Update Dimensions
-    usernameMenuContainer.style.width = '15px';
-    usernameMenuContainer.style.height = '100%';
-    usernameMenuContainer.style.borderLeft = `solid 1pt rgb(255,255,255,0)`;
-
-    // Remove list
-    while (usernameMenuContainer.firstChild) {
-      usernameMenuContainer.removeChild(usernameMenuContainer.firstChild);
-    }
-
-    // Add toggle button element to container
-    let usernameMenuButton = document.createElement('div');
-    usernameMenuButton.classList.add('username-menu-button');
-    usernameMenuButton.style.width = '100%';
-    usernameMenuButton.style.height = '100%';
-    usernameMenuButton.style.boxSizing = 'border-box';
-    usernameMenuButton.style.zIndex = '195';
-    usernameMenuButton.style.display = 'flex';
-    usernameMenuButton.style.justifyContent = 'center';
-    usernameMenuButton.style.cursor = 'pointer';
-    usernameMenuButton.style.alignItems = 'center';
-    usernameMenuButton.style.textAlign = 'center';
-    usernameMenuButton.addEventListener('click', () => {
-      toggleChatUsernameMenu(true)
-    });
-
-    // Create text element
-    let usernameMenuButtonText = document.createElement('div');
-    usernameMenuButtonText.classList.add('username-menu-button-text');
-    usernameMenuButtonText.style.width = '100%';
-    usernameMenuButtonText.style.height = 'fit-content';
-    usernameMenuButtonText.style.marginTop = '-40px';
-    usernameMenuButtonText.style.zIndex = '190';
-    usernameMenuButtonText.style.color = 'rgb(255,255,255,0.45)';
-    usernameMenuButtonText.style.cursor = 'pointer';
-    usernameMenuButtonText.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>';
-    
-    // Add text element to button
-    usernameMenuButton.appendChild(usernameMenuButtonText);
-    // Add button to container
-    usernameMenuContainer.appendChild(usernameMenuButton);
+    // Hide container
+    usernameMenuContainer2.style.display = 'none';
   }
 
   showUsernameList = toggle;
@@ -837,7 +821,6 @@ const toggleStreamerMode = (toggle) => {
     // Hide chat visibility button
     if (document.querySelector("#chat-main-menu")) document.querySelector("#chat-toggle-chat-visibility").style.display = 'none';
 
-
     try {
       // Pause all video elements
       const videoElements = document.querySelectorAll("video");
@@ -873,7 +856,6 @@ const toggleStreamerMode = (toggle) => {
       sidebarEle.style.fontSize = '1.2rem';
       sidebarEle.style.padding = 0;
       sidebarEle.style.position = 'relative';
-      //sidebarEle.style.height = '100%';
 
       let chatContainerEle = document.querySelector(".chat");
       chatContainerEle.style.position = 'relative';
@@ -983,6 +965,60 @@ const addFullWindowBtn = () => {
         }
         showFullWindowChat = !showFullWindowChat
       });
+    }
+  }
+}
+
+const addUserListBtn = () => {
+  // Create button for full screen chat 
+  let userListBtn = document.createElement('button');
+
+  userListBtn.id = 'userListBtn';
+  userListBtn.addClassName = 'cmi';
+  userListBtn.innerText = 'Toggle User List';
+
+  userListBtn.style.color = '#D6E0EA';
+  userListBtn.style.cursor = 'pointer';
+  userListBtn.style.backgroundColor = 'transparent';
+  userListBtn.style.borderStyle = 'none';
+  userListBtn.style.fontFamily = 'inherit';
+  userListBtn.style.fontWeight = 'inherit';
+  userListBtn.style.fontSize = 'inherit';
+  userListBtn.style.textDecoration = 'inherit';
+  userListBtn.style.fontStyle = 'inherit';
+  userListBtn.style.lineHeight = 'inherit';
+  userListBtn.style.borderWidth = '2px';
+  userListBtn.style.padding = '8px 1rem';
+  userListBtn.style.paddingLeft = '1.5rem';
+  userListBtn.style.paddingRight = '1.5rem';
+  userListBtn.style.textAlign = 'left';
+  userListBtn.style.whiteSpace = 'normal';
+  userListBtn.style.width = '100%';
+  userListBtn.style.maxWidth = '100%';
+  userListBtn.style.outlineOffset = '-3px';
+  userListBtn.style.userSelect = 'none';
+  
+  // Add hover effect
+  userListBtn.addEventListener('mouseover', ()=>{
+    userListBtn.style.backgroundColor = 'rgb(214, 224, 234, .025)';
+  });
+
+  // Remove hover effect
+  userListBtn.addEventListener('mouseout', ()=>{
+    userListBtn.style.backgroundColor = 'transparent';
+  });
+
+  if (chatHistoryEle[0]){
+    // Check data-chat-visible attribute
+    //var chatVisibilityDataAtr = document.querySelector('#chat-toggle-chat-visibility').getAttribute('data-chat-visible');
+    var chatVisibilityDataset = document.querySelector('#chat-toggle-chat-visibility').dataset.chatVisible;
+
+    if (chatVisibilityDataset){
+      document.querySelector('#chat-main-menu').appendChild(userListBtn);
+    }
+    
+    userListBtn.onclick = function() {
+      toggleChatUsernameMenu(showUsernameList ? false : true);
     }
   }
 }
@@ -1184,7 +1220,8 @@ var setIntervals = function() {
           : `<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
       );
 
-      document.querySelector('.username-menu-container').appendChild(buildUsernameList());
+      
+      if (enableUsernameMenu && document.querySelector('.username-menu-list')) buildUsernameList(false);
     }
 
     // Clear interval if there is no chat history

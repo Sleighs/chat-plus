@@ -1,4 +1,5 @@
 ////////   Installation   ////////
+let api = chrome; // || browser;
 
 const defaultOptions = {
   enableChatPlus: true,
@@ -12,8 +13,8 @@ const defaultOptions = {
 
 let options = {};
 
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.sync.get("options").then((result) => {
+api.runtime.onInstalled.addListener(() => {
+  api.storage.sync.get("options").then((result) => {
     let optionsList = [
       "enableChatPlus", 
       "colorUsernames", 
@@ -41,12 +42,12 @@ chrome.runtime.onInstalled.addListener(() => {
       let newOptionObj = extractProperties(optionsList, result.options);
       
       // Stores the options object in chrome.storage.sync
-      chrome.storage.sync.set({ options: newOptionObj })
+      api.storage.sync.set({ options: newOptionObj })
         .then(() => {
           console.log("Installed - set options", newOptionObj);
         });
     } else {
-      chrome.storage.sync.set({ options: defaultOptions })
+      api.storage.sync.set({ options: defaultOptions })
         .then(() => {
           console.log("Installed - default options", defaultOptions);
         });

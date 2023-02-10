@@ -33,7 +33,7 @@ ChatPlus is available in the Chrome Web Store. Check out the [ChatPlus for Rumbl
 
 Alternatively, you can download the package zip file and install it in Chrome Extensions management tab.
 
-- Download the ChatPlus zip file [here](https://drive.google.com/file/d/1rt0HqzPIM1BKCBnsxWFxhMN4ghUEK_oq/view?usp=sharing) from Google Drive or download this repository by clicking "Code" then "Download Zip".
+- Download the ChatPlus zip file [here](https://drive.google.com/file/d/1xTPPrstPHLjcUy1nohkgl78nkFimnww4/view?usp=sharing) from Google Drive or download this repository by clicking "Code" then "Download Zip".
 - Unzip the zip file. 
 - Go to the Chrome Extensions page by entering "chrome://extensions" in the Chrome url box, or by clicking the extensions icon in the Chrome browser and selecting "Manage Extensions". 
 - From the extensions page, turn on "Developer Mode", click "Load unpacked", then select the unzipped folder.

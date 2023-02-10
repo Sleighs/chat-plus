@@ -173,7 +173,7 @@ let userColors = {};
         // Add username menu
         if (enableUsernameMenu) {
             addChatUsernameMenu();
-            document.querySelector('#videoPlayer').style.zIndex = 250;
+            //document.querySelector('#videoPlayer').style.zIndex = 199;
         }
 
         // Add chat menu buttons
@@ -524,7 +524,7 @@ const addChatUsernameMenu = () => {
   usernameMenuContainer.style.height = '100%';
   usernameMenuContainer.style.boxSizing = 'border-box';
   usernameMenuContainer.style.overflow = 'hidden';
-  usernameMenuContainer.style.zIndex = '190';
+  //usernameMenuContainer.style.zIndex = '190';
   usernameMenuContainer.style.borderLeft = `solid 1pt rgb(255,255,255,0)`;
   usernameMenuContainer.style.display = 'flex';
   usernameMenuContainer.style.flexDirection = 'column';
@@ -544,7 +544,7 @@ const addChatUsernameMenu = () => {
   usernameMenuContainer2.style.flexDirection = 'column';
   usernameMenuContainer2.style.alignItems = 'flex-start';
   usernameMenuContainer2.style.justifyContent = 'center';
-  usernameMenuContainer2.style.zIndex = '190';
+  //usernameMenuContainer2.style.zIndex = '190';
   
   // Create toggle button element for container 1
   let usernameMenuButton = document.createElement('div');
@@ -554,24 +554,14 @@ const addChatUsernameMenu = () => {
   usernameMenuButton.style.height = '100%';
   usernameMenuButton.style.color = messageColors.rumble;
   usernameMenuButton.style.boxSizing = 'border-box';
-  usernameMenuButton.style.zIndex = '195';
+  //usernameMenuButton.style.zIndex = '195';
   usernameMenuButton.style.display = 'flex';
   usernameMenuButton.style.justifyContent = 'center';
   usernameMenuButton.style.alignItems = 'center';
   usernameMenuButton.style.textAlign = 'center';
   usernameMenuButton.style.cursor = 'pointer';
   usernameMenuButton.addEventListener('click', () => {
-    // Toggle username list
     toggleChatUsernameMenu(showUsernameList ? false : true);
-
-    /*// Change button icon
-    if (!showUsernameList){
-      document.querySelector('.username-menu-toggle-button-text').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>`;    
-      //usernameMenuButton.title = 'Show Recent Users';
-    } else {
-      document.querySelector('.username-menu-toggle-button-text').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>`    
-      //usernameMenuButton.title = 'Hide Recent Users';
-    }*/
   });
 
   // Create text element for toggle button 
@@ -580,7 +570,7 @@ const addChatUsernameMenu = () => {
   usernameMenuButtonText.style.width = 'fit-content';
   usernameMenuButtonText.style.height = 'fit-content';
   usernameMenuButtonText.style.marginTop = '-6%';//'-20px';
-  usernameMenuButtonText.style.zIndex = '189';
+  //usernameMenuButtonText.style.zIndex = '189';
   usernameMenuButtonText.style.color = 'rgb(255,255,255,0.45)';
   usernameMenuButtonText.style.writingMode = 'vertical-rl';
   usernameMenuButtonText.style.transform = 'rotate(180deg)';
@@ -606,7 +596,7 @@ const addChatUsernameMenu = () => {
   usernameMenuCloseButton.title = 'Close List';
   usernameMenuCloseButton.style.width = '20%';
   usernameMenuCloseButton.style.height = '100%';
-  usernameMenuCloseButton.style.zIndex = '199';
+  //usernameMenuCloseButton.style.zIndex = '199';
   usernameMenuCloseButton.style.display = 'flex';
   usernameMenuCloseButton.style.justifyContent = 'center';
   usernameMenuCloseButton.style.alignItems = 'center';
@@ -632,7 +622,7 @@ const addChatUsernameMenu = () => {
   usernameMenuRefreshButton.style.width = '42%';
   usernameMenuRefreshButton.style.height = '100%';
   usernameMenuRefreshButton.style.fontSize = '0.83rem';
-  usernameMenuRefreshButton.style.zIndex = '199';
+  //usernameMenuRefreshButton.style.zIndex = '199';
   usernameMenuRefreshButton.style.display = 'flex';
   usernameMenuRefreshButton.style.justifyContent = 'right';
   usernameMenuRefreshButton.style.alignItems = 'center';
@@ -688,7 +678,7 @@ const addChatUsernameMenu = () => {
   chatHistoryEle[0].appendChild(usernameMenuContainer2);
 
   // Bring chat menu to front
-  document.querySelector('#chat-main-menu').style.zIndex = '199';
+  document.querySelector('#chat-main-menu').style.zIndex = '190';
 };
 
 const buildUsernameList = (appended) => {
@@ -709,7 +699,7 @@ const buildUsernameList = (appended) => {
     usernameMenuList.style.position = 'relative';
     usernameMenuList.style.width = '100%';
     usernameMenuList.style.height = '100%';
-    usernameMenuList.style.zIndex = '195';
+    //usernameMenuList.style.zIndex = '195';
     usernameMenuList.style.overflow = 'scroll';
     usernameMenuList.style.boxSizing = 'border-box';
     usernameMenuList.style.padding = '6px 0';
@@ -749,7 +739,7 @@ const buildUsernameList = (appended) => {
     usernameTextElement.style.listStyle = 'none';
     usernameTextElement.style.cursor = 'pointer';
     usernameTextElement.style.fontWeight = 'bold';
-    usernameTextElement.style.zIndex = '195';
+    //usernameTextElement.style.zIndex = '195';
     usernameTextElement.style.padding = '0 6px';
     usernameTextElement.innerHTML = user;
 
@@ -938,7 +928,7 @@ const toggleStreamerMode = (toggle) => {
       chatMessageEle.style.height = '50px';
 
       // Bring chat to front
-      document.querySelector('#chat-main-menu').style.zIndex = '199';
+      //document.querySelector('#chat-main-menu').style.zIndex = '199';
       
       // Increase chat font size
       if (document.querySelector('.username-menu-list')) {
@@ -950,7 +940,7 @@ const toggleStreamerMode = (toggle) => {
       document.querySelector('.username-menu-toggle-container').style.maxWidth = '20px';
       document.querySelector('.username-menu-toggle-button-text').style.marginTop = '3%';
       document.querySelector('.username-menu-button-container').style.height = '20px';
-      document.querySelector('#chat--num-unread-messages').zIndex = '200';
+      //document.querySelector('#chat--num-unread-messages').zIndex = 150;//'199';
       // Change chat menu button text
       document.getElementById('fullWindowChatBtn').innerText = 'Restore Normal Chat';
     } catch (error){
@@ -1218,11 +1208,11 @@ var chatObserver = new MutationObserver(function(mutations) {
         // Check if the added node has element id 'chat--num-unread-messages' to position on top of the username menu
         if (document.getElementById("chat--num-unread-messages") && showUsernameList) {
           // Set the z-index and opacity of the unread message count
-          document.getElementById('chat--num-unread-messages').style.zIndex = '199';
+          //document.getElementById('chat--num-unread-messages').style.zIndex = '199';
           document.getElementById('chat--num-unread-messages').style.opacity = '1';
         } else if (document.getElementById("chat--num-unread-messages")) {
           // Set the z-index and opacity of the unread message count
-          document.getElementById('chat--num-unread-messages').style.zIndex = '';
+          //document.getElementById('chat--num-unread-messages').style.zIndex = '';
           document.getElementById('chat--num-unread-messages').style.opacity = '';
         }
       }
@@ -1389,7 +1379,7 @@ var setIntervals = function() {
     await chrome.storage.sync.get(['rants'])
       .then(function (result) {
         if (debugMode) console.log('Get rants from storage', result)
-        //savedRants = result.rants;
+        savedRants = result.rants;
       });
   }
   

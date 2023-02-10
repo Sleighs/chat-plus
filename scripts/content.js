@@ -9,7 +9,8 @@ let optionsState = {
   popupBelow: false,
   playVideoOnPageLoad: false,
   hideFullWindowChatButton: false,
-  showListUserCount: false
+  showListUserCount: false,
+  saveRants: false
 };
 
 // Undefined option vars
@@ -20,9 +21,8 @@ let enableChatPlus,
   popupBelow,
   playVideoOnPageLoad,
   hideFullWindowChatButton,
-  showListUserCount;
-
-var saveRants = false;
+  showListUserCount,
+  saveRants;
 
 // Vars that remain in scope
 let debugMode = false;
@@ -108,6 +108,7 @@ let userColors = {};
       playVideoOnPageLoad: false,
       hideFullWindowChatButton: false,
       showListUserCount: false,
+      saveRants: false
     };
 
     const optionsList = [
@@ -118,7 +119,8 @@ let userColors = {};
       "popupBelow",
       "playVideoOnPageLoad",
       "hideFullWindowChatButton",
-      "showListUserCount"
+      "showListUserCount",
+      "saveRants"
     ];
 
     function extractProperties(names, obj) {
@@ -171,6 +173,7 @@ let userColors = {};
         // Add username menu
         if (enableUsernameMenu) {
             addChatUsernameMenu();
+            document.querySelector('#videoPlayer').style.zIndex = 250;
         }
 
         // Add chat menu buttons
@@ -224,6 +227,15 @@ let userColors = {};
       }
     }    
   });  
+
+  /*await chrome.storage.sync.get("rants")
+  .then(function (result) {
+    if (result && result.rants){
+      //savedRants = result.rants;
+    } else {
+      //savedRants = [];
+    }
+  });*/
 })();
 
 
@@ -1363,3 +1375,44 @@ var setIntervals = function() {
     clearInterval(chatRefreshInterval);
   }
 }
+
+
+
+
+
+
+//////   Rant Functions   //////
+
+  
+  const getRants = async () => {
+    // Get rants from storage
+    await chrome.storage.sync.get(['rants'])
+      .then(function (result) {
+        if (debugMode) console.log('Get rants from storage', result)
+        //savedRants = result.rants;
+      });
+  }
+  
+  const toggleRantsList = (show) => {
+    if (show){
+      // Show rants list
+      showRantsList = true;
+    }
+  }
+  
+  const saveRantToStorage = (rant) => {
+    // Check if rant is already saved
+    chrome.storage.sync.set({ rants: savedRants })
+      .then(function (result) {
+        if (debugMode) console.log('Save rants to storage', savedRants)
+      });
+  
+  
+  }
+  
+  
+  // move to rant list
+  
+  // get rants
+    // find by username
+  

@@ -22,11 +22,14 @@ let enableChatPlus,
   hideFullWindowChatButton,
   showListUserCount;
 
+var saveRants = false;
+
 // Vars that remain in scope
 let debugMode = false;
 let showUsernameList = false;
 let streamerMode = false;
 let showFullWindowChat = false;
+
 
 // Vars for logged in user and current streamer 
 let currentUser = '';
@@ -35,6 +38,9 @@ let currentStreamer = '';
 // Chat history
 let currentChatHistory = [];
 var userCount = 0;
+
+// Rants
+let savedRants = [];
 
 // Text colors
 let usernameColors = {
@@ -170,6 +176,7 @@ let userColors = {};
         // Add chat menu buttons
         addFullWindowBtn();
         addUserListBtn();
+        //if (saveRants) addSavedRantsBtn();
 
         // Observe chat for changes to its child elements to detect new messages
         chatObserver.observe(document.querySelector('#chat-history-list'), { childList: true });
@@ -693,7 +700,7 @@ const buildUsernameList = (appended) => {
     usernameMenuList.style.zIndex = '195';
     usernameMenuList.style.overflow = 'scroll';
     usernameMenuList.style.boxSizing = 'border-box';
-    usernameMenuList.style.padding = '6px0';
+    usernameMenuList.style.padding = '6px 0';
   }
   
   // Sort userColors object by username
@@ -764,7 +771,8 @@ const toggleChatUsernameMenu = (toggle) => {
     // Add width
     if (streamerMode){
       usernameMenuContainer2.style.width = '17%';
-      
+      usernameMenuContainer2.style.height = '100%';
+      usernameMenuContainer2.style.maxHeight = document.querySelector('#chat-history-list').offsetHeight + 'px';
     } else {
       usernameMenuContainer2.style.width = '105px';
     }
@@ -835,7 +843,7 @@ const toggleStreamerMode = (toggle) => {
     }
 
     try {
-      // Get main element and set height to viewport height
+      // Get 'main' element and set height to viewport height
       let mainEle = document.querySelector("main");
       mainEle.style.padding = 0;
       mainEle.style.margin = 0;
@@ -844,49 +852,82 @@ const toggleStreamerMode = (toggle) => {
       mainEle.style.position = 'relative';
       mainEle.style.overflow = 'scroll';
 
+      // .main-and-sidebar
       let mainAndSidebarEle = document.querySelector(".main-and-sidebar");
       mainAndSidebarEle.style.height = '100%';
       mainAndSidebarEle.style.position = 'relative';
-      //mainAndSidebarEle.style.overflow = 'scroll';
+      mainAndSidebarEle.style.margin = 0;
+      mainAndSidebarEle.style.padding = 0;
 
-      // Get main child and fit to parent
+      // .constrained 
       let mainChildEle = document.querySelector(".constrained");
       mainChildEle.style.padding = 0;
       mainChildEle.style.margin = 0;
+      mainChildEle.style.boxSizing = 'border-box';
       mainChildEle.style.height = '100%';
+      mainChildEle.style.maxHeight = '100vh';
       mainChildEle.style.position = 'relative';
       mainChildEle.style.overflow = 'scroll';
 
-      // Increase font size
+      // .sidebar
       let sidebarEle = document.querySelector(".sidebar");  
       sidebarEle.style.fontSize = '1.2rem';
+      sidebarEle.style.margin = 0;
       sidebarEle.style.padding = 0;
       sidebarEle.style.position = 'relative';
-      sidebarEle.style.height = '100%';
+      sidebarEle.style.height = '100vh';
       sidebarEle.style.width = '100%';
-      sidebarEle.style.maxHeight = '90vw';
-      sidebarEle.style.minWidth = '95vw';
+      sidebarEle.style.minWidth = '100vw';
 
-      // Fit chat to parent
+      // .chat 
       let chatContainerEle = document.querySelector(".chat");
       chatContainerEle.style.position = 'relative';
       chatContainerEle.style.margin = 0;
-      chatContainerEle.style.height = '100%';
+      chatContainerEle.style.padding = 0;
+      chatContainerEle.style.height = '100vh';
       chatContainerEle.style.width = '100%';
+      chatContainerEle.style.overflow = 'scroll';
 
-      // Fit .chat--history to parent
+      // .chat--history
       let chatHistoryElement = document.querySelector(".chat--container");
-      chatHistoryEle.style.position = 'relative';
-      chatHistoryEle.style.margin = 0;
-      chatHistoryEle.style.height = '100%';
+      chatHistoryElement.style.position = 'relative';
+      chatHistoryElement.style.margin = 0;
+      chatHistoryElement.style.padding = 0;
+      chatHistoryElement.style.height = '100%';
 
-      // Fit .container to parent
+      // .container
       let containerEle = document.querySelector(".container");
       containerEle.style.position = 'relative';
       containerEle.style.margin = 0;
       containerEle.style.height = '100%';
 
+      // .chat--height
+      let chatListElement = document.querySelector(".chat--height");
+      chatListElement.style.position = 'relative';
+      chatListElement.style.height = '81%';
+      
+      // .chat--header
+      let chatHeaderElement = document.querySelector(".chat--header");
+      chatHeaderElement.style.position = 'relative';
+      chatHeaderElement.style.height = '28px';
+      chatHeaderElement.style.margin = 0;
+      chatHeaderElement.style.paddingLeft = '1.5%';
+      chatHeaderElement.style.paddingRight = '1%';
+      chatHeaderElement.style.boxSizing = 'border-box';
 
+      // .chat--header--title
+      let rantsContainer = document.querySelector('#chat-sticky-rants');
+      rantsContainer.style.height = 'fit-content';
+      rantsContainer.style.padding = 0;
+
+      // .chat--header--title
+      var chatMessageEle = document.querySelector('#chat-message-form');
+      chatMessageEle.style.padding = 0;
+      chatMessageEle.style.height = '50px';
+
+      // Bring chat to front
+      document.querySelector('#chat-main-menu').style.zIndex = '199';
+      
       // Increase chat font size
       if (document.querySelector('.username-menu-list')) {
         document.querySelector('.username-menu-list').style.fontSize = '1.25rem';
@@ -897,23 +938,8 @@ const toggleStreamerMode = (toggle) => {
       document.querySelector('.username-menu-toggle-container').style.maxWidth = '20px';
       document.querySelector('.username-menu-toggle-button-text').style.marginTop = '3%';
       document.querySelector('.username-menu-button-container').style.height = '20px';
-
-      sidebarEle.style.width = '99.25%';
-
-      // If page width is greater than 899px, increase sidebar element width
-      if (window.innerWidth > 899) {
-        sidebarEle.style.width = '93.75%';
-      } else {
-        sidebarEle.style.width = '99.25%';
-      }
-
-      // Bring chat to front
-      document.querySelector('#chat-main-menu').style.zIndex = '199';
-
-      var chatMessageEle = document.querySelector('#chat-message-form');
-      chatMessageEle.style.padding = 0;
-      chatMessageEle.style.height ='95%';
-
+      document.querySelector('#chat--num-unread-messages').zIndex = '200';
+      // Change chat menu button text
       document.getElementById('fullWindowChatBtn').innerText = 'Restore Normal Chat';
     } catch (error){
       //if (debugMode) console.log(error);
@@ -1007,7 +1033,7 @@ const addUserListBtn = () => {
 
   userListBtn.id = 'userListBtn';
   userListBtn.addClassName = 'cmi';
-  userListBtn.innerText = 'Toggle User List';
+  userListBtn.innerText = 'Toggle Recent List';
 
   userListBtn.style.color = '#D6E0EA';
   userListBtn.style.cursor = 'pointer';
@@ -1055,6 +1081,62 @@ const addUserListBtn = () => {
   }
 }
 
+/* 
+// For v1.3 and above
+const addSavedRantsBtn = () => {
+  // Create button for full screen chat 
+  let savedRantsBtn = document.createElement('button');
+
+  savedRantsBtn.id = 'addSavedRantsBtn';
+  savedRantsBtn.addClassName = 'cmi';
+  savedRantsBtn.innerText = 'Saved Rants';
+
+  savedRantsBtn.style.color = '#D6E0EA';
+  savedRantsBtn.style.cursor = 'pointer';
+  savedRantsBtn.style.backgroundColor = 'transparent';
+  savedRantsBtn.style.borderStyle = 'none';
+  savedRantsBtn.style.fontFamily = 'inherit';
+  savedRantsBtn.style.fontWeight = 'inherit';
+  savedRantsBtn.style.fontSize = 'inherit';
+  savedRantsBtn.style.textDecoration = 'inherit';
+  savedRantsBtn.style.fontStyle = 'inherit';
+  savedRantsBtn.style.lineHeight = 'inherit';
+  savedRantsBtn.style.borderWidth = '2px';
+  savedRantsBtn.style.padding = '8px 1rem';
+  savedRantsBtn.style.paddingLeft = '1.5rem';
+  savedRantsBtn.style.paddingRight = '1.5rem';
+  savedRantsBtn.style.textAlign = 'left';
+  savedRantsBtn.style.whiteSpace = 'normal';
+  savedRantsBtn.style.width = '100%';
+  savedRantsBtn.style.maxWidth = '100%';
+  savedRantsBtn.style.outlineOffset = '-3px';
+  savedRantsBtn.style.userSelect = 'none';
+  
+  // Add hover effect
+  savedRantsBtn.addEventListener('mouseover', ()=>{
+    savedRantsBtn.style.backgroundColor = 'rgb(214, 224, 234, .025)';
+  });
+
+  // Remove hover effect
+  savedRantsBtn.addEventListener('mouseout', ()=>{
+    savedRantsBtn.style.backgroundColor = 'transparent';
+  });
+
+  if (chatHistoryEle[0]){
+    // Check data-chat-visible attribute
+    //var chatVisibilityDataAtr = document.querySelector('#chat-toggle-chat-visibility').getAttribute('data-chat-visible');
+    var chatVisibilityDataset = document.querySelector('#chat-toggle-chat-visibility').dataset.chatVisible;
+
+    if (chatVisibilityDataset){
+      document.querySelector('#chat-main-menu').appendChild(savedRantsBtn);
+    }
+    
+    savedRantsBtn.onclick = function() {
+      //toggleRantsList(showRantsList ? false : true);
+    }
+  }
+
+}*/
 
 
 

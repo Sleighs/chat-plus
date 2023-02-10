@@ -167,10 +167,8 @@ let userColors = {};
             addChatUsernameMenu();
         }
 
-        // Handle "Hide Full Window Chat Button" option
-        //if (!hideFullWindowChatButton){
-          addFullWindowBtn();
-        //}
+        // Add chat menu buttons
+        addFullWindowBtn();
         addUserListBtn();
 
         // Observe chat for changes to its child elements to detect new messages
@@ -313,12 +311,20 @@ const getChatHistory = () => {
         element.childNodes[1].textContent.toLowerCase().includes(('@' + currentUser).toLowerCase()) ||
         element.childNodes[1].textContent.toLowerCase().includes(('@' + currentStreamer).toLowerCase())
       ) {
-        element.childNodes[1].innerHTML = highlightTerms(element.childNodes[1].textContent, ['@' + currentUser, '@' + currentStreamer], ['rgb(234, 100, 4, .7)', 'rgb(234, 100, 4, .5)']);
+        element.childNodes[1].innerHTML = highlightTerms(
+          element.childNodes[1].textContent, 
+          ['@' + currentUser, '@' + currentStreamer], 
+          ['rgb(234, 100, 4, .7)', 'rgb(187, 194, 11, .5)']
+        );
       } else if (
         element.childNodes[1].textContent.toLowerCase().includes((currentUser).toLowerCase())
         || element.childNodes[1].textContent.toLowerCase().includes((currentStreamer).toLowerCase())
       ) {
-        element.childNodes[1].innerHTML = highlightTerms(element.childNodes[1].textContent, [currentUser, currentStreamer], ['rgb(234, 100, 4, .7)', 'rgb(234, 100, 4, .5)']);
+        element.childNodes[1].innerHTML = highlightTerms(
+          element.childNodes[1].textContent, 
+          [currentUser, currentStreamer], 
+          ['rgb(234, 100, 4, .7)', 'rgb(187, 194, 11, .5)']
+        );
       }
     }
 
@@ -836,10 +842,12 @@ const toggleStreamerMode = (toggle) => {
       mainEle.style.maxHeight = '100vh';
       mainEle.style.height = '100%';
       mainEle.style.position = 'relative';
+      mainEle.style.overflow = 'scroll';
 
       let mainAndSidebarEle = document.querySelector(".main-and-sidebar");
       mainAndSidebarEle.style.height = '100%';
       mainAndSidebarEle.style.position = 'relative';
+      //mainAndSidebarEle.style.overflow = 'scroll';
 
       // Get main child and fit to parent
       let mainChildEle = document.querySelector(".constrained");
@@ -847,18 +855,37 @@ const toggleStreamerMode = (toggle) => {
       mainChildEle.style.margin = 0;
       mainChildEle.style.height = '100%';
       mainChildEle.style.position = 'relative';
+      mainChildEle.style.overflow = 'scroll';
 
       // Increase font size
       let sidebarEle = document.querySelector(".sidebar");  
       sidebarEle.style.fontSize = '1.2rem';
       sidebarEle.style.padding = 0;
       sidebarEle.style.position = 'relative';
+      sidebarEle.style.height = '100%';
+      sidebarEle.style.width = '100%';
+      sidebarEle.style.maxHeight = '90vw';
+      sidebarEle.style.minWidth = '95vw';
 
       // Fit chat to parent
       let chatContainerEle = document.querySelector(".chat");
       chatContainerEle.style.position = 'relative';
       chatContainerEle.style.margin = 0;
       chatContainerEle.style.height = '100%';
+      chatContainerEle.style.width = '100%';
+
+      // Fit .chat--history to parent
+      let chatHistoryElement = document.querySelector(".chat--container");
+      chatHistoryEle.style.position = 'relative';
+      chatHistoryEle.style.margin = 0;
+      chatHistoryEle.style.height = '100%';
+
+      // Fit .container to parent
+      let containerEle = document.querySelector(".container");
+      containerEle.style.position = 'relative';
+      containerEle.style.margin = 0;
+      containerEle.style.height = '100%';
+
 
       // Increase chat font size
       if (document.querySelector('.username-menu-list')) {
@@ -872,7 +899,7 @@ const toggleStreamerMode = (toggle) => {
       document.querySelector('.username-menu-button-container').style.height = '20px';
 
       sidebarEle.style.width = '99.25%';
-      
+
       // If page width is greater than 899px, increase sidebar element width
       if (window.innerWidth > 899) {
         sidebarEle.style.width = '93.75%';
@@ -1084,10 +1111,6 @@ var chatObserver = new MutationObserver(function(mutations) {
               );
             } 
           }
-
-          
-
-
 
           // Add the message to the chat history
           currentChatHistory.push({

@@ -1372,7 +1372,7 @@ var setIntervals = function() {
 
 
 //////   Rant Functions   //////
-
+/*
   
   const getRants = async () => {
     // Get rants from storage
@@ -1400,9 +1400,4 @@ var setIntervals = function() {
   
   }
   
-  
-  // move to rant list
-  
-  // get rants
-    // find by username
-  
+  */

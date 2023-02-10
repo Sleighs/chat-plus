@@ -282,30 +282,14 @@ function getUserCount(userList){
   return count;
 }
 
-// Highlight each term in a string, for usernames in messages
-function highlightString(text, searchTerm, color, backgroundColor) {
-  // Get index of search term
-  var index = text.toLowerCase().indexOf(searchTerm.toLowerCase());
-
-  // Get original matched text
-  var matchedText = text.substring(index, index + searchTerm.length);
-
-  //Return string with styling
-  if (index >= 0) {
-    return (
-      text.substring(0, index) +
-      "<span style='color: " +
-      color +
-      "; background-color: " + 
-      backgroundColor +
-      ";'>" +
-      matchedText +
-      "</span>" +
-      // Recursively highlight the rest of the string
-      highlightString(text.substring(index + searchTerm.length), searchTerm, color, backgroundColor)
-    );
-  }
-  return text;
+function highlightTerms(text, searchTerms, bgColors) {
+  let result = text;
+  searchTerms.forEach(function(term, index) {
+    let bgColor = bgColors[index % bgColors.length];
+    let regex = new RegExp(term, "gi");
+    result = result.replace(regex, `<span style="background-color: ${bgColor};">${term}</span>`);
+  });
+  return result;
 }
 
 const getChatHistory = () => {
@@ -326,13 +310,15 @@ const getChatHistory = () => {
     // Highlight current user's username when tagged with '@'
     if ( currentUser && currentUser.length > 2 ){
       if (
-        element.childNodes[1].textContent.toLowerCase().includes(('@' + currentUser).toLowerCase())
+        element.childNodes[1].textContent.toLowerCase().includes(('@' + currentUser).toLowerCase()) ||
+        element.childNodes[1].textContent.toLowerCase().includes(('@' + currentStreamer).toLowerCase())
       ) {
-        element.childNodes[1].innerHTML = highlightString(element.childNodes[1].textContent, '@' + currentUser, 'white', 'rgb(234, 100, 4, .85)');
+        element.childNodes[1].innerHTML = highlightTerms(element.childNodes[1].textContent, ['@' + currentUser, '@' + currentStreamer], ['rgb(234, 100, 4, .7)', 'rgb(234, 100, 4, .5)']);
       } else if (
         element.childNodes[1].textContent.toLowerCase().includes((currentUser).toLowerCase())
+        || element.childNodes[1].textContent.toLowerCase().includes((currentStreamer).toLowerCase())
       ) {
-        element.childNodes[1].innerHTML = highlightString(element.childNodes[1].textContent, currentUser, 'white', 'rgb(234, 100, 4, .85)');
+        element.childNodes[1].innerHTML = highlightTerms(element.childNodes[1].textContent, [currentUser, currentStreamer], ['rgb(234, 100, 4, .7)', 'rgb(234, 100, 4, .5)']);
       }
     }
 
@@ -1069,20 +1055,37 @@ var chatObserver = new MutationObserver(function(mutations) {
           // Assign color to username
           addedNode.childNodes[0].style.color = userColor;
 
-          // Highlight current user's username when tagged with '@'
-          if (currentUser && currentUser.length > 2){
+          // Highlight current user's username and streamer's name when mentioned
+          if (
+            (currentUser && currentUser.length > 2)
+            || (currentStreamer && currentStreamer.length > 2)
+          ){
             if (
               addedNode.childNodes[1].textContent.toLowerCase().includes(('@' + currentUser).toLowerCase())
+              || addedNode.childNodes[1].textContent.toLowerCase().includes(('@' + currentStreamer).toLowerCase())
             ) {
-              addedNode.childNodes[1].innerHTML = highlightString(addedNode.childNodes[1].textContent, '@' + currentUser, 'white', 'rgb(234, 100, 4, .85)');
+              addedNode.childNodes[1].innerHTML =  highlightTerms(
+                addedNode.childNodes[1].textContent, 
+                ['@' + currentUser, '@' + currentStreamer], 
+                ['rgb(234, 100, 4, .7)', 'rgb(187, 194, 11, .5)']
+              );
             } else 
 
             if (
               addedNode.childNodes[1].textContent.toLowerCase().includes((currentUser).toLowerCase())
+              || addedNode.childNodes[1].textContent.toLowerCase().includes((currentStreamer).toLowerCase())
             ) {
-              addedNode.childNodes[1].innerHTML = highlightString(addedNode.childNodes[1].textContent, currentUser, 'white', 'rgb(234, 100, 4, .85)');
+              addedNode.childNodes[1].innerHTML =  highlightTerms(
+                addedNode.childNodes[1].textContent, 
+                [currentUser, currentStreamer], 
+                ['rgb(234, 100, 4, .7)', 'rgb(187, 194, 11, .5)']
+              );
             } 
           }
+
+          
+
+
 
           // Add the message to the chat history
           currentChatHistory.push({
@@ -1222,39 +1225,34 @@ var setListeners = function() {
 //////   Intervals   //////
 
 var setIntervals = function() {
-  // Refresh chat history every 120 seconds
+  // Refresh chat history every 60 seconds
   const chatRefreshInterval = setInterval(function(){
     //if (debugMode) console.log('refreshing chat history');
     if (enableChatPlus) {
       getChatHistory();
     }
 
-    if (showUsernameList){
+    // Refresh user list count if enabled
+    if (
+      showUsernameList 
+      && showListUserCount 
+      && document.querySelector('.username-menu-refresh-button')
+    ){
       // Get new chat usernames for list
-      document.querySelector('.username-menu-refresh-button').innerHTML = (
-        showListUserCount 
-          ? `<span>${getUserCount(userColors)}</span>`
-          : `<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
-      );   
+      document.querySelector('.username-menu-refresh-button').innerHTML = `<span>${getUserCount(userColors)}</span>`   
     }
 
-    // Refresh user list 
+    // Refresh user list if enabled
     if (
       enableUsernameMenu 
       && document.querySelector('.username-menu-list')
     ) {
       buildUsernameList(false);
     }
+  }, 60000);
 
-    // Refresh user list count if enabled
-    if (showListUserCount) {
-      document.querySelector('.username-menu-refresh-button').innerHTML = `<span style="width: fit-content;">${getUserCount(userColors)}</span>`;
-    }
-
-    // Clear interval if there is no chat history
-    if (!chatHistoryList || !enableChatPlus){
-      //if (debugMode) console.log('clearing chat refresh interval')
-      clearInterval(chatRefreshInterval);
-    }
-  }, 120000);
+  if (!chatHistoryList || !enableChatPlus){
+    //if (debugMode) console.log('clearing chat refresh interval')
+    clearInterval(chatRefreshInterval);
+  }
 }

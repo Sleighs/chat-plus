@@ -814,7 +814,9 @@ const toggleStreamerMode = (toggle) => {
     if (document.querySelector(".foot")) document.querySelector(".foot").style.display = 'none';    
     // Hide chat visibility button
     if (document.querySelector("#chat-main-menu")) document.querySelector("#chat-toggle-chat-visibility").style.display = 'none';
-
+    // Hide rant button
+    if (document.querySelector(".chat--rant")) document.querySelector(".chat--rant").style.display = 'none';
+    
     try {
       // Pause all video elements
       const videoElements = document.querySelectorAll("video");
@@ -866,11 +868,11 @@ const toggleStreamerMode = (toggle) => {
 
       // Change button dimensions
       document.querySelector('.username-menu-toggle-container').style.maxWidth = '20px';
-      //document.querySelector('.username-menu-toggle-container').style.marginRight = '4px';
       document.querySelector('.username-menu-toggle-button-text').style.marginTop = '3%';
       document.querySelector('.username-menu-button-container').style.height = '20px';
 
       sidebarEle.style.width = '99.25%';
+      
       // If page width is greater than 899px, increase sidebar element width
       if (window.innerWidth > 899) {
         sidebarEle.style.width = '93.75%';

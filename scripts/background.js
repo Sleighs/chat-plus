@@ -9,7 +9,9 @@ const defaultOptions = {
   popupBelow: false,
   playVideoOnPageLoad: false,
   hideFullWindowChatButton: false,
-  showListUserCount: false
+  showListUserCount: false,
+  chatStyleNormal: true,
+  saveRants: false
 };
 
 // Options stored in chrome.storage.sync
@@ -26,7 +28,8 @@ chrome.runtime.onInstalled.addListener(() => {
       "popupBelow",
       "playVideoOnPageLoad",
       "hideFullWindowChatButton",
-      "showListUserCount"
+      "showListUserCount",
+      "saveRants"
     ];
 
     // Creates a new options object from the stored options and the default options

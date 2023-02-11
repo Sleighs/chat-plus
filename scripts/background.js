@@ -10,6 +10,7 @@ const defaultOptions = {
   playVideoOnPageLoad: false,
   hideFullWindowChatButton: false,
   showListUserCount: false,
+  chatStyleNormal: true,
   saveRants: false
 };
 

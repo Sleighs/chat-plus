@@ -10,6 +10,7 @@ let optionsState = {
   playVideoOnPageLoad: false,
   hideFullWindowChatButton: false,
   showListUserCount: false,
+  chatStyleNormal: true,
   saveRants: false
 };
 
@@ -22,6 +23,7 @@ let enableChatPlus,
   playVideoOnPageLoad,
   hideFullWindowChatButton,
   showListUserCount,
+  chatStyleNormal,
   saveRants;
 
 // Vars that remain in scope
@@ -64,30 +66,17 @@ let messageColors = {
   chatPlus: '#E0E9F2',
   rumble: '#d6e0ea',
   white: '#FFFFFF',
-  rumbleGreen: '#85C742',
-  rumbleBlue: '#10212F',
-  rumbleDarkBlue: '#061726'
+}
+let rumbleColors = {
+  text: '#d6e0ea',
+  green: '#85C742',
+  blue: '#10212F',
+  darkBlue: '#061726'
 }
 
 // For assigned colors
 let userColors = {};
 
-// Save options to storage
-/*const saveOptionsToStorage = () => {
-  chrome.storage.sync.set({ options: {
-    enableChatPlus: enableChatPlus,
-    colorUsernames: colorUsernames,
-    enableUsernameMenu: enableUsernameMenu,
-    showUsernameListOnStartup: showUsernameListOnStartup,
-    popupBelow: popupBelow,
-    playVideoOnPageLoad: playVideoOnPageLoad,
-    showListUserCount: showListUserCount
-    
-  } })
-  .then(function (result) {
-    //if (debugMode) console.log('Options saved to storage')
-  });
-};*/
 
 
 
@@ -108,6 +97,7 @@ let userColors = {};
       playVideoOnPageLoad: false,
       hideFullWindowChatButton: false,
       showListUserCount: false,
+      chatStyleNormal: true,
       saveRants: false
     };
 
@@ -120,6 +110,7 @@ let userColors = {};
       "playVideoOnPageLoad",
       "hideFullWindowChatButton",
       "showListUserCount",
+      "chatStyleNormal",
       "saveRants"
     ];
 
@@ -148,6 +139,8 @@ let userColors = {};
       playVideoOnPageLoad = newOptionObj.playVideoOnPageLoad;
       hideFullWindowChatButton = newOptionObj.hideFullWindowChatButton;
       showListUserCount = newOptionObj.showListUserCount;
+      chatStyleNormal = newOptionObj.chatStyleNormal;
+      saveRants = newOptionObj.saveRants;
 
       Object.assign(optionsState, newOptionObj);
     } else {
@@ -159,6 +152,8 @@ let userColors = {};
       playVideoOnPageLoad = defaultOptions.playVideoOnPageLoad;
       hideFullWindowChatButton = defaultOptions.hideFullWindowChatButton;
       showListUserCount = defaultOptions.showListUserCount;
+      chatStyleNormal = defaultOptions.chatStyleNormal;
+      saveRants = defaultOptions.saveRants;
 
       Object.assign(optionsState, defaultOptions);
     } 
@@ -172,14 +167,13 @@ let userColors = {};
 
         // Add username menu
         if (enableUsernameMenu) {
-            addChatUsernameMenu();
-            //document.querySelector('#videoPlayer').style.zIndex = 199;
+          addChatUsernameMenu();          
+          addUserListBtn();
+          if(showUsernameListOnStartup) toggleChatUsernameMenu(true);
         }
 
         // Add chat menu buttons
         addFullWindowBtn();
-        addUserListBtn();
-        //if (saveRants) addSavedRantsBtn();
 
         // Observe chat for changes to its child elements to detect new messages
         chatObserver.observe(document.querySelector('#chat-history-list'), { childList: true });
@@ -225,6 +219,8 @@ let userColors = {};
       } catch (err) {
         //if (debugMode) console.log(err);
       }
+
+      
     }    
   });  
 
@@ -323,6 +319,8 @@ const getChatHistory = () => {
 
     // Assign text color to username and message
     element.childNodes[0].style.color = userColor;
+    // Assign background color to row if chatStyleNormal is on
+    if (chatStyleNormal) element.style.background = rumbleColors.darkBlue;
 
     // Highlight current user's username when tagged with '@'
     if ( currentUser && currentUser.length > 2 ){
@@ -552,7 +550,7 @@ const addChatUsernameMenu = () => {
   usernameMenuButton.classList.add('username-menu-toggle-button');
   usernameMenuButton.style.width = '100%';
   usernameMenuButton.style.height = '100%';
-  usernameMenuButton.style.color = messageColors.rumble;
+  usernameMenuButton.style.color = rumbleColors.text;
   usernameMenuButton.style.boxSizing = 'border-box';
   //usernameMenuButton.style.zIndex = '195';
   usernameMenuButton.style.display = 'flex';
@@ -588,7 +586,7 @@ const addChatUsernameMenu = () => {
   usernameMenuButtonContainer.style.display = 'flex';
   usernameMenuButtonContainer.style.alignItems = 'center';
   usernameMenuButtonContainer.style.justifyContent = 'space-between';
-  usernameMenuButtonContainer.style.color = messageColors.rumbleDarkBlue;
+  usernameMenuButtonContainer.style.color = rumbleColors.darkBlue;
   
   // Create close button
   let usernameMenuCloseButton = document.createElement('div');
@@ -793,11 +791,6 @@ const toggleChatUsernameMenu = (toggle) => {
   }
 
   showUsernameList = toggle;
-  
-  // Save options to storage if showUsernameListOnStartup is enabled
-  /*if (showUsernameListOnStartup) {
-    saveOptionsToStorage()
-  }*/
 };
 
 
@@ -1083,69 +1076,11 @@ const addUserListBtn = () => {
   }
 }
 
-/* 
-// For v1.3 and above
-const addSavedRantsBtn = () => {
-  // Create button for full screen chat 
-  let savedRantsBtn = document.createElement('button');
-
-  savedRantsBtn.id = 'addSavedRantsBtn';
-  savedRantsBtn.addClassName = 'cmi';
-  savedRantsBtn.innerText = 'Saved Rants';
-
-  savedRantsBtn.style.color = '#D6E0EA';
-  savedRantsBtn.style.cursor = 'pointer';
-  savedRantsBtn.style.backgroundColor = 'transparent';
-  savedRantsBtn.style.borderStyle = 'none';
-  savedRantsBtn.style.fontFamily = 'inherit';
-  savedRantsBtn.style.fontWeight = 'inherit';
-  savedRantsBtn.style.fontSize = 'inherit';
-  savedRantsBtn.style.textDecoration = 'inherit';
-  savedRantsBtn.style.fontStyle = 'inherit';
-  savedRantsBtn.style.lineHeight = 'inherit';
-  savedRantsBtn.style.borderWidth = '2px';
-  savedRantsBtn.style.padding = '8px 1rem';
-  savedRantsBtn.style.paddingLeft = '1.5rem';
-  savedRantsBtn.style.paddingRight = '1.5rem';
-  savedRantsBtn.style.textAlign = 'left';
-  savedRantsBtn.style.whiteSpace = 'normal';
-  savedRantsBtn.style.width = '100%';
-  savedRantsBtn.style.maxWidth = '100%';
-  savedRantsBtn.style.outlineOffset = '-3px';
-  savedRantsBtn.style.userSelect = 'none';
-  
-  // Add hover effect
-  savedRantsBtn.addEventListener('mouseover', ()=>{
-    savedRantsBtn.style.backgroundColor = 'rgb(214, 224, 234, .025)';
-  });
-
-  // Remove hover effect
-  savedRantsBtn.addEventListener('mouseout', ()=>{
-    savedRantsBtn.style.backgroundColor = 'transparent';
-  });
-
-  if (chatHistoryEle[0]){
-    // Check data-chat-visible attribute
-    //var chatVisibilityDataAtr = document.querySelector('#chat-toggle-chat-visibility').getAttribute('data-chat-visible');
-    var chatVisibilityDataset = document.querySelector('#chat-toggle-chat-visibility').dataset.chatVisible;
-
-    if (chatVisibilityDataset){
-      document.querySelector('#chat-main-menu').appendChild(savedRantsBtn);
-    }
-    
-    savedRantsBtn.onclick = function() {
-      //toggleRantsList(showRantsList ? false : true);
-    }
-  }
-
-}*/
-
 
 
 
 
 ///////   Event Listeners   ///////
-
 
 // Create a MutationObserver to watch for new chat messages
 var chatObserver = new MutationObserver(function(mutations) {
@@ -1161,6 +1096,9 @@ var chatObserver = new MutationObserver(function(mutations) {
             // Skip node
             return;
           }
+
+          // For styling with RantsStats
+          if (chatStyleNormal)  addedNode.style.background = rumbleColors.darkBlue;
 
           // Add the message to the chat history
           let userColor = getUserColor(addedNode.childNodes[0].textContent);
@@ -1208,18 +1146,17 @@ var chatObserver = new MutationObserver(function(mutations) {
         // Check if the added node has element id 'chat--num-unread-messages' to position on top of the username menu
         if (document.getElementById("chat--num-unread-messages") && showUsernameList) {
           // Set the z-index and opacity of the unread message count
-          //document.getElementById('chat--num-unread-messages').style.zIndex = '199';
+          document.getElementById('chat--num-unread-messages').style.zIndex = '100';
           document.getElementById('chat--num-unread-messages').style.opacity = '1';
         } else if (document.getElementById("chat--num-unread-messages")) {
           // Set the z-index and opacity of the unread message count
-          //document.getElementById('chat--num-unread-messages').style.zIndex = '';
+          document.getElementById('chat--num-unread-messages').style.zIndex = '';
           document.getElementById('chat--num-unread-messages').style.opacity = '';
         }
       }
     }
   });
 });
-
 
 var setListeners = function() {
   // Listen for "@" keypress to open popup
@@ -1365,39 +1302,3 @@ var setIntervals = function() {
     clearInterval(chatRefreshInterval);
   }
 }
-
-
-
-
-
-
-//////   Rant Functions   //////
-/*
-  
-  const getRants = async () => {
-    // Get rants from storage
-    await chrome.storage.sync.get(['rants'])
-      .then(function (result) {
-        if (debugMode) console.log('Get rants from storage', result)
-        savedRants = result.rants;
-      });
-  }
-  
-  const toggleRantsList = (show) => {
-    if (show){
-      // Show rants list
-      showRantsList = true;
-    }
-  }
-  
-  const saveRantToStorage = (rant) => {
-    // Check if rant is already saved
-    chrome.storage.sync.set({ rants: savedRants })
-      .then(function (result) {
-        if (debugMode) console.log('Save rants to storage', savedRants)
-      });
-  
-  
-  }
-  
-  */

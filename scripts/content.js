@@ -43,6 +43,7 @@ var userCount = 0;
 
 // Rants
 let savedRants = [];
+let cachedRants = [];
 
 // Text colors
 let usernameColors = {
@@ -219,20 +220,40 @@ let userColors = {};
       } catch (err) {
         //if (debugMode) console.log(err);
       }
-
-      
     }    
   });  
 
-  /*await chrome.storage.sync.get("rants")
-  .then(function (result) {
-    if (result && result.rants){
-      //savedRants = result.rants;
-    } else {
-      //savedRants = [];
-    }
-  });*/
+  await chrome.storage.sync.get("testRants")
+    .then(function (result) {
+      if (result && result.testRants && result.testRants.length > 0){
+        savedRants = result.testRants;
+        
+        console.log('get rants', JSON.stringify(result))
+      } else {
+        //savedRants = [];
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 })();
+
+
+
+
+
+//////   Functions   //////
+
+// Generate an id
+const makeId = (length) => {
+  let result = '';
+  let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
 
 
 
@@ -1102,21 +1123,31 @@ var chatObserver = new MutationObserver(function(mutations) {
         if (addedNode.classList.contains("chat-history--row")) {
           // Check element classlist for 'chat-history--rant' 
           if (!enableChatPlus || addedNode.classList.contains('chat-history--rant')) {
-            // Save rant to chrome.storage.sync
-            /*let newDate = new Date();
+            /*// Save rant to chrome.storage.sync
+            let newDate = new Date();
 
             let newRant = {
-              username: addedNode.childNodes[0].textContent,
-              message: addedNode.childNodes[1].textContent,
-              amount: 1,
+              username: addedNode.querySelector('.chat-history--rant-username').textContent,
+              channel: currentStreamer,
+              message: addedNode.querySelector('.chat-history--rant-text').textContent,
+              amount: addedNode.querySelector('.chat-history--rant-price').textContent,
               timestamp: Date.now(),
               dateOfStream: newDate.toDateString(),
+              read: false,
+              id: makeId(24)
             }
 
-            console.log('newRant: ' + newRant); 
+            console.log('newRant: ' + JSON.stringify(newRant)); 
       
             savedRants.push(newRant);
-            */
+            cachedRants.push(newRant);
+
+            chrome.storage.sync.set({testRants: savedRants}, function() {
+              console.log('savedRants: ' + JSON.stringify(savedRants));
+            });*/
+
+            saveRant(addedNode);
+            
             return;
           }
 
@@ -1327,19 +1358,140 @@ var setIntervals = function() {
 }
 
 
-//////   Background 2/11/2023   //////
 
-//////   Testing   //////
 
-// Example of a simple user data object
-const user = {
-  username: 'demo-user'
-};
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  // 2. A page requested user data, respond with a copy of `user`
-  if (message === 'get-user-data') {
-    sendResponse(user);
+
+
+//////   Rants   //////
+
+const saveRant = function(element) {
+  // Save rant to chrome.storage.sync
+  let newDate = new Date();
+
+  let newRant = {
+    username: element.querySelector('.chat-history--rant-username').textContent,
+    channel: currentStreamer,
+    message: element.querySelector('.chat-history--rant-text').textContent,
+    amount: element.querySelector('.chat-history--rant-price').textContent,
+    timestamp: Date.now(),
+    dateOfStream: newDate.toDateString(),
+    markedRead: false,
+    id: makeId(24)
   }
 
+  console.log('newRant: ' + JSON.stringify(newRant)); 
+
+  savedRants.push(newRant);
+  cachedRants.push(newRant);
+
+  chrome.storage.sync.set({testRants: savedRants}, function() {
+    console.log('saveRant ' + JSON.stringify(savedRants));
+  });
+}
+
+
+function insertElementAtPosition(firstElement, secondElement, position) {
+  if (position >= secondElement.children.length) {
+    secondElement.appendChild(firstElement);
+  } else {
+    secondElement.insertBefore(firstElement, secondElement.children[position]);
+  }
+}
+
+
+//////   Test Functions  2/11/2023 //////
+
+
+// Append test button to chat window
+const testBtn = document.createElement('div');
+testBtn.innerHTML = `test`
+
+testBtn.style.color = 'white';
+testBtn.style.border = 'solid 3pt orange';
+testBtn.style.width = '25px';
+testBtn.style.height = '50px';
+testBtn.style.wordWrap = 'break-word';
+testBtn.style.zIndex = '100000'
+
+// Append test button to chat window
+const testBtn2 = document.createElement('div');
+testBtn2.innerHTML = `test rant`
+
+testBtn2.style.color = 'white';
+testBtn2.style.border = 'solid 3pt orange';
+testBtn2.style.width = '25px';
+testBtn2.style.height = '50px';
+testBtn2.style.wordWrap = 'break-word';
+testBtn2.style.zIndex = '100000'
+
+var sidebarCount = 0
+var sidebarLimit = 1;
+
+if (chatHistoryEle[0]){
+  // add chat history element to DOM on click
+  testBtn.addEventListener('click', function(){
+    console.log('testBtn clicked');
+
+    let rantViewer = document.createElement('div');
+    rantViewer.style.background = rumbleColors.darkBlue;
+    rantViewer.style.height = '300px';
+    rantViewer.style.width = '100%';
+    rantViewer.style.margin = '15px auto';
+    rantViewer.style.borderRadius = '10px';
+
+    if (sidebarCount < sidebarLimit) {
+      insertElementAtPosition(rantViewer,document.querySelector('.sidebar'), 0);
+      sidebarCount++;
+    }
+    
+  });
+
+  testBtn2.addEventListener('click', function(){
+    console.log('rant added');
+
+    // Make rant
+    
+    //.chat-history--row .chat-history--rant .chat-history--rant-head .chat--profile-pic
+    let chatHistoryRow = document.createElement('li');
+    chatHistoryRow.classList.add('chat-history--row');
+    chatHistoryRow.classList.add('chat-history--rant');
+    chatHistoryRow.style.display = 'flex';
+    chatHistoryRow.style.flexDirection = 'row';
+
+    let testRant = `
+      <div class='chat-history--rant'>
+        <div class='chat-history--rant-head'>
+          <div class='chat--profile-pic'>
+            <img src='https://static-cdn.jtvnw.net/jtv_user_pictures/8e0b0e0e-1b1c-4b1f-8b1f-8b1f8b1f8b1f-profile_image-300x300.png'>
+          </div>
+          <div>
+            <a class='chat-history--rant-username' 
+              href='/user/${currentUser}' target='_blank'>${currentUser}
+            </a>
+            <div class='chat-history--rant-price'>$1</div>
+          </div>
+        </div>
+        <div class='chat-history--rant-text'>
+          "test message @${currentUser} more testing @${currentStreamer} another test @${currentUser.toLowerCase()}"
+        </div>
+      </div>`;
+
+    chatHistoryRow.innerHTML = testRant;
+    //console.log('chatHistoryRow', chatHistoryRow);
+
+    // Append .chat-history--row to chat history element
+    chatHistoryList.appendChild(chatHistoryRow);
+  });
+
+  chatHistoryEle[0].appendChild(testBtn);
+  chatHistoryEle[0].appendChild(testBtn2);
+}
+
+/*
+// 1. Send a message to the service worker requesting the user's data
+chrome.runtime.sendMessage('get-user-data', (response) => {
+  // 3. Got an asynchronous response with the data from the service worker
+  console.log('content: received user data', response);
 });
+*/

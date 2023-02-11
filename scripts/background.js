@@ -61,4 +61,37 @@ chrome.runtime.onInstalled.addListener(() => {
         });
     }
   });
+
+  chrome.storage.sync.get("testRants").then((result) => {
+    if ( result && result.testRants ) {
+      console.log("Installed - testRants", result.testRants);
+    } else {
+      chrome.storage.sync.set({ testRants: [] })
+        .then(() => {
+          console.log("New install testRants", []);
+        });
+    }
+  });
 });
+
+
+/*
+//////   Testing  Background //////
+
+// Example of a simple user data object
+const user = {
+  username: 'demo-user'
+};
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  // 2. A page requested user data, respond with a copy of `user`
+  if (message === 'get-user-data') {
+    chrome.storage.sync.get("testRants").then((result) => {
+      sendResponse(result);
+
+    });
+
+    //sendResponse(user);
+  }
+
+});*/

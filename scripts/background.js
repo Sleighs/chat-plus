@@ -29,6 +29,7 @@ chrome.runtime.onInstalled.addListener(() => {
       "playVideoOnPageLoad",
       "hideFullWindowChatButton",
       "showListUserCount",
+      "chatStyleNormal",
       "saveRants"
     ];
 
@@ -61,5 +62,3 @@ chrome.runtime.onInstalled.addListener(() => {
     }
   });
 });
-
-

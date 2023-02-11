@@ -679,6 +679,7 @@ const addChatUsernameMenu = () => {
   document.querySelector('#chat-main-menu').style.zIndex = '190';
 };
 
+// Build and return recent user list
 const buildUsernameList = (appended) => {
   // Get username menu container
   let usernameMenuList = document.querySelector('.username-menu-list');
@@ -763,7 +764,8 @@ const buildUsernameList = (appended) => {
 // Add username list menu to page
 const toggleChatUsernameMenu = (toggle) => {
   let usernameMenuContainer2 = document.querySelector('.username-menu-container2');
-    
+  let userListBtn = document.querySelector('#userListBtn');
+  
   if (toggle) {
     // Set display to flex
     usernameMenuContainer2.style.display = 'flex';
@@ -782,10 +784,14 @@ const toggleChatUsernameMenu = (toggle) => {
 
     // Gets new user list
     buildUsernameList(false);
+
+    // Change button text
+    userListBtn.innerText = 'Hide Recent List';
   } else {
     // Hide container
     usernameMenuContainer2.style.display = 'none';
-
+    // Change button text
+    userListBtn.innerText = 'Show Recent List';
     // Change button icon
     document.querySelector('.username-menu-toggle-button-text').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>`;    
   }
@@ -1028,7 +1034,11 @@ const addUserListBtn = () => {
 
   userListBtn.id = 'userListBtn';
   userListBtn.addClassName = 'cmi';
-  userListBtn.innerText = 'Toggle Recent List';
+  if (showUsernameList){
+    userListBtn.innerText = 'Hide Recent List';
+  } else {
+    userListBtn.innerText = 'Show Recent List';
+  }
 
   userListBtn.style.color = '#D6E0EA';
   userListBtn.style.cursor = 'pointer';
@@ -1079,7 +1089,6 @@ const addUserListBtn = () => {
 
 
 
-
 ///////   Event Listeners   ///////
 
 // Create a MutationObserver to watch for new chat messages
@@ -1093,12 +1102,26 @@ var chatObserver = new MutationObserver(function(mutations) {
         if (addedNode.classList.contains("chat-history--row")) {
           // Check element classlist for 'chat-history--rant' 
           if (!enableChatPlus || addedNode.classList.contains('chat-history--rant')) {
-            // Skip node
+            // Save rant to chrome.storage.sync
+            /*let newDate = new Date();
+
+            let newRant = {
+              username: addedNode.childNodes[0].textContent,
+              message: addedNode.childNodes[1].textContent,
+              amount: 1,
+              timestamp: Date.now(),
+              dateOfStream: newDate.toDateString(),
+            }
+
+            console.log('newRant: ' + newRant); 
+      
+            savedRants.push(newRant);
+            */
             return;
           }
 
-          // For styling with RantsStats
-          if (chatStyleNormal)  addedNode.style.background = rumbleColors.darkBlue;
+          // For styling with RantsStats extension
+          if (chatStyleNormal) {addedNode.style.background = rumbleColors.darkBlue;}
 
           // Add the message to the chat history
           let userColor = getUserColor(addedNode.childNodes[0].textContent);
@@ -1302,3 +1325,21 @@ var setIntervals = function() {
     clearInterval(chatRefreshInterval);
   }
 }
+
+
+//////   Background 2/11/2023   //////
+
+//////   Testing   //////
+
+// Example of a simple user data object
+const user = {
+  username: 'demo-user'
+};
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  // 2. A page requested user data, respond with a copy of `user`
+  if (message === 'get-user-data') {
+    sendResponse(user);
+  }
+
+});

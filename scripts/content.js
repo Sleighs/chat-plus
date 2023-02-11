@@ -784,7 +784,7 @@ const toggleChatUsernameMenu = (toggle) => {
 
     // Gets new user list
     buildUsernameList(false);
-    
+
     // Change button text
     userListBtn.innerText = 'Hide Recent List';
   } else {
@@ -1102,12 +1102,26 @@ var chatObserver = new MutationObserver(function(mutations) {
         if (addedNode.classList.contains("chat-history--row")) {
           // Check element classlist for 'chat-history--rant' 
           if (!enableChatPlus || addedNode.classList.contains('chat-history--rant')) {
-            // Skip node
+            // Save rant to chrome.storage.sync
+            /*let newDate = new Date();
+
+            let newRant = {
+              username: addedNode.childNodes[0].textContent,
+              message: addedNode.childNodes[1].textContent,
+              amount: 1,
+              timestamp: Date.now(),
+              dateOfStream: newDate.toDateString(),
+            }
+
+            console.log('newRant: ' + newRant); 
+      
+            savedRants.push(newRant);
+            */
             return;
           }
 
-          // For styling with RantsStats
-          if (chatStyleNormal)  addedNode.style.background = rumbleColors.darkBlue;
+          // For styling with RantsStats extension
+          if (chatStyleNormal) {addedNode.style.background = rumbleColors.darkBlue;}
 
           // Add the message to the chat history
           let userColor = getUserColor(addedNode.childNodes[0].textContent);
@@ -1311,3 +1325,21 @@ var setIntervals = function() {
     clearInterval(chatRefreshInterval);
   }
 }
+
+
+//////   Background 2/11/2023   //////
+
+//////   Testing   //////
+
+// Example of a simple user data object
+const user = {
+  username: 'demo-user'
+};
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  // 2. A page requested user data, respond with a copy of `user`
+  if (message === 'get-user-data') {
+    sendResponse(user);
+  }
+
+});

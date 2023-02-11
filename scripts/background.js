@@ -96,7 +96,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (message === 'new-window') {
     chrome.windows.create({
-      url: chrome.runtime.getURL("rants.html"),
+      url: chrome.runtime.getURL("build-rants/index.html"),
       type: "popup",
     }, (win)=>{
       //console.log(res);

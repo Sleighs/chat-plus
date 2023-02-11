@@ -44,6 +44,7 @@ var userCount = 0;
 // Rants
 let savedRants = [];
 let cachedRants = [];
+let enableRants = true;
 
 // Text colors
 let usernameColors = {
@@ -171,6 +172,7 @@ let userColors = {};
           addChatUsernameMenu();          
           addUserListBtn();
           if(showUsernameListOnStartup) toggleChatUsernameMenu(true);
+          if(enableRants) addViewRantsBtn();
         }
 
         // Add chat menu buttons
@@ -1108,6 +1110,63 @@ const addUserListBtn = () => {
 }
 
 
+const addViewRantsBtn = () => {
+  // Create button for full screen chat 
+  let viewRantsBtn = document.createElement('button');
+
+  viewRantsBtn.id = 'viewRantsBtn';
+  viewRantsBtn.addClassName = 'cmi';
+  viewRantsBtn.innerText = 'View Rants';
+
+  viewRantsBtn.style.color = '#D6E0EA';
+  viewRantsBtn.style.cursor = 'pointer';
+  viewRantsBtn.style.backgroundColor = 'transparent';
+  viewRantsBtn.style.borderStyle = 'none';
+  viewRantsBtn.style.fontFamily = 'inherit';
+  viewRantsBtn.style.fontWeight = 'inherit';
+  viewRantsBtn.style.fontSize = 'inherit';
+  viewRantsBtn.style.textDecoration = 'inherit';
+  viewRantsBtn.style.fontStyle = 'inherit';
+  viewRantsBtn.style.lineHeight = 'inherit';
+  viewRantsBtn.style.borderWidth = '2px';
+  viewRantsBtn.style.padding = '8px 1rem';
+  viewRantsBtn.style.paddingLeft = '1.5rem';
+  viewRantsBtn.style.paddingRight = '1.5rem';
+  viewRantsBtn.style.textAlign = 'left';
+  viewRantsBtn.style.whiteSpace = 'normal';
+  viewRantsBtn.style.width = '100%';
+  viewRantsBtn.style.maxWidth = '100%';
+  viewRantsBtn.style.outlineOffset = '-3px';
+  viewRantsBtn.style.userSelect = 'none';
+  
+  // Add hover effect
+  viewRantsBtn.addEventListener('mouseover', ()=>{
+    viewRantsBtn.style.backgroundColor = 'rgb(214, 224, 234, .025)';
+  });
+
+  // Remove hover effect
+  viewRantsBtn.addEventListener('mouseout', ()=>{
+    viewRantsBtn.style.backgroundColor = 'transparent';
+  });
+
+  if (chatHistoryEle[0]){
+    // Check data-chat-visible attribute
+    //var chatVisibilityDataAtr = document.querySelector('#chat-toggle-chat-visibility').getAttribute('data-chat-visible');
+    var chatVisibilityDataset = document.querySelector('#chat-toggle-chat-visibility').dataset.chatVisible;
+
+    if (chatVisibilityDataset){
+      document.querySelector('#chat-main-menu').appendChild(viewRantsBtn);
+    }
+    
+    viewRantsBtn.onclick = function() {
+      chrome.runtime.sendMessage('new-window', (response) => {
+        console.log('new window: opening rants', response);
+      });
+    }
+  }
+}
+
+
 
 
 ///////   Event Listeners   ///////
@@ -1374,7 +1433,7 @@ const saveRant = function(element) {
     channel: currentStreamer,
     message: element.querySelector('.chat-history--rant-text').textContent,
     amount: element.querySelector('.chat-history--rant-price').textContent,
-    timestamp: Date.now(),
+    timestamp: newDate.toTimeString(),
     dateOfStream: newDate.toDateString(),
     markedRead: false,
     id: makeId(24)
@@ -1440,10 +1499,14 @@ if (chatHistoryEle[0]){
     rantViewer.style.margin = '15px auto';
     rantViewer.style.borderRadius = '10px';
 
-    if (sidebarCount < sidebarLimit) {
+    /*if (sidebarCount < sidebarLimit) {
       insertElementAtPosition(rantViewer,document.querySelector('.sidebar'), 0);
       sidebarCount++;
-    }
+    }*/
+
+    chrome.runtime.sendMessage('new-window', (response) => {
+      console.log('new window: received user data', response);
+    });
     
   });
 
@@ -1473,7 +1536,7 @@ if (chatHistoryEle[0]){
           </div>
         </div>
         <div class='chat-history--rant-text'>
-          "test message @${currentUser} more testing @${currentStreamer} another test @${currentUser.toLowerCase()}"
+          "another test message from ${currentUser} for ${currentStreamer}"
         </div>
       </div>`;
 
@@ -1489,11 +1552,8 @@ if (chatHistoryEle[0]){
 }
 
 
-// 1. Send a message to the service worker requesting the user's data
-/*chrome.runtime.sendMessage('get-user-data', (response) => {
-  // 3. Got an asynchronous response with the data from the service worker
+/*
+chrome.runtime.sendMessage('get-user-data', (response) => {
   console.log('content: received user data', response);
-});*/
-chrome.runtime.sendMessage('new-window', (response) => {
-  console.log('new window: received user data', response);
 });
+*/

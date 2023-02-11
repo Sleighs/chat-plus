@@ -75,7 +75,7 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 
-/*
+
 //////   Testing  Background //////
 
 // Example of a simple user data object
@@ -94,4 +94,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     //sendResponse(user);
   }
 
-});*/
+  if (message === 'new-window') {
+    chrome.windows.create({
+      url: chrome.runtime.getURL("rants.html"),
+      type: "popup",
+    }, (win)=>{
+      //console.log(res);
+      sendResponse(JSON.stringify(win));
+    })
+  }
+
+});

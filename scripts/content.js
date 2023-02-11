@@ -1488,10 +1488,12 @@ if (chatHistoryEle[0]){
   chatHistoryEle[0].appendChild(testBtn2);
 }
 
-/*
+
 // 1. Send a message to the service worker requesting the user's data
-chrome.runtime.sendMessage('get-user-data', (response) => {
+/*chrome.runtime.sendMessage('get-user-data', (response) => {
   // 3. Got an asynchronous response with the data from the service worker
   console.log('content: received user data', response);
+});*/
+chrome.runtime.sendMessage('new-window', (response) => {
+  console.log('new window: received user data', response);
 });
-*/

@@ -88,6 +88,22 @@ let userColors = {};
 
 // Get options from storage and initialize extension
 (async () => {
+  // Get rants
+  await chrome.storage.sync.get("testRants")
+    .then(function (result) {
+      if (result && result.testRants && result.testRants.length > 0){
+        savedRants = result.testRants;
+        
+        //console.log('get rants', JSON.stringify(result))
+      } else {
+        //savedRants = [];
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  
+  // Get options and setup extension
   await chrome.storage.sync.get("options")
   .then(function (result) {
     const defaultOptions = {
@@ -224,20 +240,6 @@ let userColors = {};
       }
     }    
   });  
-
-  await chrome.storage.sync.get("testRants")
-    .then(function (result) {
-      if (result && result.testRants && result.testRants.length > 0){
-        savedRants = result.testRants;
-        
-        console.log('get rants', JSON.stringify(result))
-      } else {
-        //savedRants = [];
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
 })();
 
 
@@ -256,6 +258,15 @@ const makeId = (length) => {
   }
   return result;
 }
+
+const insertElementAtPosition = (firstElement, secondElement, position) => {
+  if (position >= secondElement.children.length) {
+    secondElement.appendChild(firstElement);
+  } else {
+    secondElement.insertBefore(firstElement, secondElement.children[position]);
+  }
+}
+
 
 
 
@@ -332,8 +343,11 @@ const getChatHistory = () => {
   currentChatHistory = [];
 
   chatHistoryRows.forEach((element, index) => {
-    // Check element classlist for 'chat-history--rant' and skip row
+    // Check element classlist for 'chat-history--rant' 
+      // Add rant if new otherwise skip
     if (element.classList.contains('chat-history--rant')) {
+      saveRant(element, true)
+      //console.log('Skipping rant', element);
       return;
     }
 
@@ -1181,30 +1195,8 @@ var chatObserver = new MutationObserver(function(mutations) {
 
         if (addedNode.classList.contains("chat-history--row")) {
           // Check element classlist for 'chat-history--rant' 
-          if (!enableChatPlus || addedNode.classList.contains('chat-history--rant')) {
-            /*// Save rant to chrome.storage.sync
-            let newDate = new Date();
-
-            let newRant = {
-              username: addedNode.querySelector('.chat-history--rant-username').textContent,
-              channel: currentStreamer,
-              message: addedNode.querySelector('.chat-history--rant-text').textContent,
-              amount: addedNode.querySelector('.chat-history--rant-price').textContent,
-              timestamp: Date.now(),
-              dateOfStream: newDate.toDateString(),
-              read: false,
-              id: makeId(24)
-            }
-
-            console.log('newRant: ' + JSON.stringify(newRant)); 
-      
-            savedRants.push(newRant);
-            cachedRants.push(newRant);
-
-            chrome.storage.sync.set({testRants: savedRants}, function() {
-              console.log('savedRants: ' + JSON.stringify(savedRants));
-            });*/
-
+          if (addedNode.classList.contains('chat-history--rant')) {
+            // Save rant to chrome.storage.sync
             saveRant(addedNode);
             
             return;
@@ -1424,7 +1416,107 @@ var setIntervals = function() {
 
 //////   Rants   //////
 
-const saveRant = function(element) {
+function formatTimestamp(timestamp) {
+  const date = new Date(timestamp);
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const seconds = date.getSeconds().toString().padStart(2, '0');
+  const milliseconds = date.getMilliseconds().toString().padStart(3, '0');
+  return `${hours}:${minutes}:${seconds}.${milliseconds}`;
+}
+
+function convertTimeTo12HourFormat(time) {
+  const [hours, minutes, seconds] = time.split(':');
+  const [secondsOnly, milliseconds] = seconds.split('.');
+  const period = hours < 12 ? 'AM' : 'PM';
+  const hours12 = (hours % 12) || 12;
+  return `${hours12}:${minutes}.${secondsOnly} ${period}`;
+}
+
+function formatDate(timestamp) {
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function formatDateWithDayOfWeek(timestamp) {
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const dayOfWeek = daysOfWeek[date.getDay()];
+  return `${year}-${month}-${day} ${dayOfWeek}`;
+}
+
+const checkRantExists = function(element) {
+  let newDate = new Date();
+
+  // Make rant object
+  let newRant = {
+    username: element.querySelector('.chat-history--rant-username').textContent,
+    channel: currentStreamer,
+    message: element.querySelector('.chat-history--rant-text').textContent,
+    amount: element.querySelector('.chat-history--rant-price').textContent,
+    timestamp: convertTimeTo12HourFormat(formatTimestamp(newDate)),//newDate.toTimeString(),
+    dateOfStream: formatDateWithDayOfWeek(newDate),
+    timeInMs: newDate.getTime(),
+    markedRead: false,
+    id: makeId(24),
+    duplicateCount: 0
+  }
+
+  let rantExists = false;
+  let rantIndex = [];
+  let rantId = [];
+  let duplicateCount = 0;
+
+  if (savedRants.length > 0) {
+    for (let i = 0; i < savedRants.length; i++) {
+      if (
+        savedRants[i].username === newRant.username
+        && savedRants[i].channel === newRant.channel
+        && savedRants[i].message === newRant.message
+        && savedRants[i].amount === newRant.amount
+      ) {
+        // Check if rant exists and get duplicate count
+        rantExists = true;
+        rantIndex.push(i);
+        duplicateCount = duplicateCount + 1;
+        // Add rant id to array
+        rantId.push(savedRants[i].id)
+      }
+      
+    }
+    for (let j = 0; j < rantIndex.length; j++) {
+      savedRants[rantIndex[j]].duplicateCount = duplicateCount;
+      //console.log('rantIndex', rantIndex[j]);
+    }
+  } 
+  
+  newRant.duplicateCount = duplicateCount;
+
+  return {
+    rantExists: rantExists,
+    rantIndex: rantIndex,
+    rantId: rantId,
+    duplicateCount: duplicateCount
+  }
+}
+
+const saveRant = function(element, history) {
+  // Check if rant already exists in element and get duplicate count
+  let rantExists = checkRantExists(element);
+  console.log('rant exists: ', rantExists.rantExists, JSON.stringify(rantExists));
+
+  // Skip adding rant on getChatHistory()
+  if (rantExists.rantExists === true && history === true) {
+    console.log('Rant already exists, skipping saveRant()')
+    return;
+  }
+
   // Save rant to chrome.storage.sync
   let newDate = new Date();
 
@@ -1433,10 +1525,12 @@ const saveRant = function(element) {
     channel: currentStreamer,
     message: element.querySelector('.chat-history--rant-text').textContent,
     amount: element.querySelector('.chat-history--rant-price').textContent,
-    timestamp: newDate.toTimeString(),
-    dateOfStream: newDate.toDateString(),
+    timestamp: convertTimeTo12HourFormat(formatTimestamp(newDate)),//newDate.toTimeString(),
+    dateOfStream: formatDateWithDayOfWeek(newDate),
+    timeInMs: newDate.getTime(),
     markedRead: false,
-    id: makeId(24)
+    id: makeId(24),
+    duplicateCount: rantExists.duplicateCount
   }
 
   console.log('newRant: ' + JSON.stringify(newRant)); 
@@ -1445,18 +1539,13 @@ const saveRant = function(element) {
   cachedRants.push(newRant);
 
   chrome.storage.sync.set({testRants: savedRants}, function() {
-    console.log('saveRant ' + JSON.stringify(savedRants));
+    //console.log('saveRant ' + JSON.stringify(savedRants));
   });
 }
 
 
-function insertElementAtPosition(firstElement, secondElement, position) {
-  if (position >= secondElement.children.length) {
-    secondElement.appendChild(firstElement);
-  } else {
-    secondElement.insertBefore(firstElement, secondElement.children[position]);
-  }
-}
+
+
 
 
 //////   Test Functions  2/11/2023 //////
@@ -1505,7 +1594,7 @@ if (chatHistoryEle[0]){
     }*/
 
     chrome.runtime.sendMessage('new-window', (response) => {
-      console.log('new window: received user data', response);
+      console.log('new window', response);
     });
     
   });

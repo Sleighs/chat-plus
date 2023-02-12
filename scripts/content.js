@@ -188,7 +188,11 @@ let userColors = {};
           addChatUsernameMenu();          
           addUserListBtn();
           if(showUsernameListOnStartup) toggleChatUsernameMenu(true);
-          if(enableRants) addViewRantsBtn();
+          
+        }
+        if (enableRants) {
+          addViewRantsBtn();
+          addRantTestBtn();
         }
 
         // Add chat menu buttons
@@ -267,6 +271,41 @@ const insertElementAtPosition = (firstElement, secondElement, position) => {
   }
 }
 
+
+function formatTimestamp(timestamp) {
+  const date = new Date(timestamp);
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const seconds = date.getSeconds().toString().padStart(2, '0');
+  const milliseconds = date.getMilliseconds().toString().padStart(3, '0');
+  return `${hours}:${minutes}:${seconds}.${milliseconds}`;
+}
+
+function convertTimeTo12HourFormat(time) {
+  const [hours, minutes, seconds] = time.split(':');
+  const [secondsOnly, milliseconds] = seconds.split('.');
+  const period = hours < 12 ? 'AM' : 'PM';
+  const hours12 = (hours % 12) || 12;
+  return `${hours12}:${minutes}.${secondsOnly} ${period}`;
+}
+
+function formatDate(timestamp) {
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function formatDateWithDayOfWeek(timestamp) {
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const dayOfWeek = daysOfWeek[date.getDay()];
+  return `${year}-${month}-${day} ${dayOfWeek}`;
+}
 
 
 
@@ -1196,9 +1235,8 @@ var chatObserver = new MutationObserver(function(mutations) {
         if (addedNode.classList.contains("chat-history--row")) {
           // Check element classlist for 'chat-history--rant' 
           if (addedNode.classList.contains('chat-history--rant')) {
-            // Save rant to chrome.storage.sync
+            // Save rant to sync storage
             saveRant(addedNode);
-            
             return;
           }
 
@@ -1416,41 +1454,6 @@ var setIntervals = function() {
 
 //////   Rants   //////
 
-function formatTimestamp(timestamp) {
-  const date = new Date(timestamp);
-  const hours = date.getHours().toString().padStart(2, '0');
-  const minutes = date.getMinutes().toString().padStart(2, '0');
-  const seconds = date.getSeconds().toString().padStart(2, '0');
-  const milliseconds = date.getMilliseconds().toString().padStart(3, '0');
-  return `${hours}:${minutes}:${seconds}.${milliseconds}`;
-}
-
-function convertTimeTo12HourFormat(time) {
-  const [hours, minutes, seconds] = time.split(':');
-  const [secondsOnly, milliseconds] = seconds.split('.');
-  const period = hours < 12 ? 'AM' : 'PM';
-  const hours12 = (hours % 12) || 12;
-  return `${hours12}:${minutes}.${secondsOnly} ${period}`;
-}
-
-function formatDate(timestamp) {
-  const date = new Date(timestamp);
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const day = date.getDate().toString().padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function formatDateWithDayOfWeek(timestamp) {
-  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const date = new Date(timestamp);
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const day = date.getDate().toString().padStart(2, '0');
-  const dayOfWeek = daysOfWeek[date.getDay()];
-  return `${year}-${month}-${day} ${dayOfWeek}`;
-}
-
 const checkRantExists = function(element) {
   let newDate = new Date();
 
@@ -1481,14 +1484,13 @@ const checkRantExists = function(element) {
         && savedRants[i].message === newRant.message
         && savedRants[i].amount === newRant.amount
       ) {
-        // Check if rant exists and get duplicate count
+        // Add 1 to duplicate count
         rantExists = true;
         rantIndex.push(i);
         duplicateCount = duplicateCount + 1;
         // Add rant id to array
         rantId.push(savedRants[i].id)
-      }
-      
+      } 
     }
     for (let j = 0; j < rantIndex.length; j++) {
       savedRants[rantIndex[j]].duplicateCount = duplicateCount;
@@ -1509,11 +1511,11 @@ const checkRantExists = function(element) {
 const saveRant = function(element, history) {
   // Check if rant already exists in element and get duplicate count
   let rantExists = checkRantExists(element);
-  console.log('rant exists: ', rantExists.rantExists, JSON.stringify(rantExists));
+  //console.log('rant exists: ', rantExists.rantExists, JSON.stringify(rantExists));
 
   // Skip adding rant on getChatHistory()
   if (rantExists.rantExists === true && history === true) {
-    console.log('Rant already exists, skipping saveRant()')
+    //console.log('Rant already exists, not saving')
     return;
   }
 
@@ -1536,11 +1538,16 @@ const saveRant = function(element, history) {
   console.log('newRant: ' + JSON.stringify(newRant)); 
 
   savedRants.push(newRant);
-  cachedRants.push(newRant);
+  //cachedRants.push(newRant);
 
   chrome.storage.sync.set({testRants: savedRants}, function() {
     //console.log('saveRant ' + JSON.stringify(savedRants));
   });
+
+  /*chrome.runtime.sendMessage('save-data', (response) => {
+    console.log('content: received user data', response);
+  });*/
+
 }
 
 
@@ -1579,7 +1586,7 @@ var sidebarLimit = 1;
 if (chatHistoryEle[0]){
   // add chat history element to DOM on click
   testBtn.addEventListener('click', function(){
-    console.log('testBtn clicked');
+    //console.log('testBtn clicked');
 
     let rantViewer = document.createElement('div');
     rantViewer.style.background = rumbleColors.darkBlue;
@@ -1594,7 +1601,7 @@ if (chatHistoryEle[0]){
     }*/
 
     chrome.runtime.sendMessage('new-window', (response) => {
-      console.log('new window', response);
+      //console.log('new window', response);
     });
     
   });
@@ -1636,8 +1643,9 @@ if (chatHistoryEle[0]){
     chatHistoryList.appendChild(chatHistoryRow);
   });
 
-  chatHistoryEle[0].appendChild(testBtn);
-  chatHistoryEle[0].appendChild(testBtn2);
+  // Append test button to chat window
+  //chatHistoryEle[0].appendChild(testBtn);
+  //chatHistoryEle[0].appendChild(testBtn2);
 }
 
 
@@ -1646,3 +1654,85 @@ chrome.runtime.sendMessage('get-user-data', (response) => {
   console.log('content: received user data', response);
 });
 */
+
+
+const addRantTestBtn = () => {
+  // Create button for full screen chat 
+  let rantTestBtn = document.createElement('button');
+
+  rantTestBtn.id = 'rantTestBtn';
+  rantTestBtn.addClassName = 'cmi';
+  rantTestBtn.innerText = 'Test Rant';
+
+  rantTestBtn.style.color = '#D6E0EA';
+  rantTestBtn.style.cursor = 'pointer';
+  rantTestBtn.style.backgroundColor = 'transparent';
+  rantTestBtn.style.borderStyle = 'none';
+  rantTestBtn.style.fontFamily = 'inherit';
+  rantTestBtn.style.fontWeight = 'inherit';
+  rantTestBtn.style.fontSize = 'inherit';
+  rantTestBtn.style.textDecoration = 'inherit';
+  rantTestBtn.style.fontStyle = 'inherit';
+  rantTestBtn.style.lineHeight = 'inherit';
+  rantTestBtn.style.borderWidth = '2px';
+  rantTestBtn.style.padding = '8px 1rem';
+  rantTestBtn.style.paddingLeft = '1.5rem';
+  rantTestBtn.style.paddingRight = '1.5rem';
+  rantTestBtn.style.textAlign = 'left';
+  rantTestBtn.style.whiteSpace = 'normal';
+  rantTestBtn.style.width = '100%';
+  rantTestBtn.style.maxWidth = '100%';
+  rantTestBtn.style.outlineOffset = '-3px';
+  rantTestBtn.style.userSelect = 'none';
+  
+  // Add hover effect
+  rantTestBtn.addEventListener('mouseover', ()=>{
+    rantTestBtn.style.backgroundColor = 'rgb(214, 224, 234, .025)';
+  });
+
+  // Remove hover effect
+  rantTestBtn.addEventListener('mouseout', ()=>{
+    rantTestBtn.style.backgroundColor = 'transparent';
+  });
+
+  if (chatHistoryEle[0]){
+    // Check data-chat-visible attribute
+    //var chatVisibilityDataAtr = document.querySelector('#chat-toggle-chat-visibility').getAttribute('data-chat-visible');
+    var chatVisibilityDataset = document.querySelector('#chat-toggle-chat-visibility').dataset.chatVisible;
+
+    if (chatVisibilityDataset){
+      document.querySelector('#chat-main-menu').appendChild(rantTestBtn);
+    }
+    
+    rantTestBtn.addEventListener('click', ()=>{  
+      let chatHistoryRow = document.createElement('li');
+      chatHistoryRow.classList.add('chat-history--row');
+      chatHistoryRow.classList.add('chat-history--rant');
+      chatHistoryRow.style.display = 'flex';
+      chatHistoryRow.style.flexDirection = 'row';
+      
+      let testRant = `
+        <div class='chat-history--row chat-history--rant'>
+          <div class='chat-history--rant'>
+            <div class='chat-history--rant-head'>
+              <div class='chat--profile-pic'>
+                <img src='https://static-cdn.jtvnw.net/jtv_user_pictures/8e0b0e0e-1b1c-4b1f-8b1f-8b1f8b1f8b1f-profile_image-300x300.png'>
+              </div>
+              <div>
+                <a class='chat-history--rant-username' 
+                  href='/user/${currentUser}' target='_blank'>${currentUser}
+                </a>
+                <div class='chat-history--rant-price'>$1</div>
+              </div>
+            </div>
+            <div class='chat-history--rant-text'>
+              "test message from ${currentUser} for ${currentStreamer} and this is a really long message to test the width of the rant"
+            </div>
+          </div>
+        </div>`;
+
+      chatHistoryRow.innerHTML = testRant;
+      chatHistoryList.appendChild(chatHistoryRow);
+    });
+  }
+}

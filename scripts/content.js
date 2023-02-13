@@ -261,7 +261,6 @@ try {
   const streamerEle = document.querySelector('.media-heading-name');
   if (streamerEle) {
     currentStreamer = streamerEle.textContent;
-    console.log(currentStreamer);
   }
 } catch (error) {
   //if (debugMode) console.log('Error getting current user or streamer', error);

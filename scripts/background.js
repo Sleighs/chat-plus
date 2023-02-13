@@ -12,7 +12,7 @@ const defaultOptions = {
   showListUserCount: false,
   chatStyleNormal: true,
   saveRants: false,
-  chatAvatarEnabled: true,
+  chatAvatarEnabled: true
 };
 
 // Options stored in chrome.storage.sync

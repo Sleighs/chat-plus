@@ -100,7 +100,7 @@ let userColors = {};
 // Get options from storage and initialize extension
 (async () => {
   // Get rants
-  await chrome.storage.sync.get("savedRants")
+  /*await chrome.storage.sync.get("savedRants")
     .then(function (result) {
       if (result && result.savedRants && result.savedRants.length > 0){
         savedRants = result.savedRants;
@@ -112,7 +112,7 @@ let userColors = {};
     })
     .catch((err) => {
       console.log(err);
-    });
+    });*/
   
   // Get options and setup extension
   await chrome.storage.sync.get("options")
@@ -301,7 +301,6 @@ const insertElementAtPosition = (firstElement, secondElement, position) => {
   }
 }
 
-
 function formatTimestamp(timestamp) {
   const date = new Date(timestamp);
   const hours = date.getHours().toString().padStart(2, '0');
@@ -423,12 +422,12 @@ const getChatHistory = () => {
       return;
     }
 
-    /*if (!chatAvatarEnabled
+    // Remove avatar if chatAvatarEnabled is false
+    if (!chatAvatarEnabled
       && ele.childNodes[0].classList.contains("chat-history--user-avatar")){
       ele.querySelector(".chat-history--user-avatar").style.display = "none";
       //ele.childNodes[0].remove();
-      console.log('Hiding avatar', ele.querySelector(".chat-history--user-avatar"));
-    }*/
+    }
 
     let element = ele.querySelector('.chat-history--message-wrapper');
     
@@ -1355,13 +1354,12 @@ var chatObserver = new MutationObserver(function(mutations) {
             //console.log(mutation.addedNodes[i].querySelector(".chat-history--user-avatar"))
             
           // If hide pictures is enabled, hide the picture
-          /*if (
+          if (
             !chatAvatarEnabled 
             && mutation.addedNodes[i].childNodes[0].classList.contains("chat-history--user-avatar")){
-            //mutation.addedNodes[i].childNodes[0].style.display = "none";
-            mutation.addedNodes[i].childNodes[0].remove();
-              console.log('removed avatar')
-          }*/
+            mutation.addedNodes[i].childNodes[0].style.display = "none";
+            //mutation.addedNodes[i].childNodes[0].remove();
+          }
       
           let addedNode = mutation.addedNodes[i].querySelector('.chat-history--message-wrapper');
 

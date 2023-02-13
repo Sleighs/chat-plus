@@ -308,11 +308,13 @@ function highlightTerms(text, searchTerms, bgColors) {
 const getChatHistory = () => {
   currentChatHistory = [];
 
-  chatHistoryRows.forEach((element, index) => {
+  chatHistoryRows.forEach((ele, index) => {
     // Check element classlist for 'chat-history--rant' and skip row
-    if (element.classList.contains('chat-history--rant')) {
+    if (ele.classList.contains('chat-history--rant')) {
       return;
     }
+
+    let element = ele.querySelector('.chat-history--message-wrapper');
 
     //Assign random color to each unique username in current chat history
     let userColor = getUserColor(element.childNodes[0].textContent);
@@ -1097,28 +1099,14 @@ var chatObserver = new MutationObserver(function(mutations) {
     if (mutation.type === "childList") {
       // Loop through the added nodes to find new messages
       for (var i = 0; i < mutation.addedNodes.length; i++) {
-        var addedNode = mutation.addedNodes[i];
-
-        if (addedNode.classList.contains("chat-history--row")) {
+        if (mutation.addedNodes[i].classList.contains("chat-history--row")) {
           // Check element classlist for 'chat-history--rant' 
-          if (!enableChatPlus || addedNode.classList.contains('chat-history--rant')) {
+          if (!enableChatPlus || mutation.addedNodes[i].classList.contains('chat-history--rant')) {
             // Save rant to chrome.storage.sync
-            /*let newDate = new Date();
-
-            let newRant = {
-              username: addedNode.childNodes[0].textContent,
-              message: addedNode.childNodes[1].textContent,
-              amount: 1,
-              timestamp: Date.now(),
-              dateOfStream: newDate.toDateString(),
-            }
-
-            console.log('newRant: ' + newRant); 
-      
-            savedRants.push(newRant);
-            */
             return;
           }
+
+          let addedNode = mutation.addedNodes[i].querySelector('.chat-history--message-wrapper');
 
           // For styling with RantsStats extension
           if (chatStyleNormal) {addedNode.style.background = rumbleColors.darkBlue;}

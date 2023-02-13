@@ -337,8 +337,9 @@ const getRandomColor = () => {
 try {
   // Get current user from page if logged in
   let rantEle = document.querySelectorAll('.chat-history--rant-head');
-  let usernameEle = document.querySelectorAll('.chat-history--rant-username');
-
+  let usernameEle = document.querySelectorAll('.media-heading-name');
+  //document.querySelectorAll('.chat-history--rant-username');
+  
   if (rantEle && usernameEle) {
     if (usernameEle.length > 0) {
       currentUser = usernameEle[usernameEle.length - 1].textContent;
@@ -346,11 +347,10 @@ try {
   }
 
   // Get current streamer from author element if exists
-  const authorEle = document.querySelector('.media-by--a');
-
-  if (authorEle){
-    const authorHref = authorEle.getAttribute('href');
-    currentStreamer = authorHref.replace('/c/', '');
+  const streamerEle = document.querySelector('.media-heading-name');
+  if (streamerEle) {
+    currentStreamer = streamerEle.textContent;
+    console.log(currentStreamer);
   }
 } catch (error) {
   //if (debugMode) console.log('Error getting current user or streamer', error);
@@ -1638,6 +1638,10 @@ const storeRants = function(rant) {
     console.log('cachedRants: ' + JSON.stringify(cachedRants));
   }
 }
+
+
+
+
 
 
 

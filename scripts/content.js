@@ -349,10 +349,11 @@ try {
   }
 
   // Get current streamer from author element if exists
-  const streamerEle = document.querySelector('.media-heading-name');
-  if (streamerEle) {
-    currentStreamer = streamerEle.textContent;
-    console.log(currentStreamer);
+  const authorEle = document.querySelector('.media-by--a');
+  
+  if (authorEle){
+    const authorHref = authorEle.getAttribute('href');
+    currentStreamer = authorHref.replace('/c/', '');
   }
 } catch (error) {
   //if (debugMode) console.log('Error getting current user or streamer', error);

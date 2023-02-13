@@ -26,12 +26,14 @@ let enableChatPlus,
   chatStyleNormal,
   saveRants;
 
+  var timestampsEnabled = true;
+  var bookmarkedVideos = [];
+
 // Vars that remain in scope
 let debugMode = false;
 let showUsernameList = false;
 let streamerMode = false;
 let showFullWindowChat = false;
-
 
 // Vars for logged in user and current streamer 
 let currentUser = '';
@@ -1634,6 +1636,8 @@ const storeRants = function(rant) {
     // Add rant to cachedRants 
     cachedRants.push(rant);
 
+    // If Missed Rants is open, show cached rants
+
     // Show rants not in savedRants
     console.log('cachedRants: ' + JSON.stringify(cachedRants));
   }
@@ -1646,106 +1650,11 @@ const storeRants = function(rant) {
 
 
 
-//////   Test Functions  2/11/2023 //////
-
-// Append test button to chat window
-const testBtn = document.createElement('div');
-testBtn.innerHTML = `test`
-
-testBtn.style.color = 'white';
-testBtn.style.border = 'solid 3pt orange';
-testBtn.style.width = '25px';
-testBtn.style.height = '50px';
-testBtn.style.wordWrap = 'break-word';
-testBtn.style.zIndex = '100000'
-
-// Append test button to chat window
-const testBtn2 = document.createElement('div');
-testBtn2.innerHTML = `test rant`
-
-testBtn2.style.color = 'white';
-testBtn2.style.border = 'solid 3pt orange';
-testBtn2.style.width = '25px';
-testBtn2.style.height = '50px';
-testBtn2.style.wordWrap = 'break-word';
-testBtn2.style.zIndex = '100000'
-
-var sidebarCount = 0
-var sidebarLimit = 1;
-
-if (chatHistoryEle[0]){
-  // add chat history element to DOM on click
-  testBtn.addEventListener('click', function(){
-    //console.log('testBtn clicked');
-
-    let rantViewer = document.createElement('div');
-    rantViewer.style.background = rumbleColors.darkBlue;
-    rantViewer.style.height = '300px';
-    rantViewer.style.width = '100%';
-    rantViewer.style.margin = '15px auto';
-    rantViewer.style.borderRadius = '10px';
-
-    /*if (sidebarCount < sidebarLimit) {
-      insertElementAtPosition(rantViewer,document.querySelector('.sidebar'), 0);
-      sidebarCount++;
-    }*/
-
-    chrome.runtime.sendMessage('new-window', (response) => {
-      //console.log('new window', response);
-    }).onDisconnect.addListener(function() {
-      //console.log('disconnected');
-    });
-    
-  });
-
-  testBtn2.addEventListener('click', function(){
-    console.log('rant added');
-
-    // Make rant
-    
-    //.chat-history--row .chat-history--rant .chat-history--rant-head .chat--profile-pic
-    let chatHistoryRow = document.createElement('li');
-    chatHistoryRow.classList.add('chat-history--row');
-    chatHistoryRow.classList.add('chat-history--rant');
-    chatHistoryRow.style.display = 'flex';
-    chatHistoryRow.style.flexDirection = 'row';
-
-    let testRant = `
-      <div class='chat-history--rant'>
-        <div class='chat-history--rant-head'>
-          <div class='chat--profile-pic'>
-            <img src='https://static-cdn.jtvnw.net/jtv_user_pictures/8e0b0e0e-1b1c-4b1f-8b1f-8b1f8b1f8b1f-profile_image-300x300.png'>
-          </div>
-          <div>
-            <a class='chat-history--rant-username' 
-              href='/user/${currentUser}' target='_blank'>${currentUser}
-            </a>
-            <div class='chat-history--rant-price'>$1</div>
-          </div>
-        </div>
-        <div class='chat-history--rant-text'>
-          "another test message from ${currentUser} for ${currentStreamer}"
-        </div>
-      </div>`;
-
-    chatHistoryRow.innerHTML = testRant;
-    //console.log('chatHistoryRow', chatHistoryRow);
-
-    // Append .chat-history--row to chat history element
-    chatHistoryList.appendChild(chatHistoryRow);
-  });
-
-  // Append test button to chat window
-  //chatHistoryEle[0].appendChild(testBtn);
-  //chatHistoryEle[0].appendChild(testBtn2);
-}
 
 
-/*
-chrome.runtime.sendMessage('get-user-data', (response) => {
-  console.log('content: received user data', response);
-});
-*/
+
+
+//////  Rant Test   //////
 
 
 const addRantTestBtn = () => {

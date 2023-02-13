@@ -11,7 +11,9 @@ let optionsState = {
   hideFullWindowChatButton: false,
   showListUserCount: false,
   chatStyleNormal: true,
-  saveRants: false
+  saveRants: false,
+  chatAvatarEnabled: true
+
 };
 
 // Undefined option vars
@@ -24,7 +26,8 @@ let enableChatPlus,
   hideFullWindowChatButton,
   showListUserCount,
   chatStyleNormal,
-  saveRants;
+  saveRants,
+  chatAvatarEnabled;
 
   var timestampsEnabled = true;
   var bookmarkedVideos = [];
@@ -47,6 +50,12 @@ var userCount = 0;
 let savedRants = [];
 let cachedRants = [];
 let enableRants = true;
+
+// Service Worker
+let rantServiceWorker = {
+  method: 'rantServiceWorker',
+  action: 'keepAlive' 
+}
 
 // Text colors
 let usernameColors = {
@@ -118,7 +127,8 @@ let userColors = {};
       hideFullWindowChatButton: false,
       showListUserCount: false,
       chatStyleNormal: true,
-      saveRants: false
+      saveRants: false,
+      chatAvatarEnabled: true
     };
 
     const optionsList = [
@@ -131,7 +141,8 @@ let userColors = {};
       "hideFullWindowChatButton",
       "showListUserCount",
       "chatStyleNormal",
-      "saveRants"
+      "saveRants",
+      "chatAvatarEnabled"
     ];
 
     function extractProperties(names, obj) {
@@ -161,6 +172,7 @@ let userColors = {};
       showListUserCount = newOptionObj.showListUserCount;
       chatStyleNormal = newOptionObj.chatStyleNormal;
       saveRants = newOptionObj.saveRants;
+      chatAvatarEnabled = newOptionObj.chatAvatarEnabled;
 
       Object.assign(optionsState, newOptionObj);
     } else {
@@ -174,6 +186,7 @@ let userColors = {};
       showListUserCount = defaultOptions.showListUserCount;
       chatStyleNormal = defaultOptions.chatStyleNormal;
       saveRants = defaultOptions.saveRants;
+      chatAvatarEnabled = defaultOptions.chatAvatarEnabled;
 
       Object.assign(optionsState, defaultOptions);
     } 
@@ -389,7 +402,7 @@ function getUserCount(userList){
 function highlightTerms(text, searchTerms, bgColors) {
   let result = text;
   searchTerms.forEach(function(term, index) {
-    let bgColor = bgColors[index % bgColors.length];
+    let bgColor = bgColors[index/* % bgColors.length*/];
     let regex = new RegExp(term, "gi");
     result = result.replace(regex, `<span style="background-color: ${bgColor};">${term}</span>`);
   });
@@ -399,10 +412,10 @@ function highlightTerms(text, searchTerms, bgColors) {
 const getChatHistory = () => {
   currentChatHistory = [];
 
-  chatHistoryRows.forEach((element, index) => {
+  chatHistoryRows.forEach((ele, index) => {
     // Check element classlist for 'chat-history--rant' 
       // Add rant if new otherwise skip
-    if (element.classList.contains('chat-history--rant')) {
+    if (ele.classList.contains('chat-history--rant')) {
       if (saveRants) {
         saveRant(element, true)
       }
@@ -410,6 +423,15 @@ const getChatHistory = () => {
       return;
     }
 
+    /*if (!chatAvatarEnabled
+      && ele.childNodes[0].classList.contains("chat-history--user-avatar")){
+      ele.querySelector(".chat-history--user-avatar").style.display = "none";
+      //ele.childNodes[0].remove();
+      console.log('Hiding avatar', ele.querySelector(".chat-history--user-avatar"));
+    }*/
+
+    let element = ele.querySelector('.chat-history--message-wrapper');
+    
     //Assign random color to each unique username in current chat history
     let userColor = getUserColor(element.childNodes[0].textContent);
 
@@ -1232,10 +1254,8 @@ const addViewRantsBtn = () => {
     }
     
     viewRantsBtn.onclick = function() {
-      //console.log('view rants button clicked');
-
-      chrome.runtime.sendMessage('new-window', (response) => {
-        //console.log('new window: opening rants', response);
+      chrome.runtime.sendMessage('new-rant-window', (response) => {
+        //console.log('new rants window', response);
       });
     }
   }
@@ -1311,9 +1331,9 @@ var chatObserver = new MutationObserver(function(mutations) {
     if (mutation.type === "childList") {
       // Loop through the added nodes to find new messages
       for (var i = 0; i < mutation.addedNodes.length; i++) {
-        var addedNode = mutation.addedNodes[i];
-
-        if (addedNode.classList.contains("chat-history--row")) {
+        // let addedNode = mutation.addedNodes[i];
+        
+        /*if (addedNode.classList.contains("chat-history--row")) {
           // Check element classlist for 'chat-history--rant' 
           if (addedNode.classList.contains('chat-history--rant')) {
             // Save rant to sync storage
@@ -1321,16 +1341,40 @@ var chatObserver = new MutationObserver(function(mutations) {
               saveRant(addedNode);
             }
             return;
-          }
+          }*/
+          if (mutation.addedNodes[i].classList.contains("chat-history--row")) {
+            // Check element classlist for 'chat-history--rant' 
+            if (mutation.addedNodes[i].classList.contains('chat-history--rant')) {
+              // Save rant to sync storage
+              if (saveRants){
+                saveRant(mutation.addedNodes[i]);
+              }
+              return;
+            }
+
+            //console.log(mutation.addedNodes[i].querySelector(".chat-history--user-avatar"))
+            
+          // If hide pictures is enabled, hide the picture
+          /*if (
+            !chatAvatarEnabled 
+            && mutation.addedNodes[i].childNodes[0].classList.contains("chat-history--user-avatar")){
+            //mutation.addedNodes[i].childNodes[0].style.display = "none";
+            mutation.addedNodes[i].childNodes[0].remove();
+              console.log('removed avatar')
+          }*/
+      
+          let addedNode = mutation.addedNodes[i].querySelector('.chat-history--message-wrapper');
 
           // For styling with RantsStats extension
           if (chatStyleNormal) {addedNode.style.background = rumbleColors.darkBlue;}
 
           // Add the message to the chat history
           let userColor = getUserColor(addedNode.childNodes[0].textContent);
+          //let userColor = getUserColor(wrapperEle.childNodes[0].textContent);
 
           // Assign color to username
           addedNode.childNodes[0].style.color = userColor;
+          //wrapperEle.childNodes[0].style.color = userColor;
 
           // Highlight current user's username and streamer's name when mentioned
           if (
@@ -1527,6 +1571,16 @@ var setIntervals = function() {
     //if (debugMode) console.log('clearing chat refresh interval')
     clearInterval(chatRefreshInterval);
   }
+
+  if (saveRants){
+    var rantInterval = setInterval(() => {
+      chrome.runtime.sendMessage(rantServiceWorker).then(function(response) {
+       console.log('Rant SW', response);
+      });
+    }, 20000);
+  } else {
+    clearInterval(rantInterval);
+  }
 }
 
 
@@ -1626,6 +1680,7 @@ const saveRant = function(element, history) {
 
 const storeRants = function(rant) {
   try {
+    chrome.runtime.connect();
     chrome.storage.sync.set({savedRants: savedRants}, function() {
       //console.log('saveRant ' + JSON.stringify(savedRants));
     });
@@ -1741,4 +1796,16 @@ const addRantTestBtn = () => {
       chatHistoryList.appendChild(chatHistoryRow);
     });
   }
+}
+
+
+const sendRantDataToBackground = () =>{
+  chrome.runtime.sendMessage({
+    type: 'storage-off', 
+    savedRants: JSON.stringify(savedRants),
+    cachedRants: JSON.stringify(cachedRants)
+  }, function(response) {
+    //console.log('response: ' + JSON.stringify(response));
+    console.log('sent rant data to background: ' + response);
+  });
 }

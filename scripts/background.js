@@ -11,7 +11,8 @@ const defaultOptions = {
   hideFullWindowChatButton: false,
   showListUserCount: false,
   chatStyleNormal: true,
-  saveRants: false
+  saveRants: false,
+  chatAvatarEnabled: true,
 };
 
 // Options stored in chrome.storage.sync
@@ -34,7 +35,8 @@ chrome.runtime.onInstalled.addListener(() => {
       "hideFullWindowChatButton",
       "showListUserCount",
       "chatStyleNormal",
-      "saveRants"
+      "saveRants",
+      "chatAvatarEnabled"
     ];
 
     // Creates a new options object from the stored options and the default options
@@ -78,9 +80,35 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+let portFromCS;
+
+function connected(p) {
+  if (p.message === 'new-rant-window') {
+    // Close previous rant windows
+    let windowOptions = {
+      url: chrome.runtime.getURL("build-rants/index.html"),
+      type: rantPopupType
+    }
+
+    // Open new rant window
+    chrome.windows.create(windowOptions, (win)=>{
+      sendResponse(JSON.stringify(win));
+    });
+  }
+
+  /*portFromCS = p;
+  portFromCS.postMessage({greeting: "hi there content script!"});
+  portFromCS.onMessage.addListener((m) => {
+    console.log("In background script, received message from content script")
+    console.log(m.greeting);
+  });*/
+}
 
 
-//////   Testing  Background //////
+chrome.runtime.onConnect.addListener(connected);
+
+//////   MessageListener   //////
+let rantTimeCounter = 0;
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // 2. A page requested user data, respond with a copy of `user`
@@ -91,15 +119,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message === 'new-window') {
-    //window.close();
-
-    chrome.windows.create({
+    // Close previous rant windows
+    let windowOptions = {
       url: chrome.runtime.getURL("build-rants/index.html"),
       type: rantPopupType
-    }, (win)=>{
-      //console.log(res);
+    }
+
+    // Open new rant window
+    chrome.windows.create(windowOptions, (win)=>{
       sendResponse(JSON.stringify(win));
-    })
+    });
   }
 
+  if (message.method === 'rantServiceWorker') {
+    if (message.action === 'keepAlive') {
+      rantTimeCounter = rantTimeCounter + 20;
+      sendResponse(rantTimeCounter);
+    }
+  }
 });
+

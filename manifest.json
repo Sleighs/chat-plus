@@ -38,5 +38,13 @@
   ],
   "permissions": [
     "storage"
-  ]
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'",
+    
+      "pages": [
+        "build-rants/index.html"
+      ]
+    
+  }
 }

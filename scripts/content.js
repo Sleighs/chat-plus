@@ -89,10 +89,10 @@ let userColors = {};
 // Get options from storage and initialize extension
 (async () => {
   // Get rants
-  await chrome.storage.sync.get("testRants")
+  await chrome.storage.sync.get("savedRants")
     .then(function (result) {
-      if (result && result.testRants && result.testRants.length > 0){
-        savedRants = result.testRants;
+      if (result && result.savedRants && result.savedRants.length > 0){
+        savedRants = result.savedRants;
         
         //console.log('get rants', JSON.stringify(result))
       } else {
@@ -175,6 +175,20 @@ let userColors = {};
 
       Object.assign(optionsState, defaultOptions);
     } 
+    chrome.storage.sync.get("savedRants")
+    .then(function (result) {
+      if (result && result.savedRants && result.savedRants.length > 0){
+        savedRants = result.savedRants;
+        
+        //console.log('get rants', JSON.stringify(result))
+      } else {
+        //savedRants = [];
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  }).then(() => {
 
     // If app is enabled
     if (enableChatPlus) {
@@ -193,6 +207,7 @@ let userColors = {};
         if (enableRants) {
           addViewRantsBtn();
           addRantTestBtn();
+          addMissedRantCheckBtn();
         }
 
         // Add chat menu buttons
@@ -385,7 +400,9 @@ const getChatHistory = () => {
     // Check element classlist for 'chat-history--rant' 
       // Add rant if new otherwise skip
     if (element.classList.contains('chat-history--rant')) {
-      saveRant(element, true)
+      if (saveRants) {
+        saveRant(element, true)
+      }
       //console.log('Skipping rant', element);
       return;
     }
@@ -1212,12 +1229,73 @@ const addViewRantsBtn = () => {
     }
     
     viewRantsBtn.onclick = function() {
+      //console.log('view rants button clicked');
+
       chrome.runtime.sendMessage('new-window', (response) => {
-        console.log('new window: opening rants', response);
+        //console.log('new window: opening rants', response);
       });
     }
   }
 }
+
+const addMissedRantCheckBtn = () => {
+  // Create button for full screen chat 
+  let missedRantCheckBtn = document.createElement('button');
+
+  missedRantCheckBtn.id = 'viewRantsBtn';
+  missedRantCheckBtn.addClassName = 'cmi';
+  missedRantCheckBtn.innerText = 'View Missed Rants';
+  missedRantCheckBtn.title = 'See unsaved Rants received while tab was idle. Missed Rants are gone after page refresh.';
+
+  missedRantCheckBtn.style.color = '#D6E0EA';
+  missedRantCheckBtn.style.cursor = 'pointer';
+  missedRantCheckBtn.style.backgroundColor = 'transparent';
+  missedRantCheckBtn.style.borderStyle = 'none';
+  missedRantCheckBtn.style.fontFamily = 'inherit';
+  missedRantCheckBtn.style.fontWeight = 'inherit';
+  missedRantCheckBtn.style.fontSize = 'inherit';
+  missedRantCheckBtn.style.textDecoration = 'inherit';
+  missedRantCheckBtn.style.fontStyle = 'inherit';
+  missedRantCheckBtn.style.lineHeight = 'inherit';
+  missedRantCheckBtn.style.borderWidth = '2px';
+  missedRantCheckBtn.style.padding = '8px 1rem';
+  missedRantCheckBtn.style.paddingLeft = '1.5rem';
+  missedRantCheckBtn.style.paddingRight = '1.5rem';
+  missedRantCheckBtn.style.textAlign = 'left';
+  missedRantCheckBtn.style.whiteSpace = 'normal';
+  missedRantCheckBtn.style.width = '100%';
+  missedRantCheckBtn.style.maxWidth = '100%';
+  missedRantCheckBtn.style.outlineOffset = '-3px';
+  missedRantCheckBtn.style.userSelect = 'none';
+  
+  // Add hover effect
+  missedRantCheckBtn.addEventListener('mouseover', ()=>{
+    missedRantCheckBtn.style.backgroundColor = 'rgb(214, 224, 234, .025)';
+  });
+
+  // Remove hover effect
+  missedRantCheckBtn.addEventListener('mouseout', ()=>{
+    missedRantCheckBtn.style.backgroundColor = 'transparent';
+  });
+
+  if (chatHistoryEle[0]){
+    // Check data-chat-visible attribute
+    //var chatVisibilityDataAtr = document.querySelector('#chat-toggle-chat-visibility').getAttribute('data-chat-visible');
+    var chatVisibilityDataset = document.querySelector('#chat-toggle-chat-visibility').dataset.chatVisible;
+
+    if (chatVisibilityDataset){
+      document.querySelector('#chat-main-menu').appendChild(missedRantCheckBtn);
+    }
+    
+    missedRantCheckBtn.onclick = function() {
+      //console.log('Missed rants button clicked');
+      getChatHistory();
+
+      console.log('Missed Rants', JSON.stringify(cachedRants));
+    }
+  }
+}
+
 
 
 
@@ -1236,7 +1314,9 @@ var chatObserver = new MutationObserver(function(mutations) {
           // Check element classlist for 'chat-history--rant' 
           if (addedNode.classList.contains('chat-history--rant')) {
             // Save rant to sync storage
-            saveRant(addedNode);
+            if (saveRants){
+              saveRant(addedNode);
+            }
             return;
           }
 
@@ -1450,11 +1530,9 @@ var setIntervals = function() {
 
 
 
-
-
 //////   Rants   //////
 
-const checkRantExists = function(element) {
+const checkRantExists = function(element, rant) {
   let newDate = new Date();
 
   // Make rant object
@@ -1538,25 +1616,33 @@ const saveRant = function(element, history) {
   console.log('newRant: ' + JSON.stringify(newRant)); 
 
   savedRants.push(newRant);
-  //cachedRants.push(newRant);
 
-  chrome.storage.sync.set({testRants: savedRants}, function() {
-    //console.log('saveRant ' + JSON.stringify(savedRants));
-  });
+  // Save rants to chrome.storage.sync
+  storeRants(newRant);
+}
 
-  /*chrome.runtime.sendMessage('save-data', (response) => {
-    console.log('content: received user data', response);
-  });*/
+const storeRants = function(rant) {
+  try {
+    chrome.storage.sync.set({savedRants: savedRants}, function() {
+      //console.log('saveRant ' + JSON.stringify(savedRants));
+    });
+  } catch (error) {
+    console.log('Refresh required.' + error);
 
+    getChatHistory();
+
+    // Add rant to cachedRants 
+    cachedRants.push(rant);
+
+    // Show rants not in savedRants
+    console.log('cachedRants: ' + JSON.stringify(cachedRants));
+  }
 }
 
 
 
 
-
-
 //////   Test Functions  2/11/2023 //////
-
 
 // Append test button to chat window
 const testBtn = document.createElement('div');
@@ -1602,6 +1688,8 @@ if (chatHistoryEle[0]){
 
     chrome.runtime.sendMessage('new-window', (response) => {
       //console.log('new window', response);
+    }).onDisconnect.addListener(function() {
+      //console.log('disconnected');
     });
     
   });
@@ -1695,6 +1783,8 @@ const addRantTestBtn = () => {
     rantTestBtn.style.backgroundColor = 'transparent';
   });
 
+  let rantPrice = 10;
+
   if (chatHistoryEle[0]){
     // Check data-chat-visible attribute
     //var chatVisibilityDataAtr = document.querySelector('#chat-toggle-chat-visibility').getAttribute('data-chat-visible');
@@ -1722,7 +1812,7 @@ const addRantTestBtn = () => {
                 <a class='chat-history--rant-username' 
                   href='/user/${currentUser}' target='_blank'>${currentUser}
                 </a>
-                <div class='chat-history--rant-price'>$1</div>
+                <div class='chat-history--rant-price'>$${rantPrice}</div>
               </div>
             </div>
             <div class='chat-history--rant-text'>
@@ -1730,6 +1820,8 @@ const addRantTestBtn = () => {
             </div>
           </div>
         </div>`;
+
+      rantPrice += 10;
 
       chatHistoryRow.innerHTML = testRant;
       chatHistoryList.appendChild(chatHistoryRow);

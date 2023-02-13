@@ -17,6 +17,10 @@ const defaultOptions = {
 // Options stored in chrome.storage.sync
 let options = {};
 
+let rantPopupType = "popup";
+
+//"normal", "popup", "panel", "app", or "devtools"
+
 // Initial setup
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.sync.get("options").then((result) => {
@@ -62,13 +66,13 @@ chrome.runtime.onInstalled.addListener(() => {
     }
   });
 
-  chrome.storage.sync.get("testRants").then((result) => {
-    if ( result && result.testRants ) {
-      console.log("Installed - testRants", result.testRants);
+  chrome.storage.sync.get("savedRants").then((result) => {
+    if ( result && result.savedRants ) {
+      console.log("Installed - savedRants retrieved", result.savedRants);
     } else {
       chrome.storage.sync.set({ testRants: [] })
         .then(() => {
-          console.log("New install testRants", []);
+          console.log("Installed - savedRants empty", []);
         });
     }
   });
@@ -78,26 +82,20 @@ chrome.runtime.onInstalled.addListener(() => {
 
 //////   Testing  Background //////
 
-// Example of a simple user data object
-const user = {
-  username: 'demo-user'
-};
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // 2. A page requested user data, respond with a copy of `user`
-  if (message === 'get-user-data') {
-    chrome.storage.sync.get("testRants").then((result) => {
+  if (message === 'store-rant') {
+    chrome.storage.sync.get("savedRants").then((result) => {
       sendResponse(result);
-
     });
-
-    //sendResponse(user);
   }
 
   if (message === 'new-window') {
+    //window.close();
+
     chrome.windows.create({
       url: chrome.runtime.getURL("build-rants/index.html"),
-      type: "popup",
+      type: rantPopupType
     }, (win)=>{
       //console.log(res);
       sendResponse(JSON.stringify(win));

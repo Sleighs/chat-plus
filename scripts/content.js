@@ -11,7 +11,8 @@ let optionsState = {
   hideFullWindowChatButton: false,
   showListUserCount: false,
   chatStyleNormal: true,
-  saveRants: false
+  saveRants: false,
+  chatAvatarEnabled: true
 };
 
 // Undefined option vars
@@ -24,7 +25,8 @@ let enableChatPlus,
   hideFullWindowChatButton,
   showListUserCount,
   chatStyleNormal,
-  saveRants;
+  saveRants,
+  chatAvatarEnabled;
 
 // Vars that remain in scope
 let debugMode = false;
@@ -98,7 +100,8 @@ let userColors = {};
       hideFullWindowChatButton: false,
       showListUserCount: false,
       chatStyleNormal: true,
-      saveRants: false
+      saveRants: false,
+      chatAvatarEnabled: true
     };
 
     const optionsList = [
@@ -111,7 +114,8 @@ let userColors = {};
       "hideFullWindowChatButton",
       "showListUserCount",
       "chatStyleNormal",
-      "saveRants"
+      "saveRants",
+      "chatAvatarEnabled"
     ];
 
     function extractProperties(names, obj) {
@@ -141,6 +145,7 @@ let userColors = {};
       showListUserCount = newOptionObj.showListUserCount;
       chatStyleNormal = newOptionObj.chatStyleNormal;
       saveRants = newOptionObj.saveRants;
+      chatAvatarEnabled = newOptionObj.chatAvatarEnabled;
 
       Object.assign(optionsState, newOptionObj);
     } else {
@@ -154,6 +159,7 @@ let userColors = {};
       showListUserCount = defaultOptions.showListUserCount;
       chatStyleNormal = defaultOptions.chatStyleNormal;
       saveRants = defaultOptions.saveRants;
+      chatAvatarEnabled = defaultOptions.chatAvatarEnabled;
 
       Object.assign(optionsState, defaultOptions);
     } 
@@ -219,19 +225,8 @@ let userColors = {};
       } catch (err) {
         //if (debugMode) console.log(err);
       }
-
-      
     }    
   });  
-
-  /*await chrome.storage.sync.get("rants")
-  .then(function (result) {
-    if (result && result.rants){
-      //savedRants = result.rants;
-    } else {
-      //savedRants = [];
-    }
-  });*/
 })();
 
 
@@ -312,6 +307,13 @@ const getChatHistory = () => {
     // Check element classlist for 'chat-history--rant' and skip row
     if (ele.classList.contains('chat-history--rant')) {
       return;
+    }
+
+    // Remove avatar if chatAvatarEnabled is false
+    if (!chatAvatarEnabled
+      && ele.childNodes[0].classList.contains("chat-history--user-avatar")
+    ){
+      ele.querySelector(".chat-history--user-avatar").style.display = "none";
     }
 
     let element = ele.querySelector('.chat-history--message-wrapper');
@@ -870,7 +872,7 @@ const toggleStreamerMode = (toggle) => {
       mainChildEle.style.height = '100%';
       mainChildEle.style.maxHeight = '100vh';
       mainChildEle.style.position = 'relative';
-      mainChildEle.style.overflow = 'scroll';
+      mainChildEle.style.overflow = 'hidden';
 
       // .sidebar
       let sidebarEle = document.querySelector(".sidebar");  
@@ -1104,6 +1106,13 @@ var chatObserver = new MutationObserver(function(mutations) {
           if (!enableChatPlus || mutation.addedNodes[i].classList.contains('chat-history--rant')) {
             // Save rant to chrome.storage.sync
             return;
+          }
+
+          if (
+            !chatAvatarEnabled 
+            && mutation.addedNodes[i].childNodes[0].classList.contains("chat-history--user-avatar")
+          ){
+            mutation.addedNodes[i].childNodes[0].style.display = "none";
           }
 
           let addedNode = mutation.addedNodes[i].querySelector('.chat-history--message-wrapper');

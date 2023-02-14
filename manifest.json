@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ChatPlus for Rumble",
-  "version": "1.2.91",
+  "version": "1.2.92",
   "description": "Enhance Rumble livestream chat. Features include highlighted mentions, easy user tagging and full window chat.",
   "action": {
     "default_icon": {

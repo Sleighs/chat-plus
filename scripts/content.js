@@ -51,11 +51,7 @@ let savedRants = [];
 let cachedRants = [];
 let enableRants = true;
 
-// Service Worker
-let rantServiceWorker = {
-  method: 'rantServiceWorker',
-  action: 'keepAlive' 
-}
+
 
 // Text colors
 let usernameColors = {
@@ -351,8 +347,8 @@ const getRandomColor = () => {
 try {
   // Get current user from page if logged in
   let rantEle = document.querySelectorAll('.chat-history--rant-head');
-  let usernameEle = document.querySelectorAll('.media-heading-name');
-  //document.querySelectorAll('.chat-history--rant-username');
+  let usernameEle = document.querySelectorAll('.chat-history--rant-username');
+  //document.querySelectorAll('.media-heading-name');
   
   if (rantEle && usernameEle) {
     if (usernameEle.length > 0) {
@@ -416,7 +412,7 @@ const getChatHistory = () => {
       // Add rant if new otherwise skip
     if (ele.classList.contains('chat-history--rant')) {
       if (saveRants) {
-        saveRant(element, true)
+        saveRant(ele, true)
       }
       //console.log('Skipping rant', element);
       return;
@@ -1253,9 +1249,13 @@ const addViewRantsBtn = () => {
     }
     
     viewRantsBtn.onclick = function() {
-      chrome.runtime.sendMessage('new-rant-window', (response) => {
-        //console.log('new rants window', response);
-      });
+      try {
+        chrome.runtime.sendMessage('new-window', (response) => {
+          //console.log('new rants window', response);
+        });
+      } catch (error) {
+        console.log('new rants window error', error);
+      } 
     }
   }
 }
@@ -1330,17 +1330,6 @@ var chatObserver = new MutationObserver(function(mutations) {
     if (mutation.type === "childList") {
       // Loop through the added nodes to find new messages
       for (var i = 0; i < mutation.addedNodes.length; i++) {
-        // let addedNode = mutation.addedNodes[i];
-        
-        /*if (addedNode.classList.contains("chat-history--row")) {
-          // Check element classlist for 'chat-history--rant' 
-          if (addedNode.classList.contains('chat-history--rant')) {
-            // Save rant to sync storage
-            if (saveRants){
-              saveRant(addedNode);
-            }
-            return;
-          }*/
           if (mutation.addedNodes[i].classList.contains("chat-history--row")) {
             // Check element classlist for 'chat-history--rant' 
             if (mutation.addedNodes[i].classList.contains('chat-history--rant')) {
@@ -1570,6 +1559,12 @@ var setIntervals = function() {
     clearInterval(chatRefreshInterval);
   }
 
+  /*
+  // Service Worker
+  let rantServiceWorker = {
+    method: 'rantServiceWorker',
+    action: 'keepAlive' 
+  }
   if (saveRants){
     var rantInterval = setInterval(() => {
       chrome.runtime.sendMessage(rantServiceWorker).then(function(response) {
@@ -1578,7 +1573,7 @@ var setIntervals = function() {
     }, 20000);
   } else {
     clearInterval(rantInterval);
-  }
+  }*/
 }
 
 
@@ -1678,7 +1673,6 @@ const saveRant = function(element, history) {
 
 const storeRants = function(rant) {
   try {
-    chrome.runtime.connect();
     chrome.storage.sync.set({savedRants: savedRants}, function() {
       //console.log('saveRant ' + JSON.stringify(savedRants));
     });
@@ -1797,13 +1791,13 @@ const addRantTestBtn = () => {
 }
 
 
-const sendRantDataToBackground = () =>{
-  chrome.runtime.sendMessage({
-    type: 'storage-off', 
-    savedRants: JSON.stringify(savedRants),
-    cachedRants: JSON.stringify(cachedRants)
-  }, function(response) {
-    //console.log('response: ' + JSON.stringify(response));
-    console.log('sent rant data to background: ' + response);
-  });
-}
+let intCount = 0;
+// Listen for messages from background.js
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  // if method is rantServiceWorker then send the savedRants
+  if (request.method == 'rantServiceWorker') {
+    intCount = intCount + 20;
+    console.log('rantServiceWorker', intCount)
+    sendResponse({ savedRants: savedRants, cachedRants });
+  }
+});

@@ -13,6 +13,10 @@
     "default_title": "ChatPlus for Rumble",
     "default_popup": "build/index.html"
   },
+  "options_ui": {
+    "page": "build/index.html",
+    "open_in_tab": true
+  },
   "icons": {
     "16": "images/icon-16.png",
     "32": "images/icon-32.png",
@@ -38,15 +42,13 @@
   ],
   "permissions": [
     "storage",
-    "nativeMessaging",
+    "offscreen",
     "tabs"
   ],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'",
-    
-      "pages": [
-        "build-rants/index.html"
-      ]
-    
+    "pages": [
+      "build-rants/index.html"
+    ]
   }
 }

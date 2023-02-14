@@ -1250,7 +1250,7 @@ const addViewRantsBtn = () => {
     
     viewRantsBtn.onclick = function() {
       try {
-        chrome.runtime.sendMessage('new-window', (response) => {
+        chrome.runtime.sendMessage({ action:'new-window' }, (response) => {
           //console.log('new rants window', response);
         });
       } catch (error) {
@@ -1559,12 +1559,13 @@ var setIntervals = function() {
     clearInterval(chatRefreshInterval);
   }
 
-  /*
+  
   // Service Worker
   let rantServiceWorker = {
     method: 'rantServiceWorker',
-    action: 'keepAlive' 
-  }
+    action: 'keepAlive', 
+    from: 'content'
+  } 
   if (saveRants){
     var rantInterval = setInterval(() => {
       chrome.runtime.sendMessage(rantServiceWorker).then(function(response) {
@@ -1573,7 +1574,7 @@ var setIntervals = function() {
     }, 20000);
   } else {
     clearInterval(rantInterval);
-  }*/
+  }
 }
 
 
@@ -1691,7 +1692,16 @@ const storeRants = function(rant) {
   }
 }
 
-
+let intCount = 0;
+// Listen for messages from background.js
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  // Send rants
+  if (request.method == 'rantServiceWorker') {
+    intCount = intCount + 20;
+    console.log('rantServiceWorker', intCount)
+    sendResponse({ savedRants: savedRants, cachedRants });
+  }
+});
 
 
 
@@ -1791,13 +1801,3 @@ const addRantTestBtn = () => {
 }
 
 
-let intCount = 0;
-// Listen for messages from background.js
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  // if method is rantServiceWorker then send the savedRants
-  if (request.method == 'rantServiceWorker') {
-    intCount = intCount + 20;
-    console.log('rantServiceWorker', intCount)
-    sendResponse({ savedRants: savedRants, cachedRants });
-  }
-});

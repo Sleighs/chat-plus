@@ -94,22 +94,7 @@ let userColors = {};
 //////   Initialize App   ///////
 
 // Get options from storage and initialize extension
-(async () => {
-  // Get rants
-  /*await chrome.storage.sync.get("savedRants")
-    .then(function (result) {
-      if (result && result.savedRants && result.savedRants.length > 0){
-        savedRants = result.savedRants;
-        
-        //console.log('get rants', JSON.stringify(result))
-      } else {
-        //savedRants = [];
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });*/
-  
+(async () => {  
   // Get options and setup extension
   await chrome.storage.sync.get("options")
   .then(function (result) {
@@ -348,11 +333,16 @@ try {
   // Get current user from page if logged in
   let rantEle = document.querySelectorAll('.chat-history--rant-head');
   let usernameEle = document.querySelectorAll('.chat-history--rant-username');
-  //document.querySelectorAll('.media-heading-name');
+  let usernameEle2 = document.querySelectorAll('.media-heading-name');
   
   if (rantEle && usernameEle) {
     if (usernameEle.length > 0) {
       currentUser = usernameEle[usernameEle.length - 1].textContent;
+      chrome.storage.local.set({ currentUser });
+    } else {
+      chrome.storage.local.get(['currentUser'], (result) => {
+        currentUser = result.currentUser;
+      });
     } 
   }
 
@@ -1559,7 +1549,6 @@ var setIntervals = function() {
     clearInterval(chatRefreshInterval);
   }
 
-  
   // Service Worker
   let rantServiceWorker = {
     method: 'rantServiceWorker',
@@ -1623,7 +1612,6 @@ const checkRantExists = function(element, rant) {
     }
     for (let j = 0; j < rantIndex.length; j++) {
       savedRants[rantIndex[j]].duplicateCount = duplicateCount;
-      //console.log('rantIndex', rantIndex[j]);
     }
   } 
   
@@ -1648,7 +1636,7 @@ const saveRant = function(element, history) {
     return;
   }
 
-  // Save rant to chrome.storage.sync
+  // Save rant to API.storage.sync
   let newDate = new Date();
 
   let newRant = {
@@ -1668,7 +1656,7 @@ const saveRant = function(element, history) {
 
   savedRants.push(newRant);
 
-  // Save rants to chrome.storage.sync
+  // Save rants to API.storage.sync
   storeRants(newRant);
 }
 
@@ -1678,30 +1666,30 @@ const storeRants = function(rant) {
       //console.log('saveRant ' + JSON.stringify(savedRants));
     });
   } catch (error) {
-    console.log('Refresh required.' + error);
+    //console.log('Refresh required.' + error);
 
     getChatHistory();
 
     // Add rant to cachedRants 
     cachedRants.push(rant);
 
-    // If Missed Rants is open, show cached rants
-
-    // Show rants not in savedRants
+    // If Missed Rants is open, show rants not in savedRants(cachedRants)
     console.log('cachedRants: ' + JSON.stringify(cachedRants));
   }
 }
 
-let intCount = 0;
-// Listen for messages from background.js
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  // Send rants
-  if (request.method == 'rantServiceWorker') {
-    intCount = intCount + 20;
-    console.log('rantServiceWorker', intCount)
-    sendResponse({ savedRants: savedRants, cachedRants });
-  }
-});
+if (saveRants){
+  let intCount = 0;
+  // Listen for messages from background.js
+  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    // Send rants
+    if (request.method == 'rantServiceWorker') {
+      intCount = intCount + 20;
+      console.log('rantServiceWorker', intCount)
+      sendResponse({ savedRants: savedRants, cachedRants });
+    }
+  });
+}
 
 
 
@@ -1754,7 +1742,7 @@ const addRantTestBtn = () => {
     rantTestBtn.style.backgroundColor = 'transparent';
   });
 
-  let rantPrice = 10;
+  let rantPrice = 2;
 
   if (chatHistoryEle[0]){
     // Check data-chat-visible attribute
@@ -1792,7 +1780,7 @@ const addRantTestBtn = () => {
           </div>
         </div>`;
 
-      rantPrice += 10;
+      rantPrice += 15;
 
       chatHistoryRow.innerHTML = testRant;
       chatHistoryList.appendChild(chatHistoryRow);

@@ -63,29 +63,18 @@ chrome.runtime.onInstalled.addListener(() => {
         });
     }
   });
-
-  chrome.storage.sync.get("savedRants").then((result) => {
-    if ( result && result.savedRants ) {
-      console.log("Installed - savedRants retrieved", result.savedRants);
-    } else {
-      chrome.storage.sync.set({ savedRants: [] })
-        .then(() => {
-          console.log("Installed - savedRants empty", []);
-        });
-    }
-  });
 });
 
 chrome.runtime.onStartup.addListener(() => {
   // Keep the service worker alive every 20 seconds
-  var testInterval = setInterval(() => {
+  var keepAliveInterval = setInterval(() => {
     chrome.runtime.sendMessage({
       method: "rantServiceWorker", 
       action: "keepAlive",
       from: 'background'
     });
   }, 20000);
-  testInterval();
+  keepAliveInterval();
 });
 
 //////   MessageListener   //////
@@ -104,13 +93,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Close previous rant windows
     let windowOptions = {
       url: chrome.runtime.getURL("build-rants/index.html"),
-      type: "popup",
-    }
+      type: "normal",
+    } 
+
+    // Close previous rant windows
+    chrome.windows.getAll({populate: true}, (windows) => {
+      windows.forEach((window) => {
+        window.tabs.forEach((tab) => {
+          if (tab.url.includes("build-rants/index.html")) {
+            chrome.windows.remove(window.id);
+          }
+        });
+      });
+    });
 
     // Open new rant window
-    chrome.windows.create(windowOptions, (win)=>{
-      sendResponse(JSON.stringify(win));
+    chrome.windows.create(windowOptions, (window)=>{
+      sendResponse(JSON.stringify(window));
     });
   }
 });
-

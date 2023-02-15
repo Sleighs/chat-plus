@@ -249,8 +249,14 @@ try {
   if (rantEle && usernameEle) {
     if (usernameEle.length > 0) {
       currentUser = usernameEle[usernameEle.length - 1].textContent;
+      chrome.storage.local.set({ currentUser });
+    } else {
+      chrome.storage.local.get(['currentUser'], (result) => {
+        currentUser = result.currentUser;
+      });
     } 
   }
+  
 
   // Get current streamer from author element if exists
   const authorEle = document.querySelector('.media-by--a');

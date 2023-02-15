@@ -1669,11 +1669,9 @@ const saveRant = function(element, history) {
     duplicateCount: rantExists.duplicateCount
   }
 
-  console.log('newRant: ' + JSON.stringify(newRant)); 
-
-  //newRants.push(newRant);
-  savedRants.push(newRant);
-  //getRants();
+  console.log('newRant' + newRants.length + ': ' + newRant.username + ' - ' + newRant.message);
+  
+  newRants.push(newRant);
 
   // Save rants to storage
   storeRants(newRant);
@@ -1685,29 +1683,8 @@ const getRants = function() {
     chrome.storage.sync.get('savedRants')
       .then((result) => {
         rantSaverIsRunning = true;
-
-        console.log('Rants retrieved successfully1.', newRants)     
-        
-        // Combine new rants with saved rants
-        function combineArrs(arr1, arr2) {
-          let newArr = [];
-          for (let i = 0; i < arr1.length; i++) {
-            newArr.push(arr1[i]);
-          }
-          for (let j = 0; j < arr2.length; j++) {
-            newArr.push(arr2[j]);
-          }
-          return newArr;
-        }
-
-        let allRants = combineArrs(result.savedRants, newRants);
-        
-        savedRants = allRants;
+        savedRants = result.savedRants.concat(newRants);
         newRants = []; 
-
-        console.log('Rants retrieved successfully2.', newRants)
-        console.log('Rants retrieved successfully3.', savedRants)
-
       });
   } catch (error) {
     console.log('getRants - Refresh required.' + error);
@@ -1718,14 +1695,22 @@ const getRants = function() {
 }
 
 const storeRants = function(rant) {
-  //getRants();
-
   try {
-    chrome.storage.sync.set({savedRants: savedRants}, function() {
-      console.log('Rants stored successfully'/* + JSON.stringify(savedRants)*/);
-    }); 
+    chrome.storage.sync.get('savedRants')
+      .then((result) => {
+        rantSaverIsRunning = true;
+
+        // Combine new rants with saved rants
+        savedRants = result.savedRants.concat(newRants);
+        newRants = []; 
+
+        chrome.storage.sync.set({savedRants: savedRants}, function() {
+          //console.log('Rants stored successfully'/* + JSON.stringify(savedRants)*/);
+        }); 
+      });
   } catch (error) {
-    //console.log('Refresh required.' + error);
+    // if (debugMode) console.log('Refresh required.' + error);
+
     // Update rant saver state
     rantSaverIsRunning = false;
     document.querySelector('#viewRantsBtn').style.color = 'darkred';
@@ -1740,28 +1725,6 @@ const storeRants = function(rant) {
   }
 }
 
-if (saveRants){
-  let intCount = 0;
-  // Listen for messages from background.js
-  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    // Send rants
-    if (request.method == 'rantServiceWorker') {
-      intCount = intCount + 20;
-      console.log('rantServiceWorker', intCount)
-
-      sendResponse({ savedRants: savedRants, cachedRants });
-
-      /*// Update rantSaver state
-      rantSaverIsRunning = true;
-      //viewRantsBtn
-      document.querySelector('#viewRantsBtn').style.color = 'green';
-      setTimeout(() => {
-        rantSaverIsRunning = false;
-        document.querySelector('#viewRantsBtn').style.color = 'darkred';
-      }, 21000);*/
-    }
-  });
-}
 
 
 
@@ -1861,3 +1824,21 @@ const addRantTestBtn = () => {
 }
 
 
+/*
+if (saveRants){
+  let intCount = 0;
+  // Listen for messages from background.js
+  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.method == 'rantServiceWorker') {
+      intCount = intCount + 20;
+      console.log('rantServiceWorker', intCount)
+
+      sendResponse({ savedRants: savedRants, cachedRants });
+    }
+  })
+  .catch((error) => {
+    rantSaverIsRunning = false;
+    document.querySelector('#viewRantsBtn').style.color = 'darkred';
+  });
+}
+*/

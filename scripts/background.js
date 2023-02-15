@@ -65,7 +65,7 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-chrome.runtime.onStartup.addListener(() => {
+/*chrome.runtime.onStartup.addListener(() => {
   // Keep the service worker alive every 20 seconds
   var keepAliveInterval = setInterval(() => {
     chrome.runtime.sendMessage({
@@ -75,7 +75,7 @@ chrome.runtime.onStartup.addListener(() => {
     });
   }, 20000);
   keepAliveInterval();
-});
+});*/
 
 //////   MessageListener   //////
 let rantTimeCounter = 0;

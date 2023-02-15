@@ -49,7 +49,9 @@ var userCount = 0;
 // Rants
 let savedRants = [];
 let cachedRants = [];
+let newRants = [];
 let enableRants = true;
+let rantSaverIsRunning = false;
 
 
 
@@ -171,21 +173,24 @@ let userColors = {};
 
       Object.assign(optionsState, defaultOptions);
     } 
-    chrome.storage.sync.get("savedRants")
-    .then(function (result) {
-      if (result && result.savedRants && result.savedRants.length > 0){
-        savedRants = result.savedRants;
-        
-        //console.log('get rants', JSON.stringify(result))
-      } else {
-        //savedRants = [];
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    
+    if (document.querySelector('.chat-history')){
+      chrome.storage.sync.get("savedRants")
+        .then(function (result) {
+          if (result && result.savedRants && result.savedRants.length > 0){
+            savedRants = result.savedRants;
+            // Update rant saving state
+            rantSaverIsRunning = true;
+            document.querySelector('#viewRantsBtn').style.color = 'green';
+            
+            //console.log('get rants', JSON.stringify(result))
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }).then(() => {
-
     // If app is enabled
     if (enableChatPlus) {
       // Check if chat exists
@@ -254,7 +259,10 @@ let userColors = {};
         //if (debugMode) console.log(err);
       }
     }    
-  });  
+  })
+  .catch((err) => {
+    console.log('init', err);
+  });
 })();
 
 
@@ -906,7 +914,7 @@ const toggleChatUsernameMenu = (toggle) => {
 
 
 
-//////   In Page Options   //////
+//////   Chat Options   //////
 
 const toggleStreamerMode = (toggle) => {
   streamerMode = toggle;
@@ -1557,9 +1565,18 @@ var setIntervals = function() {
   } 
   if (saveRants){
     var rantInterval = setInterval(() => {
-      chrome.runtime.sendMessage(rantServiceWorker).then(function(response) {
-       console.log('Rant SW', response);
-      });
+      try {
+        chrome.runtime.sendMessage(rantServiceWorker).then(function(response) {
+          console.log('Rant SW sendMessage', response);
+          rantSaverIsRunning = true;
+          document.querySelector('#viewRantsBtn').style.color = 'green';
+        });
+      } catch (e) {
+        setTimeout(() => {
+          rantSaverIsRunning = false;
+          document.querySelector('#viewRantsBtn').style.color = 'darkred';
+        }, 21000);
+      }
     }, 20000);
   } else {
     clearInterval(rantInterval);
@@ -1654,20 +1671,65 @@ const saveRant = function(element, history) {
 
   console.log('newRant: ' + JSON.stringify(newRant)); 
 
+  //newRants.push(newRant);
   savedRants.push(newRant);
+  //getRants();
 
-  // Save rants to API.storage.sync
+  // Save rants to storage
   storeRants(newRant);
 }
 
+const getRants = function() {
+  // Get rants from storage
+  try {
+    chrome.storage.sync.get('savedRants')
+      .then((result) => {
+        rantSaverIsRunning = true;
+
+        console.log('Rants retrieved successfully1.', newRants)     
+        
+        // Combine new rants with saved rants
+        function combineArrs(arr1, arr2) {
+          let newArr = [];
+          for (let i = 0; i < arr1.length; i++) {
+            newArr.push(arr1[i]);
+          }
+          for (let j = 0; j < arr2.length; j++) {
+            newArr.push(arr2[j]);
+          }
+          return newArr;
+        }
+
+        let allRants = combineArrs(result.savedRants, newRants);
+        
+        savedRants = allRants;
+        newRants = []; 
+
+        console.log('Rants retrieved successfully2.', newRants)
+        console.log('Rants retrieved successfully3.', savedRants)
+
+      });
+  } catch (error) {
+    console.log('getRants - Refresh required.' + error);
+    // Update rant saver state
+    rantSaverIsRunning = false;
+    document.querySelector('#viewRantsBtn').style.color = 'darkred';
+  }
+}
+
 const storeRants = function(rant) {
+  //getRants();
+
   try {
     chrome.storage.sync.set({savedRants: savedRants}, function() {
-      //console.log('saveRant ' + JSON.stringify(savedRants));
-    });
+      console.log('Rants stored successfully'/* + JSON.stringify(savedRants)*/);
+    }); 
   } catch (error) {
     //console.log('Refresh required.' + error);
-
+    // Update rant saver state
+    rantSaverIsRunning = false;
+    document.querySelector('#viewRantsBtn').style.color = 'darkred';
+            
     getChatHistory();
 
     // Add rant to cachedRants 
@@ -1686,7 +1748,17 @@ if (saveRants){
     if (request.method == 'rantServiceWorker') {
       intCount = intCount + 20;
       console.log('rantServiceWorker', intCount)
+
       sendResponse({ savedRants: savedRants, cachedRants });
+
+      /*// Update rantSaver state
+      rantSaverIsRunning = true;
+      //viewRantsBtn
+      document.querySelector('#viewRantsBtn').style.color = 'green';
+      setTimeout(() => {
+        rantSaverIsRunning = false;
+        document.querySelector('#viewRantsBtn').style.color = 'darkred';
+      }, 21000);*/
     }
   });
 }

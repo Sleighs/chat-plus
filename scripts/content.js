@@ -430,7 +430,6 @@ const getChatHistory = () => {
 
     // Assign text color to username and message
     element.childNodes[0].style.color = userColor;
-    //if(element.childNodes[0].querySelector('.chat-history--username')) element.childNodes[0].querySelector('a').style.color = userColor;
     element.childNodes[0].querySelector('a').style.color = userColor;
 
     // Assign background color to row if chatStyleNormal is on
@@ -1362,7 +1361,6 @@ var chatObserver = new MutationObserver(function(mutations) {
 
           // Assign color to username
           addedNode.childNodes[0].style.color = userColor;
-          //if(addedNode.childNodes[0].querySelector('.chat-history--username')) addedNode.childNodes[0].querySelector('a').style.color = userColor;
           addedNode.childNodes[0].querySelector('a').style.color = userColor;
 
           //wrapperEle.childNodes[0].style.color = userColor;

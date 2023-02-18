@@ -109,7 +109,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     // Open new rant window
     chrome.windows.create(windowOptions, (window)=>{
-      sendResponse(JSON.stringify(window));
+      sendResponse(window);
     });
   }
 });

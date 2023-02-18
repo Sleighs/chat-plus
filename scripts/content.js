@@ -175,7 +175,7 @@ let userColors = {};
     } 
     
     if (document.querySelector('.chat-history')){
-      chrome.storage.sync.get("savedRants")
+      chrome.storage.local.get("savedRants")
         .then(function (result) {
           if (result && result.savedRants && result.savedRants.length > 0){
             savedRants = result.savedRants;
@@ -1335,7 +1335,7 @@ var chatObserver = new MutationObserver(function(mutations) {
             if (mutation.addedNodes[i].classList.contains('chat-history--rant')) {
               // Save rant to sync storage
               if (saveRants){
-                saveRant(mutation.addedNodes[i]);
+                saveRant(mutation.addedNodes[i], false);
               }
               return;
             }
@@ -1646,13 +1646,13 @@ const checkRantExists = function(element, rant) {
   }
 }
 
-const saveRant = function(element, history) {
+const saveRant = function(element, fromHistory) {
   // Check if rant already exists in element and get duplicate count
   let rantExists = checkRantExists(element);
   //console.log('rant exists: ', rantExists.rantExists, JSON.stringify(rantExists));
 
   // Skip adding rant on getChatHistory()
-  if (rantExists.rantExists === true && history === true) {
+  if (rantExists.rantExists === true && fromHistory === true) {
     //console.log('Rant already exists, not saving')
     return;
   }
@@ -1673,7 +1673,7 @@ const saveRant = function(element, history) {
     duplicateCount: rantExists.duplicateCount
   }
 
-  console.log('newRant' + newRants.length + ': ' + newRant.username + ' - ' + newRant.message);
+  console.log('newRant ' + newRants.length + ': $' + newRant.amount + ' ' + newRant.username + ' - ' + newRant.message);
   
   newRants.push(newRant);
 
@@ -1684,10 +1684,10 @@ const saveRant = function(element, history) {
 const getRants = function() {
   // Get rants from storage
   try {
-    chrome.storage.sync.get('savedRants')
+    chrome.storage.local.get('savedRants')
       .then((result) => {
         rantSaverIsRunning = true;
-        savedRants = result.savedRants.concat(newRants);
+        savedRants = savedRants.concat(newRants);
         newRants = []; 
       });
   } catch (error) {
@@ -1700,15 +1700,17 @@ const getRants = function() {
 
 const storeRants = function(rant) {
   try {
-    chrome.storage.sync.get('savedRants')
+    chrome.storage.local.get('savedRants')
       .then((result) => {
         rantSaverIsRunning = true;
 
         // Combine new rants with saved rants
-        savedRants = result.savedRants.concat(newRants);
+        if (result.savedRants) {
+          savedRants = result.savedRants.concat(newRants);
+        }
         newRants = []; 
 
-        chrome.storage.sync.set({savedRants: savedRants}, function() {
+        chrome.storage.local.set({savedRants: savedRants}, function() {
           //console.log('Rants stored successfully'/* + JSON.stringify(savedRants)*/);
         }); 
       });
@@ -1781,7 +1783,7 @@ const addRantTestBtn = () => {
     rantTestBtn.style.backgroundColor = 'transparent';
   });
 
-  let rantPrice = 2;
+  let rantIntervalOn = false;
 
   if (chatHistoryEle[0]){
     // Check data-chat-visible attribute
@@ -1790,16 +1792,21 @@ const addRantTestBtn = () => {
 
     if (chatVisibilityDataset){
       document.querySelector('#chat-main-menu').appendChild(rantTestBtn);
+      //rantTestBtn.style.width = '25px';
+      //chatHistoryEle[0].appendChild(rantTestBtn);
     }
     
-    rantTestBtn.addEventListener('click', ()=>{  
+    rantTestBtn.addEventListener('click', () => {  
       let chatHistoryRow = document.createElement('li');
       chatHistoryRow.classList.add('chat-history--row');
       chatHistoryRow.classList.add('chat-history--rant');
       chatHistoryRow.style.display = 'flex';
       chatHistoryRow.style.flexDirection = 'row';
       
-      let testRant = `
+      
+      var rantPrice = 2;
+      
+      var testRant = `
         <div class='chat-history--row chat-history--rant'>
           <div class='chat-history--rant'>
             <div class='chat-history--rant-head'>
@@ -1819,30 +1826,16 @@ const addRantTestBtn = () => {
           </div>
         </div>`;
 
-      rantPrice += 15;
+        function newRant(){
+          rantPrice += 15;
 
-      chatHistoryRow.innerHTML = testRant;
-      chatHistoryList.appendChild(chatHistoryRow);
+          chatHistoryRow.innerHTML = testRant;
+          chatHistoryList.appendChild(chatHistoryRow);
+        }
+
+        var testRantInterval = setInterval(newRant, 1000);
+        
+        //newRant();
     });
   }
 }
-
-
-/*
-if (saveRants){
-  let intCount = 0;
-  // Listen for messages from background.js
-  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.method == 'rantServiceWorker') {
-      intCount = intCount + 20;
-      console.log('rantServiceWorker', intCount)
-
-      sendResponse({ savedRants: savedRants, cachedRants });
-    }
-  })
-  .catch((error) => {
-    rantSaverIsRunning = false;
-    document.querySelector('#viewRantsBtn').style.color = 'darkred';
-  });
-}
-*/

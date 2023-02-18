@@ -964,15 +964,15 @@ const toggleStreamerMode = (toggle) => {
       mainEle.style.maxHeight = '100vh';
       mainEle.style.height = '100%';
       mainEle.style.position = 'relative';
-      mainEle.style.overflow = 'scroll';
-
+      //mainEle.style.overflow = 'hidden';
+    
       // .main-and-sidebar
       let mainAndSidebarEle = document.querySelector(".main-and-sidebar");
       mainAndSidebarEle.style.height = '100%';
       mainAndSidebarEle.style.position = 'relative';
       mainAndSidebarEle.style.margin = 0;
       mainAndSidebarEle.style.padding = 0;
-
+    
       // .constrained 
       let mainChildEle = document.querySelector(".constrained");
       mainChildEle.style.padding = 0;
@@ -981,64 +981,67 @@ const toggleStreamerMode = (toggle) => {
       mainChildEle.style.height = '100%';
       mainChildEle.style.maxHeight = '100vh';
       mainChildEle.style.position = 'relative';
-      mainChildEle.style.overflow = 'scroll';
-
+      //mainChildEle.style.overflow = 'hidden';
+    
       // .sidebar
       let sidebarEle = document.querySelector(".sidebar");  
       sidebarEle.style.fontSize = '1.2rem';
       sidebarEle.style.margin = 0;
       sidebarEle.style.padding = 0;
       sidebarEle.style.position = 'relative';
-      sidebarEle.style.height = '100vh';
+      sidebarEle.style.height = '100%';
+      sidebarEle.style.maxHeight = '100vh';
       sidebarEle.style.width = '100%';
       sidebarEle.style.minWidth = '100vw';
-
+    
       // .chat 
       let chatContainerEle = document.querySelector(".chat");
       chatContainerEle.style.position = 'relative';
       chatContainerEle.style.margin = 0;
       chatContainerEle.style.padding = 0;
-      chatContainerEle.style.height = '100vh';
+      chatContainerEle.style.height = '100%';
+      chatContainerEle.style.maxHeight = '100vh';
       chatContainerEle.style.width = '100%';
-      chatContainerEle.style.overflow = 'scroll';
-
+      //chatContainerEle.style.overflow = 'scroll';
+    
       // .chat--history
       let chatHistoryElement = document.querySelector(".chat--container");
       chatHistoryElement.style.position = 'relative';
       chatHistoryElement.style.margin = 0;
       chatHistoryElement.style.padding = 0;
       chatHistoryElement.style.height = '100%';
-
+    
       // .container
       let containerEle = document.querySelector(".container");
       containerEle.style.position = 'relative';
       containerEle.style.margin = 0;
-      containerEle.style.height = '100%';
-
+      containerEle.style.height = '90%';
+    
       // .chat--height
       let chatListElement = document.querySelector(".chat--height");
       chatListElement.style.position = 'relative';
-      chatListElement.style.height = '81%';
+      chatListElement.style.height = '100%';
+      chatListElement.style.maxHeight = '85vh';
       
       // .chat--header
       let chatHeaderElement = document.querySelector(".chat--header");
       chatHeaderElement.style.position = 'relative';
-      chatHeaderElement.style.height = '28px';
+      chatHeaderElement.style.height = '6vh';
       chatHeaderElement.style.margin = 0;
-      chatHeaderElement.style.paddingLeft = '1.5%';
+      chatHeaderElement.style.paddingLeft = '1%';
       chatHeaderElement.style.paddingRight = '1%';
       chatHeaderElement.style.boxSizing = 'border-box';
-
+    
       // .chat--header--title
       let rantsContainer = document.querySelector('#chat-sticky-rants');
       rantsContainer.style.height = 'fit-content';
       rantsContainer.style.padding = 0;
-
-      // .chat--header--title
+    
+      // .chat-message-form
       var chatMessageEle = document.querySelector('#chat-message-form');
       chatMessageEle.style.padding = 0;
-      chatMessageEle.style.height = '50px';
-
+      chatMessageEle.style.height = '9vh';
+    
       // Bring chat to front
       //document.querySelector('#chat-main-menu').style.zIndex = '199';
       
@@ -1047,7 +1050,7 @@ const toggleStreamerMode = (toggle) => {
         document.querySelector('.username-menu-list').style.fontSize = '1.25rem';
         document.querySelector('.username-menu-button-container').style.fontSize = '1.2rem';
       }
-
+    
       // Change button dimensions
       document.querySelector('.username-menu-toggle-container').style.maxWidth = '20px';
       document.querySelector('.username-menu-toggle-button-text').style.marginTop = '3%';
@@ -1058,16 +1061,16 @@ const toggleStreamerMode = (toggle) => {
     } catch (error){
       //if (debugMode) console.log(error);
     }
-
+    
     // Pause all video elements
     const videoElements = document.querySelectorAll("video");
-
+    
     videoElements.forEach((videoElement) => {
       videoElement.pause();
     });
-
+    
     // Open username menu
-    toggleChatUsernameMenu(true);
+    //toggleChatUsernameMenu(true);
   } else if (!toggle){
     window.location.reload()
     // Save username colors to storage

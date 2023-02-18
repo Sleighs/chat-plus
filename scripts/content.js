@@ -863,7 +863,7 @@ const toggleStreamerMode = (toggle) => {
       mainEle.style.maxHeight = '100vh';
       mainEle.style.height = '100%';
       mainEle.style.position = 'relative';
-      mainEle.style.overflow = 'scroll';
+      //mainEle.style.overflow = 'hidden';
 
       // .main-and-sidebar
       let mainAndSidebarEle = document.querySelector(".main-and-sidebar");
@@ -880,7 +880,7 @@ const toggleStreamerMode = (toggle) => {
       mainChildEle.style.height = '100%';
       mainChildEle.style.maxHeight = '100vh';
       mainChildEle.style.position = 'relative';
-      mainChildEle.style.overflow = 'hidden';
+      //mainChildEle.style.overflow = 'hidden';
 
       // .sidebar
       let sidebarEle = document.querySelector(".sidebar");  
@@ -888,7 +888,8 @@ const toggleStreamerMode = (toggle) => {
       sidebarEle.style.margin = 0;
       sidebarEle.style.padding = 0;
       sidebarEle.style.position = 'relative';
-      sidebarEle.style.height = '100vh';
+      sidebarEle.style.height = '100%';
+      sidebarEle.style.maxHeight = '100vh';
       sidebarEle.style.width = '100%';
       sidebarEle.style.minWidth = '100vw';
 
@@ -897,9 +898,10 @@ const toggleStreamerMode = (toggle) => {
       chatContainerEle.style.position = 'relative';
       chatContainerEle.style.margin = 0;
       chatContainerEle.style.padding = 0;
-      chatContainerEle.style.height = '100vh';
+      chatContainerEle.style.height = '100%';
+      chatContainerEle.style.maxHeight = '100vh';
       chatContainerEle.style.width = '100%';
-      chatContainerEle.style.overflow = 'scroll';
+      //chatContainerEle.style.overflow = 'scroll';
 
       // .chat--history
       let chatHistoryElement = document.querySelector(".chat--container");
@@ -912,19 +914,20 @@ const toggleStreamerMode = (toggle) => {
       let containerEle = document.querySelector(".container");
       containerEle.style.position = 'relative';
       containerEle.style.margin = 0;
-      containerEle.style.height = '100%';
+      containerEle.style.height = '90%';
 
       // .chat--height
       let chatListElement = document.querySelector(".chat--height");
       chatListElement.style.position = 'relative';
-      chatListElement.style.height = '81%';
+      chatListElement.style.height = '100%';
+      chatListElement.style.maxHeight = '85vh';
       
       // .chat--header
       let chatHeaderElement = document.querySelector(".chat--header");
       chatHeaderElement.style.position = 'relative';
-      chatHeaderElement.style.height = '28px';
+      chatHeaderElement.style.height = '6vh';
       chatHeaderElement.style.margin = 0;
-      chatHeaderElement.style.paddingLeft = '1.5%';
+      chatHeaderElement.style.paddingLeft = '1%';
       chatHeaderElement.style.paddingRight = '1%';
       chatHeaderElement.style.boxSizing = 'border-box';
 
@@ -933,10 +936,10 @@ const toggleStreamerMode = (toggle) => {
       rantsContainer.style.height = 'fit-content';
       rantsContainer.style.padding = 0;
 
-      // .chat--header--title
+      // .chat-message-form
       var chatMessageEle = document.querySelector('#chat-message-form');
       chatMessageEle.style.padding = 0;
-      chatMessageEle.style.height = '50px';
+      chatMessageEle.style.height = '9vh';
 
       // Bring chat to front
       //document.querySelector('#chat-main-menu').style.zIndex = '199';
@@ -966,7 +969,7 @@ const toggleStreamerMode = (toggle) => {
     });
 
     // Open username menu
-    toggleChatUsernameMenu(true);
+    //toggleChatUsernameMenu(true);
   } else if (!toggle){
     window.location.reload()
     // Save username colors to storage

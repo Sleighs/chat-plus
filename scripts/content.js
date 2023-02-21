@@ -1570,6 +1570,7 @@ var setIntervals = function() {
     action: 'keepAlive', 
     from: 'content'
   } 
+  
   if (saveRants){
     var rantInterval = setInterval(() => {
       try {

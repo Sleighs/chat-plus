@@ -12,7 +12,8 @@ const defaultOptions = {
   showListUserCount: false,
   chatStyleNormal: true,
   saveRants: false,
-  chatAvatarEnabled: true
+  chatAvatarEnabled: true,
+  normalChatColors: false,
 };
 
 // Options stored in chrome.storage.sync
@@ -32,7 +33,8 @@ chrome.runtime.onInstalled.addListener(() => {
       "showListUserCount",
       "chatStyleNormal",
       "saveRants",
-      "chatAvatarEnabled"
+      "chatAvatarEnabled",
+      "normalChatColors",
     ];
 
     // Creates a new options object from the stored options and the default options

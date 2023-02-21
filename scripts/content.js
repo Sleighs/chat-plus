@@ -12,7 +12,8 @@ let optionsState = {
   showListUserCount: false,
   chatStyleNormal: true,
   saveRants: false,
-  chatAvatarEnabled: true
+  chatAvatarEnabled: true,
+  normalChatColors: false
 };
 
 // Undefined option vars
@@ -26,7 +27,8 @@ let enableChatPlus,
   showListUserCount,
   chatStyleNormal,
   saveRants,
-  chatAvatarEnabled;
+  chatAvatarEnabled,
+  normalChatColors;
 
 // Vars that remain in scope
 let debugMode = false;
@@ -101,7 +103,8 @@ let userColors = {};
       showListUserCount: false,
       chatStyleNormal: true,
       saveRants: false,
-      chatAvatarEnabled: true
+      chatAvatarEnabled: true,
+      normalChatColors: false,
     };
 
     const optionsList = [
@@ -115,7 +118,8 @@ let userColors = {};
       "showListUserCount",
       "chatStyleNormal",
       "saveRants",
-      "chatAvatarEnabled"
+      "chatAvatarEnabled",
+      "normalChatColors"
     ];
 
     function extractProperties(names, obj) {
@@ -146,6 +150,7 @@ let userColors = {};
       chatStyleNormal = newOptionObj.chatStyleNormal;
       saveRants = newOptionObj.saveRants;
       chatAvatarEnabled = newOptionObj.chatAvatarEnabled;
+      normalChatColors = newOptionObj.normalChatColors;
 
       Object.assign(optionsState, newOptionObj);
     } else {
@@ -160,6 +165,7 @@ let userColors = {};
       chatStyleNormal = defaultOptions.chatStyleNormal;
       saveRants = defaultOptions.saveRants;
       chatAvatarEnabled = defaultOptions.chatAvatarEnabled;
+      normalChatColors = defaultOptions.normalChatColors;
 
       Object.assign(optionsState, defaultOptions);
     } 
@@ -277,8 +283,10 @@ let chatHistoryNames = document.querySelectorAll('.chat-history--username');
 let chatHistoryMessages = document.querySelectorAll('.chat-history--message');
 
 // Retrieves user color from userColor object
-const getUserColor = (username) => {
-  if (colorUsernames === false ){
+const getUserColor = (username, color) => {
+  if (color) {
+    userColors[username] = color;
+  } else if (colorUsernames === false ){
     userColors[username] = usernameColors.rumbler;
   } else if (!userColors[username]) {
     userColors[username] = getRandomColor();
@@ -323,13 +331,21 @@ const getChatHistory = () => {
     }
 
     let element = ele.querySelector('.chat-history--message-wrapper');
-
+    
     //Assign random color to each unique username in current chat history
-    let userColor = getUserColor(element.childNodes[0].textContent);
+    let userColor;
 
-    // Assign text color to username and message
-    element.childNodes[0].style.color = userColor;
-    element.childNodes[0].querySelector('a').style.color = userColor;
+    if (!normalChatColors) {
+      userColor = getUserColor(element.childNodes[0].textContent, null);
+    } else {
+      userColor = getUserColor(element.childNodes[0].textContent, element.childNodes[0].querySelector('a').style.color);
+    }
+
+    if (!normalChatColors){
+      // Assign text color to username and message
+      element.childNodes[0].style.color = userColor;
+      element.childNodes[0].querySelector('a').style.color = userColor;
+    }
 
     // Assign background color to row if chatStyleNormal is on
     if (chatStyleNormal) element.style.background = rumbleColors.darkBlue;
@@ -1134,10 +1150,12 @@ var chatObserver = new MutationObserver(function(mutations) {
           // Add the message to the chat history
           let userColor = getUserColor(addedNode.childNodes[0].textContent);
 
-          // Assign color to username
-          addedNode.childNodes[0].style.color = userColor;
-          addedNode.childNodes[0].querySelector('a').style.color = userColor;
-
+          if (!normalChatColors){
+            // Assign color to username
+            addedNode.childNodes[0].style.color = userColor;
+            addedNode.childNodes[0].querySelector('a').style.color = userColor;
+          }
+          
           // Highlight current user's username and streamer's name when mentioned
           if (
             (currentUser && currentUser.length > 2)

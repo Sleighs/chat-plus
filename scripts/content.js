@@ -12,7 +12,8 @@ let optionsState = {
   showListUserCount: false,
   chatStyleNormal: true,
   saveRants: false,
-  chatAvatarEnabled: true
+  chatAvatarEnabled: true,
+  normalChatColors: false
 
 };
 
@@ -27,7 +28,8 @@ let enableChatPlus,
   showListUserCount,
   chatStyleNormal,
   saveRants,
-  chatAvatarEnabled;
+  chatAvatarEnabled,
+  normalChatColors;
 
   var timestampsEnabled = true;
   var bookmarkedVideos = [];
@@ -111,7 +113,8 @@ let userColors = {};
       showListUserCount: false,
       chatStyleNormal: true,
       saveRants: false,
-      chatAvatarEnabled: true
+      chatAvatarEnabled: true,
+      normalChatColors: false
     };
 
     const optionsList = [
@@ -125,7 +128,8 @@ let userColors = {};
       "showListUserCount",
       "chatStyleNormal",
       "saveRants",
-      "chatAvatarEnabled"
+      "chatAvatarEnabled",
+      "normalChatColors"
     ];
 
     function extractProperties(names, obj) {
@@ -156,6 +160,7 @@ let userColors = {};
       chatStyleNormal = newOptionObj.chatStyleNormal;
       saveRants = newOptionObj.saveRants;
       chatAvatarEnabled = newOptionObj.chatAvatarEnabled;
+      normalChatColors = newOptionObj.normalChatColors;
 
       Object.assign(optionsState, newOptionObj);
     } else {
@@ -170,6 +175,7 @@ let userColors = {};
       chatStyleNormal = defaultOptions.chatStyleNormal;
       saveRants = defaultOptions.saveRants;
       chatAvatarEnabled = defaultOptions.chatAvatarEnabled;
+      normalChatColors = defaultOptions.normalChatColors;
 
       Object.assign(optionsState, defaultOptions);
     } 
@@ -428,12 +434,14 @@ const getChatHistory = () => {
     //Assign random color to each unique username in current chat history
     let userColor = getUserColor(element.childNodes[0].textContent);
 
-    // Assign text color to username and message
-    element.childNodes[0].style.color = userColor;
-    element.childNodes[0].querySelector('a').style.color = userColor;
-
+    if (!normalChatColors){
+      // Assign text color to username and message
+      element.childNodes[0].style.color = userColor;
+      element.childNodes[0].querySelector('a').style.color = userColor;
+    }
+    
     // Assign background color to row if chatStyleNormal is on
-    if (chatStyleNormal) element.style.background = rumbleColors.darkBlue;
+    //if (chatStyleNormal) element.style.background = rumbleColors.darkBlue;
 
     // Highlight current user's username when tagged with '@'
     if ( currentUser && currentUser.length > 2 ){
@@ -1362,10 +1370,12 @@ var chatObserver = new MutationObserver(function(mutations) {
           let userColor = getUserColor(addedNode.childNodes[0].textContent);
           //let userColor = getUserColor(wrapperEle.childNodes[0].textContent);
 
-          // Assign color to username
-          addedNode.childNodes[0].style.color = userColor;
-          addedNode.childNodes[0].querySelector('a').style.color = userColor;
-
+          if (!normalChatColors){
+            // Assign color to username
+            addedNode.childNodes[0].style.color = userColor;
+            addedNode.childNodes[0].querySelector('a').style.color = userColor;
+          }
+          
           //wrapperEle.childNodes[0].style.color = userColor;
 
           // Highlight current user's username and streamer's name when mentioned
@@ -1570,7 +1580,7 @@ var setIntervals = function() {
     action: 'keepAlive', 
     from: 'content'
   } 
-  
+
   if (saveRants){
     var rantInterval = setInterval(() => {
       try {

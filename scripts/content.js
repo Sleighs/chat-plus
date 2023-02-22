@@ -1150,6 +1150,12 @@ var chatObserver = new MutationObserver(function(mutations) {
           // Add the message to the chat history
           let userColor = getUserColor(addedNode.childNodes[0].textContent);
 
+          if (!normalChatColors) {
+            userColor = getUserColor(addedNode.childNodes[0].textContent, null);
+          } else {
+            userColor = getUserColor(addedNode.childNodes[0].textContent, element.childNodes[0].querySelector('a').style.color);
+          }
+
           if (!normalChatColors){
             // Assign color to username
             addedNode.childNodes[0].style.color = userColor;

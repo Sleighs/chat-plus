@@ -11,7 +11,9 @@ let optionsState = {
   hideFullWindowChatButton: false,
   showListUserCount: false,
   chatStyleNormal: true,
-  saveRants: false
+  saveRants: false,
+  chatAvatarEnabled: true,
+  normalChatColors: false
 };
 
 // Undefined option vars
@@ -24,7 +26,9 @@ let enableChatPlus,
   hideFullWindowChatButton,
   showListUserCount,
   chatStyleNormal,
-  saveRants;
+  saveRants,
+  chatAvatarEnabled,
+  normalChatColors;
 
 // Vars that remain in scope
 let debugMode = false;
@@ -98,7 +102,9 @@ let userColors = {};
       hideFullWindowChatButton: false,
       showListUserCount: false,
       chatStyleNormal: true,
-      saveRants: false
+      saveRants: false,
+      chatAvatarEnabled: true,
+      normalChatColors: false,
     };
 
     const optionsList = [
@@ -111,7 +117,9 @@ let userColors = {};
       "hideFullWindowChatButton",
       "showListUserCount",
       "chatStyleNormal",
-      "saveRants"
+      "saveRants",
+      "chatAvatarEnabled",
+      "normalChatColors"
     ];
 
     function extractProperties(names, obj) {
@@ -141,6 +149,8 @@ let userColors = {};
       showListUserCount = newOptionObj.showListUserCount;
       chatStyleNormal = newOptionObj.chatStyleNormal;
       saveRants = newOptionObj.saveRants;
+      chatAvatarEnabled = newOptionObj.chatAvatarEnabled;
+      normalChatColors = newOptionObj.normalChatColors;
 
       Object.assign(optionsState, newOptionObj);
     } else {
@@ -154,6 +164,8 @@ let userColors = {};
       showListUserCount = defaultOptions.showListUserCount;
       chatStyleNormal = defaultOptions.chatStyleNormal;
       saveRants = defaultOptions.saveRants;
+      chatAvatarEnabled = defaultOptions.chatAvatarEnabled;
+      normalChatColors = defaultOptions.normalChatColors;
 
       Object.assign(optionsState, defaultOptions);
     } 
@@ -219,19 +231,8 @@ let userColors = {};
       } catch (err) {
         //if (debugMode) console.log(err);
       }
-
-      
     }    
   });  
-
-  /*await chrome.storage.sync.get("rants")
-  .then(function (result) {
-    if (result && result.rants){
-      //savedRants = result.rants;
-    } else {
-      //savedRants = [];
-    }
-  });*/
 })();
 
 
@@ -254,8 +255,14 @@ try {
   if (rantEle && usernameEle) {
     if (usernameEle.length > 0) {
       currentUser = usernameEle[usernameEle.length - 1].textContent;
+      chrome.storage.local.set({ currentUser });
+    } else {
+      chrome.storage.local.get(['currentUser'], (result) => {
+        currentUser = result.currentUser;
+      });
     } 
   }
+  
 
   // Get current streamer from author element if exists
   const authorEle = document.querySelector('.media-by--a');
@@ -276,8 +283,10 @@ let chatHistoryNames = document.querySelectorAll('.chat-history--username');
 let chatHistoryMessages = document.querySelectorAll('.chat-history--message');
 
 // Retrieves user color from userColor object
-const getUserColor = (username) => {
-  if (colorUsernames === false ){
+const getUserColor = (username, color) => {
+  if (color) {
+    userColors[username] = color;
+  } else if (colorUsernames === false ){
     userColors[username] = usernameColors.rumbler;
   } else if (!userColors[username]) {
     userColors[username] = getRandomColor();
@@ -308,17 +317,36 @@ function highlightTerms(text, searchTerms, bgColors) {
 const getChatHistory = () => {
   currentChatHistory = [];
 
-  chatHistoryRows.forEach((element, index) => {
+  chatHistoryRows.forEach((ele, index) => {
     // Check element classlist for 'chat-history--rant' and skip row
-    if (element.classList.contains('chat-history--rant')) {
+    if (ele.classList.contains('chat-history--rant')) {
       return;
     }
 
-    //Assign random color to each unique username in current chat history
-    let userColor = getUserColor(element.childNodes[0].textContent);
+    // Remove avatar if chatAvatarEnabled is false
+    if (!chatAvatarEnabled
+      && ele.childNodes[0].classList.contains("chat-history--user-avatar")
+    ){
+      ele.querySelector(".chat-history--user-avatar").style.display = "none";
+    }
 
-    // Assign text color to username and message
-    element.childNodes[0].style.color = userColor;
+    let element = ele.querySelector('.chat-history--message-wrapper');
+    
+    //Assign random color to each unique username in current chat history
+    let userColor;
+
+    if (!normalChatColors) {
+      userColor = getUserColor(element.childNodes[0].textContent, null);
+    } else {
+      userColor = getUserColor(element.childNodes[0].textContent, element.childNodes[0].querySelector('a').style.color);
+    }
+
+    if (!normalChatColors){
+      // Assign text color to username and message
+      element.childNodes[0].style.color = userColor;
+      element.childNodes[0].querySelector('a').style.color = userColor;
+    }
+
     // Assign background color to row if chatStyleNormal is on
     if (chatStyleNormal) element.style.background = rumbleColors.darkBlue;
 
@@ -518,7 +546,7 @@ const addChatUsernameMenu = () => {
   usernameMenuContainer.classList.add('username-menu-toggle-container');
   usernameMenuContainer.style.position = 'absolute';//'relative';
   usernameMenuContainer.style.width = '100%';
-  usernameMenuContainer.style.maxWidth = '15px';
+  usernameMenuContainer.style.maxWidth = '12px';
   usernameMenuContainer.style.height = '100%';
   usernameMenuContainer.style.boxSizing = 'border-box';
   usernameMenuContainer.style.overflow = 'hidden';
@@ -851,7 +879,7 @@ const toggleStreamerMode = (toggle) => {
       mainEle.style.maxHeight = '100vh';
       mainEle.style.height = '100%';
       mainEle.style.position = 'relative';
-      mainEle.style.overflow = 'scroll';
+      //mainEle.style.overflow = 'hidden';
 
       // .main-and-sidebar
       let mainAndSidebarEle = document.querySelector(".main-and-sidebar");
@@ -868,7 +896,7 @@ const toggleStreamerMode = (toggle) => {
       mainChildEle.style.height = '100%';
       mainChildEle.style.maxHeight = '100vh';
       mainChildEle.style.position = 'relative';
-      mainChildEle.style.overflow = 'scroll';
+      //mainChildEle.style.overflow = 'hidden';
 
       // .sidebar
       let sidebarEle = document.querySelector(".sidebar");  
@@ -876,7 +904,8 @@ const toggleStreamerMode = (toggle) => {
       sidebarEle.style.margin = 0;
       sidebarEle.style.padding = 0;
       sidebarEle.style.position = 'relative';
-      sidebarEle.style.height = '100vh';
+      sidebarEle.style.height = '100%';
+      sidebarEle.style.maxHeight = '100vh';
       sidebarEle.style.width = '100%';
       sidebarEle.style.minWidth = '100vw';
 
@@ -885,9 +914,10 @@ const toggleStreamerMode = (toggle) => {
       chatContainerEle.style.position = 'relative';
       chatContainerEle.style.margin = 0;
       chatContainerEle.style.padding = 0;
-      chatContainerEle.style.height = '100vh';
+      chatContainerEle.style.height = '100%';
+      chatContainerEle.style.maxHeight = '100vh';
       chatContainerEle.style.width = '100%';
-      chatContainerEle.style.overflow = 'scroll';
+      //chatContainerEle.style.overflow = 'scroll';
 
       // .chat--history
       let chatHistoryElement = document.querySelector(".chat--container");
@@ -900,19 +930,20 @@ const toggleStreamerMode = (toggle) => {
       let containerEle = document.querySelector(".container");
       containerEle.style.position = 'relative';
       containerEle.style.margin = 0;
-      containerEle.style.height = '100%';
+      containerEle.style.height = '90%';
 
       // .chat--height
       let chatListElement = document.querySelector(".chat--height");
       chatListElement.style.position = 'relative';
-      chatListElement.style.height = '81%';
+      chatListElement.style.height = '100%';
+      chatListElement.style.maxHeight = '85vh';
       
       // .chat--header
       let chatHeaderElement = document.querySelector(".chat--header");
       chatHeaderElement.style.position = 'relative';
-      chatHeaderElement.style.height = '28px';
+      chatHeaderElement.style.height = '6vh';
       chatHeaderElement.style.margin = 0;
-      chatHeaderElement.style.paddingLeft = '1.5%';
+      chatHeaderElement.style.paddingLeft = '1%';
       chatHeaderElement.style.paddingRight = '1%';
       chatHeaderElement.style.boxSizing = 'border-box';
 
@@ -921,10 +952,10 @@ const toggleStreamerMode = (toggle) => {
       rantsContainer.style.height = 'fit-content';
       rantsContainer.style.padding = 0;
 
-      // .chat--header--title
+      // .chat-message-form
       var chatMessageEle = document.querySelector('#chat-message-form');
       chatMessageEle.style.padding = 0;
-      chatMessageEle.style.height = '50px';
+      chatMessageEle.style.height = '9vh';
 
       // Bring chat to front
       //document.querySelector('#chat-main-menu').style.zIndex = '199';
@@ -954,7 +985,7 @@ const toggleStreamerMode = (toggle) => {
     });
 
     // Open username menu
-    toggleChatUsernameMenu(true);
+    //toggleChatUsernameMenu(true);
   } else if (!toggle){
     window.location.reload()
     // Save username colors to storage
@@ -1097,38 +1128,34 @@ var chatObserver = new MutationObserver(function(mutations) {
     if (mutation.type === "childList") {
       // Loop through the added nodes to find new messages
       for (var i = 0; i < mutation.addedNodes.length; i++) {
-        var addedNode = mutation.addedNodes[i];
-
-        if (addedNode.classList.contains("chat-history--row")) {
+        if (mutation.addedNodes[i].classList.contains("chat-history--row")) {
           // Check element classlist for 'chat-history--rant' 
-          if (!enableChatPlus || addedNode.classList.contains('chat-history--rant')) {
+          if (!enableChatPlus || mutation.addedNodes[i].classList.contains('chat-history--rant')) {
             // Save rant to chrome.storage.sync
-            /*let newDate = new Date();
-
-            let newRant = {
-              username: addedNode.childNodes[0].textContent,
-              message: addedNode.childNodes[1].textContent,
-              amount: 1,
-              timestamp: Date.now(),
-              dateOfStream: newDate.toDateString(),
-            }
-
-            console.log('newRant: ' + newRant); 
-      
-            savedRants.push(newRant);
-            */
             return;
           }
 
-          // For styling with RantsStats extension
+          if (
+            !chatAvatarEnabled 
+            && mutation.addedNodes[i].childNodes[0].classList.contains("chat-history--user-avatar")
+          ){
+            mutation.addedNodes[i].childNodes[0].style.display = "none";
+          }
+
+          let addedNode = mutation.addedNodes[i].querySelector('.chat-history--message-wrapper');
+
+          // For styling with other extensions
           if (chatStyleNormal) {addedNode.style.background = rumbleColors.darkBlue;}
 
           // Add the message to the chat history
           let userColor = getUserColor(addedNode.childNodes[0].textContent);
 
-          // Assign color to username
-          addedNode.childNodes[0].style.color = userColor;
-
+          if (!normalChatColors){
+            // Assign color to username
+            addedNode.childNodes[0].style.color = userColor;
+            addedNode.childNodes[0].querySelector('a').style.color = userColor;
+          }
+          
           // Highlight current user's username and streamer's name when mentioned
           if (
             (currentUser && currentUser.length > 2)
@@ -1325,21 +1352,3 @@ var setIntervals = function() {
     clearInterval(chatRefreshInterval);
   }
 }
-
-
-//////   Background 2/11/2023   //////
-
-//////   Testing   //////
-
-// Example of a simple user data object
-const user = {
-  username: 'demo-user'
-};
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  // 2. A page requested user data, respond with a copy of `user`
-  if (message === 'get-user-data') {
-    sendResponse(user);
-  }
-
-});

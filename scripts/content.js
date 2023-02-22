@@ -379,8 +379,10 @@ let chatHistoryNames = document.querySelectorAll('.chat-history--username');
 let chatHistoryMessages = document.querySelectorAll('.chat-history--message');
 
 // Retrieves user color from userColor object
-const getUserColor = (username) => {
-  if (colorUsernames === false ){
+const getUserColor = (username, color) => {
+  if (color) {
+    userColors[username] = color;
+  } else if (colorUsernames === false ){
     userColors[username] = usernameColors.rumbler;
   } else if (!userColors[username]) {
     userColors[username] = getRandomColor();
@@ -432,7 +434,13 @@ const getChatHistory = () => {
     let element = ele.querySelector('.chat-history--message-wrapper');
     
     //Assign random color to each unique username in current chat history
-    let userColor = getUserColor(element.childNodes[0].textContent);
+    let userColor;
+
+    if (!normalChatColors) {
+      userColor = getUserColor(element.childNodes[0].textContent, null);
+    } else {
+      userColor = getUserColor(element.childNodes[0].textContent, element.childNodes[0].querySelector('a').style.color);
+    }
 
     if (!normalChatColors){
       // Assign text color to username and message
@@ -639,7 +647,7 @@ const addChatUsernameMenu = () => {
   usernameMenuContainer.classList.add('username-menu-toggle-container');
   usernameMenuContainer.style.position = 'absolute';//'relative';
   usernameMenuContainer.style.width = '100%';
-  usernameMenuContainer.style.maxWidth = '15px';
+  usernameMenuContainer.style.maxWidth = '12px';
   usernameMenuContainer.style.height = '100%';
   usernameMenuContainer.style.boxSizing = 'border-box';
   usernameMenuContainer.style.overflow = 'hidden';
@@ -1363,12 +1371,14 @@ var chatObserver = new MutationObserver(function(mutations) {
       
           let addedNode = mutation.addedNodes[i].querySelector('.chat-history--message-wrapper');
 
-          // For styling with RantsStats extension
-          if (chatStyleNormal) {addedNode.style.background = rumbleColors.darkBlue;}
-
           // Add the message to the chat history
-          let userColor = getUserColor(addedNode.childNodes[0].textContent);
-          //let userColor = getUserColor(wrapperEle.childNodes[0].textContent);
+          let userColor;
+
+          if (!normalChatColors) {
+            userColor = getUserColor(element.childNodes[0].textContent, null);
+          } else {
+            userColor = getUserColor(element.childNodes[0].textContent, element.childNodes[0].querySelector('a').style.color);
+          }
 
           if (!normalChatColors){
             // Assign color to username
@@ -1376,7 +1386,9 @@ var chatObserver = new MutationObserver(function(mutations) {
             addedNode.childNodes[0].querySelector('a').style.color = userColor;
           }
           
-          //wrapperEle.childNodes[0].style.color = userColor;
+          
+          // For styling with RantsStats extension
+          if (chatStyleNormal) {addedNode.style.background = rumbleColors.darkBlue;}
 
           // Highlight current user's username and streamer's name when mentioned
           if (

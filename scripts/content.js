@@ -546,7 +546,7 @@ const addChatUsernameMenu = () => {
   usernameMenuContainer.classList.add('username-menu-toggle-container');
   usernameMenuContainer.style.position = 'absolute';//'relative';
   usernameMenuContainer.style.width = '100%';
-  usernameMenuContainer.style.maxWidth = '15px';
+  usernameMenuContainer.style.maxWidth = '12px';
   usernameMenuContainer.style.height = '100%';
   usernameMenuContainer.style.boxSizing = 'border-box';
   usernameMenuContainer.style.overflow = 'hidden';
@@ -1144,7 +1144,7 @@ var chatObserver = new MutationObserver(function(mutations) {
 
           let addedNode = mutation.addedNodes[i].querySelector('.chat-history--message-wrapper');
 
-          // For styling with RantsStats extension
+          // For styling with other extensions
           if (chatStyleNormal) {addedNode.style.background = rumbleColors.darkBlue;}
 
           // Add the message to the chat history

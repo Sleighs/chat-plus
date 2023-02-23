@@ -855,11 +855,12 @@ const toggleStreamerMode = (toggle) => {
     if (document.querySelector(".header")) document.querySelector(".header").style.display = 'none';
     // Hide footer
     if (document.querySelector(".foot")) document.querySelector(".foot").style.display = 'none';    
-    // Hide chat visibility button
+    // Hide chat visibility and pop-out button in chat menu
     if (document.querySelector("#chat-main-menu")) document.querySelector("#chat-toggle-chat-visibility").style.display = 'none';
+    if (document.querySelector("#chat-main-menu")) document.querySelector("#chat-toggle-popup").style.display = 'none';
     // Hide rant button
     if (document.querySelector(".chat--rant")) document.querySelector(".chat--rant").style.display = 'none';
-    
+
     try {
       // Pause all video elements
       const videoElements = document.querySelectorAll("video");

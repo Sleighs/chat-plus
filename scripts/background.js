@@ -66,3 +66,22 @@ chrome.runtime.onInstalled.addListener(() => {
     }
   });
 });
+
+async function updateIcon() {
+  await chrome.storage.sync.get('options', function(data) {
+    try {    
+      var iconPath = data.options.enableChatPlus 
+        ? {
+          "16": "../images/icon-16.png",
+          "32": "../images/icon-32.png"
+        }
+        : {
+          "16": "../images/icon-gray-32.png",
+          "32": "../images/icon-gray-32.png"
+        };
+      chrome.action.setIcon({path: iconPath});
+    } catch (err){
+      console.log('Error updating Icon', err);
+    }
+  });
+};

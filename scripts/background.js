@@ -67,6 +67,12 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.method === 'enableChatPlus') {  
+    updateIcon();
+  }
+});
+
 async function updateIcon() {
   await chrome.storage.sync.get('options', function(data) {
     try {    

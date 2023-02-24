@@ -79,11 +79,13 @@ async function updateIcon() {
       var iconPath = data.options.enableChatPlus 
         ? {
           "16": "../images/icon-16.png",
-          "32": "../images/icon-32.png"
+          "32": "../images/icon-32.png",
+          "128": "../images/icon-128.png"
         }
         : {
           "16": "../images/icon-gray-32.png",
-          "32": "../images/icon-gray-32.png"
+          "32": "../images/icon-gray-32.png",
+          "128": "../images/icon-gray-128.png"
         };
       chrome.action.setIcon({path: iconPath});
     } catch (err){

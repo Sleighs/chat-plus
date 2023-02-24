@@ -33,6 +33,10 @@
       "run_at": "document_idle"
     }
   ],
+  "options_ui": {
+    "page": "build/index.html",
+    "open_in_tab": true
+  },
   "pages": [
     "build-rants/index.html"
   ],

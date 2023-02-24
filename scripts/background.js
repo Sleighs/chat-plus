@@ -67,17 +67,6 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-/*chrome.runtime.onStartup.addListener(() => {
-  // Keep the service worker alive every 20 seconds
-  var keepAliveInterval = setInterval(() => {
-    chrome.runtime.sendMessage({
-      method: "rantServiceWorker", 
-      action: "keepAlive",
-      from: 'background'
-    });
-  }, 20000);
-  keepAliveInterval();
-});*/
 
 //////   MessageListener   //////
 let rantTimeCounter = 0;
@@ -114,4 +103,30 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse(window);
     });
   }
+
+  if (message.method === 'enableChatPlus') {  
+    updateIcon()
+  }
 });
+
+async function updateIcon() {
+  await chrome.storage.sync.get('options', function(data) {
+    try {
+      console.table('updateIcon running...', data, data.options.enableChatPlus);
+      
+      var iconPath = data.options.enableChatPlus 
+        ? {
+          "16": "../images/icon-16.png",
+          "32": "../images/icon-32.png"
+        }
+        : {
+          "16": "../images/icon-gray-32.png",
+          "32": "../images/icon-gray-32.png"
+        };
+      
+      chrome.action.setIcon({path: iconPath});
+    } catch (err){
+      console.log('updateIcon err', err);
+    }
+  });
+};

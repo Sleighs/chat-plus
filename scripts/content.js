@@ -1376,9 +1376,9 @@ var chatObserver = new MutationObserver(function(mutations) {
           let userColor;
 
           if (!normalChatColors) {
-            userColor = getUserColor(element.childNodes[0].textContent, null);
+            userColor = getUserColor(addedNode.childNodes[0].textContent, null);
           } else {
-            userColor = getUserColor(element.childNodes[0].textContent, element.childNodes[0].querySelector('a').style.color);
+            userColor = getUserColor(addedNode.childNodes[0].textContent, element.childNodes[0].querySelector('a').style.color);
           }
 
           if (!normalChatColors){
@@ -1598,7 +1598,7 @@ var setIntervals = function() {
     var rantInterval = setInterval(() => {
       try {
         chrome.runtime.sendMessage(rantServiceWorker).then(function(response) {
-          console.log('Rant SW sendMessage', response);
+          //console.log('Rant SW sendMessage', response);
           rantSaverIsRunning = true;
           document.querySelector('#viewRantsBtn').style.color = 'green';
         });

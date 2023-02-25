@@ -1282,8 +1282,7 @@ var setListeners = function() {
     }
   });
 
-  // Listen for input in chat message input
-
+  // Listen for inputs in chat message input
   if (inputElement) {
     inputElement.addEventListener("input", function(e) {
       if (enableChatPlus) {
@@ -1303,8 +1302,6 @@ var setListeners = function() {
 
         // Get coordinates of input element
         let messageCoordinates = getPageCoordinates(inputElement);
-
-        
 
         // If "@"" is found in the input and caret is next to it
         if ( 
@@ -1356,7 +1353,6 @@ var setListeners = function() {
 
     if (usernameListPopup) {
       showUsernameList = false;
-      //usernameListPopup.remove()
       clearMentionPopup();
     }  
 

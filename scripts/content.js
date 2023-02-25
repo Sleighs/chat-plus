@@ -35,7 +35,7 @@ let debugMode = false;
 let showUsernameList = false;
 let streamerMode = false;
 let showFullWindowChat = false;
-
+let caretPosition, caretStart;
 
 // Vars for logged in user and current streamer 
 let currentUser = '';
@@ -80,7 +80,6 @@ let rumbleColors = {
 
 // For assigned colors
 let userColors = {};
-
 
 
 
@@ -457,14 +456,54 @@ const openChatUsernamesPopup = (coordinates) => {
   popupContent.style.overflow = 'auto';
   popup.appendChild(popupContent);
 
+  // Append popup to page
+  document.body.appendChild(popup);
+
+  // Focus popup
+  document.querySelector('.chat-plus-popup').focus();
+
+  populateMentionPopup();
+}
+
+const populateMentionPopup = (text) => {
+  // Define popup element
+  let popup = document.querySelector('.chat-plus-popup');
+  // Define popup list element
+  let popupContent = document.querySelector('.chat-plus-popup-content');
+
+  // Remove all children from username list
+  while (popupContent && popupContent.firstChild) {
+    popupContent.removeChild(popupContent.firstChild);
+  }
+
   // Sort userColors object by username
   function sortObjectByPropName(obj) {
     const sorted = {};
+    
     Object.keys(obj)
       .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
-      .forEach(key => {
-        sorted[key] = obj[key];
+      .forEach((key, index) => {
+        // Get caret position
+        let thisCaret = storeCaretPosition(document.getElementById('chat-message-text-input'));
+        // Get text from message input
+        let thisText = document.getElementById('chat-message-text-input').value;
+        // Get the typed after the caret position
+        let textBetweenIndexes = thisText.substring(caretStart, thisCaret);
+        
+        // If there is no typed text or the text includes a space, add all usernames to the list. 
+        if (
+          textBetweenIndexes == null 
+          || textBetweenIndexes.length == ''
+          || textBetweenIndexes.includes(' ')
+        ){
+          sorted[key] = obj[key];
+        } else 
+        // Otherwise add usernames that match the typed text to the list
+        if (key.toLowerCase().includes(textBetweenIndexes.toLowerCase())) {
+          sorted[key] = obj[key];
+        }
       });
+
     return sorted;
   }
   let sortedUserColors = sortObjectByPropName(userColors);
@@ -507,11 +546,15 @@ const openChatUsernamesPopup = (coordinates) => {
     });
   }
 
-  // Append popup to page
-  document.body.appendChild(popup);
+}
 
-  // Focus popup
-  document.querySelector('.chat-plus-popup').focus();
+const clearMentionPopup = () => {
+  // Define popup element
+  let popup = document.querySelector('.chat-plus-popup');
+  // Define popup list element
+  if (popup) popup.remove();
+  // reset caretStart
+  caretStart = null;
 }
 
 
@@ -855,11 +898,12 @@ const toggleStreamerMode = (toggle) => {
     if (document.querySelector(".header")) document.querySelector(".header").style.display = 'none';
     // Hide footer
     if (document.querySelector(".foot")) document.querySelector(".foot").style.display = 'none';    
-    // Hide chat visibility button
+    // Hide chat visibility and pop-out button in chat menu
     if (document.querySelector("#chat-main-menu")) document.querySelector("#chat-toggle-chat-visibility").style.display = 'none';
+    if (document.querySelector("#chat-main-menu")) document.querySelector("#chat-toggle-popup").style.display = 'none';
     // Hide rant button
     if (document.querySelector(".chat--rant")) document.querySelector(".chat--rant").style.display = 'none';
-    
+
     try {
       // Pause all video elements
       const videoElements = document.querySelectorAll("video");
@@ -1120,6 +1164,7 @@ const addUserListBtn = () => {
 
 
 
+
 ///////   Event Listeners   ///////
 
 // Create a MutationObserver to watch for new chat messages
@@ -1149,6 +1194,12 @@ var chatObserver = new MutationObserver(function(mutations) {
 
           // Add the message to the chat history
           let userColor = getUserColor(addedNode.childNodes[0].textContent);
+
+          if (!normalChatColors) {
+            userColor = getUserColor(addedNode.childNodes[0].textContent, null);
+          } else {
+            userColor = getUserColor(addedNode.childNodes[0].textContent, element.childNodes[0].querySelector('a').style.color);
+          }
 
           if (!normalChatColors){
             // Assign color to username
@@ -1209,47 +1260,34 @@ var chatObserver = new MutationObserver(function(mutations) {
 });
 
 var setListeners = function() {
-  // Listen for "@" keypress to open popup
+  let usernameListPopup = document.querySelector('.chat-plus-popup');
+  let inputElement = document.getElementById("chat-message-text-input");
+
   document.addEventListener("keydown", function(event) {
-    // If "2" key is pressed and shift key is held down
-    /*if (event.keyCode === 50 && event.shiftKey && !document.querySelector('.chat-plus-popup')) {
-      // Open username list popup
-      openChatUsernamesPopup();
-    }*/
-
     if (enableChatPlus) {
-      var usernameListPopup = document.querySelector('.chat-plus-popup');
-
       // If space bar is pressed remove username list popup
       if (usernameListPopup && event.keyCode === 32) {
         // Close popup
-        if (usernameListPopup) {
-          usernameListPopup.remove()
-        }
-      }
-
-      // If backspace is pressed remove username list popup
-      if (usernameListPopup && event.keyCode === 8) {
-        // Close popup
-        if (usernameListPopup) {
-          usernameListPopup.remove()
-        }
+        showUsernameList = false;
+        clearMentionPopup();
+        
       }
 
       // If escape key is pressed hide username list
       if (showUsernameList && event.keyCode === 27) {
         showUsernameList = false;
-        toggleChatUsernameMenu(false)
+        clearMentionPopup();
+        toggleChatUsernameMenu(false);
       }
     }
   });
 
   // Listen for input in chat message input
-  let inputElement = document.getElementById("chat-message-text-input");
 
   if (inputElement) {
-    inputElement.addEventListener("input", function() {
+    inputElement.addEventListener("input", function(e) {
       if (enableChatPlus) {
+        
         let inputValue = inputElement.value;
         
         // Get all indexes of @
@@ -1261,10 +1299,12 @@ var setListeners = function() {
         }
 
         // Get caret position
-        let caretPosition = storeCaretPosition(inputElement);
+        caretPosition = storeCaretPosition(inputElement);
 
         // Get coordinates of input element
-        let messageCoordinates = getPageCoordinates(inputElement)
+        let messageCoordinates = getPageCoordinates(inputElement);
+
+        
 
         // If "@"" is found in the input and caret is next to it
         if ( 
@@ -1274,7 +1314,25 @@ var setListeners = function() {
           // Open username list popup
           showUsernameList = true;
           openChatUsernamesPopup(messageCoordinates);
+          caretStart = caretPosition;
         } 
+
+        // Remove popup if input is empty
+        if (inputValue === ''){
+          showUsernameList = false;
+          clearMentionPopup();
+        }
+
+        if (showUsernameList) {
+          populateMentionPopup();
+        } 
+
+        // If space is entered remove username list popup
+        if (caretStart && inputValue.substring(caretStart, caretPosition).includes(' ')) {
+          // Close popup
+          showUsernameList = false;
+          clearMentionPopup();
+        }
       }
     });
   }
@@ -1288,7 +1346,7 @@ var setListeners = function() {
       && !usernameListPopup.contains(event.target)
     ) {
       showUsernameList = false;
-      usernameListPopup.remove()
+      clearMentionPopup();
     }
   });
 
@@ -1298,7 +1356,8 @@ var setListeners = function() {
 
     if (usernameListPopup) {
       showUsernameList = false;
-      usernameListPopup.remove()
+      //usernameListPopup.remove()
+      clearMentionPopup();
     }  
 
     // Update size of streamer mode chat window 

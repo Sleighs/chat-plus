@@ -66,3 +66,30 @@ chrome.runtime.onInstalled.addListener(() => {
     }
   });
 });
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.method === 'enableChatPlus') {  
+    updateIcon();
+  }
+});
+
+async function updateIcon() {
+  await chrome.storage.sync.get('options', function(data) {
+    try {    
+      var iconPath = data.options.enableChatPlus 
+        ? {
+          "16": "../images/icon-16.png",
+          "32": "../images/icon-32.png",
+          "128": "../images/icon-128.png"
+        }
+        : {
+          "16": "../images/icon-gray-32.png",
+          "32": "../images/icon-gray-32.png",
+          "128": "../images/icon-gray-128.png"
+        };
+      chrome.action.setIcon({path: iconPath});
+    } catch (err){
+      console.log('Error updating Icon', err);
+    }
+  });
+};

@@ -1481,20 +1481,11 @@ var setListeners = function() {
 
   document.addEventListener("keydown", function(event) {
     if (enableChatPlus) {
-
       // If space bar is pressed remove username list popup
       if (usernameListPopup && event.keyCode === 32) {
         // Close popup
-        if (usernameListPopup) {
+          showUsernameList = false;
           clearMentionPopup();
-        }
-      }
-
-      // If backspace is pressed remove username list popup
-      if (usernameListPopup && event.keyCode === 8) {
-        if (usernameListPopup) {
-          //usernameListPopup.remove();
-        }
       }
 
       // If escape key is pressed hide username list
@@ -1526,7 +1517,7 @@ var setListeners = function() {
         caretPosition = storeCaretPosition(inputElement);
 
         // Get coordinates of input element
-        let messageCoordinates = getPageCoordinates(inputElement)
+        let messageCoordinates = getPageCoordinates(inputElement);
 
         // If "@"" is found in the input and caret is next to it
         if ( 
@@ -1548,6 +1539,13 @@ var setListeners = function() {
         if (showUsernameList) {
           populateMentionPopup();
         } 
+
+        // If space is entered remove username list popup
+        if (caretStart && inputValue.substring(caretStart, caretPosition).includes(' ')) {
+          // Close popup
+          showUsernameList = false;
+          clearMentionPopup();
+        }
       }
     });
   }
@@ -1571,7 +1569,6 @@ var setListeners = function() {
 
     if (usernameListPopup) {
       showUsernameList = false;
-      //usernameListPopup.remove()
       clearMentionPopup();
     }  
 

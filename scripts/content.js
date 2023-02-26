@@ -548,6 +548,8 @@ const openChatUsernamesPopup = (coordinates) => {
   popupContent.style.height = '100%';
   popupContent.style.zIndex = '199';
   popupContent.style.overflow = 'auto';
+  popupContent.tabIndex = '0';
+  popupContent.style.display = 'block';
   popup.appendChild(popupContent);
 
   // Append popup to page
@@ -611,11 +613,16 @@ const populateMentionPopup = (text) => {
     usernameTextElement.style.cursor = 'pointer';
     usernameTextElement.style.fontWeight = 'bold';
     usernameTextElement.style.padding = '0 7px';
+    usernameTextElement.tabIndex = '0'
     usernameTextElement.innerHTML = user;
     popupContent.appendChild(usernameTextElement);
 
     // Add hover effect
     usernameTextElement.addEventListener('mouseover', () => {
+      usernameTextElement.style.backgroundColor = 'rgba(255,255,255,.1)';
+    });
+    // Add focus effect
+    usernameTextElement.addEventListener('focus', () => {
       usernameTextElement.style.backgroundColor = 'rgba(255,255,255,.1)';
     });
     // Remove hover effect
@@ -1411,7 +1418,7 @@ var chatObserver = new MutationObserver(function(mutations) {
           if (!normalChatColors) {
             userColor = getUserColor(addedNode.childNodes[0].textContent, null);
           } else {
-            userColor = getUserColor(addedNode.childNodes[0].textContent, element.childNodes[0].querySelector('a').style.color);
+            userColor = getUserColor(addedNode.childNodes[0].textContent, addedNode.childNodes[0].querySelector('a').style.color);
           }
 
           if (!normalChatColors){
@@ -1478,6 +1485,7 @@ var chatObserver = new MutationObserver(function(mutations) {
 var setListeners = function() {
   let usernameListPopup = document.querySelector('.chat-plus-popup');
   let inputElement = document.getElementById("chat-message-text-input");
+  let popupListEle = document.querySelector('.chat-plus-popup-content');
 
   document.addEventListener("keydown", function(event) {
     if (enableChatPlus) {
@@ -1489,11 +1497,66 @@ var setListeners = function() {
       }
 
       // If escape key is pressed hide username list
-      if (showUsernameList && event.keyCode === 27) {
-        showUsernameList = false;
-        clearMentionPopup();
+      if (event.keyCode === 27) {
+        if (showUsernameList){
+          showUsernameList = false;
+          clearMentionPopup();
+        }
         toggleChatUsernameMenu(false);
       }
+
+      /*
+      // If tab key or space bar is pressed
+      if (
+        event.keyCode === 9 
+        || event.key === 'Tab'
+        || event.keyCode === 38
+        || event.key === 'ArrowUp'
+      ) {
+        // If username list is open
+        if (showUsernameList) {
+          // Check if popup list element children are focused
+
+        }
+      }
+
+      // If username list is open and popup list element is focused add arrow key navigation 
+      if (showUsernameList) {
+        let listIndex = 0;
+        // If up arrow key is pressed
+        if (event.keyCode === 38) {
+          // If the first element is focused
+          if (popupListEle.childNodes[0] === document.activeElement) {
+            // Focus on the last element
+            popupListEle.childNodes[popupListEle.childNodes.length - 1].focus();
+            listIndex = popupListEle.childNodes.length - 1;
+          } else {
+            // Focus on the previous element
+            listIndex = listIndex - 1;
+            popupListEle.childNodes[listIndex].focus();
+          }
+        }
+        // If down arrow key is pressed
+        if (event.keyCode === 40) {
+          // If the last element is focused
+          if (popupListEle.childNodes[popupListEle.childNodes.length - 1] === document.activeElement) {
+            // Focus on the first element
+            popupListEle.childNodes[0].focus();
+            listIndex = 0;
+          } else {
+            // Focus on the next element
+            listIndex = listIndex + 1;
+            popupListEle[listIndex].focus();
+          }
+        }
+      }*/
+      
+      console.table({
+        keyCode: event.keyCode, 
+        which: event.which, 
+        key: event.key, 
+        code: event.code
+      })
     }
   });
 

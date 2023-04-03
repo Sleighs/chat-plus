@@ -94,7 +94,6 @@ let filteredUserColors = {};
 
 
 
-
 //////   Initialize App   ///////
 
 // Get options from storage and initialize extension
@@ -187,7 +186,10 @@ let filteredUserColors = {};
             savedRants = result.savedRants;
             // Update rant saving state
             rantSaverIsRunning = true;
-            document.querySelector('#viewRantsBtn').style.color = 'green';
+            if (document.querySelector('#viewRantsBtn')){
+              document.querySelector('#viewRantsBtn').style.color = 'green';
+            
+            }
             
             //console.log('get rants', JSON.stringify(result))
           }
@@ -210,11 +212,6 @@ let filteredUserColors = {};
           addUserListBtn();
           if(showUsernameListOnStartup) toggleChatUsernameMenu(true);
           
-        }
-        if (enableRants) {
-          addViewRantsBtn();
-          addRantTestBtn();
-          addMissedRantCheckBtn();
         }
 
         // Add chat menu buttons
@@ -257,7 +254,7 @@ let filteredUserColors = {};
           }
         }
 
-        // Play video on page load if enabled
+        // Play video on page load if eenabled
         if (playVideoOnPageLoad && document.querySelectorAll('video').length > 0) {
           playVideoContent();
         }
@@ -404,76 +401,79 @@ function highlightTerms(text, searchTerms, bgColors) {
 
 const getChatHistory = () => {
   currentChatHistory = [];
-
-  chatHistoryRows.forEach((ele, index) => {
-    // Check element classlist for 'chat-history--rant' 
-      // Add rant if new otherwise skip
-    if (ele.classList.contains('chat-history--rant')) {
-      if (saveRants) {
-        saveRant(ele, true)
+  if (chatHistoryRows) {
+    chatHistoryRows.forEach((ele, index) => {
+      // Check element classlist for 'chat-history--rant' 
+        // Add rant if new otherwise skip
+      if (ele.classList.contains('chat-history--rant')) {
+        if (saveRants) {
+          saveRant(ele, true)
+        }
+        //console.log('Skipping rant', element);
+        return;
       }
-      //console.log('Skipping rant', element);
-      return;
-    }
 
-    // Remove avatar if chatAvatarEnabled is false
-    if (!chatAvatarEnabled
-      && ele.childNodes[0].classList.contains("chat-history--user-avatar")){
-      ele.querySelector(".chat-history--user-avatar").style.display = "none";
-      //ele.childNodes[0].remove();
-    }
-
-    let element = ele.querySelector('.chat-history--message-wrapper');
-    
-    //Assign random color to each unique username in current chat history
-    let userColor;
-
-    if (!normalChatColors) {
-      userColor = getUserColor(element.childNodes[0].textContent, null);
-    } else {
-      userColor = getUserColor(element.childNodes[0].textContent, element.childNodes[0].querySelector('a').style.color);
-    }
-
-    if (!normalChatColors){
-      // Assign text color to username and message
-      element.childNodes[0].style.color = userColor;
-      element.childNodes[0].querySelector('a').style.color = userColor;
-    }
-    
-    // Assign background color to row if chatStyleNormal is on
-    //if (chatStyleNormal) element.style.background = rumbleColors.darkBlue;
-
-    // Highlight current user's username when tagged with '@'
-    if ( currentUser && currentUser.length > 2 ){
-      if (
-        element.childNodes[1].textContent.toLowerCase().includes(('@' + currentUser).toLowerCase()) ||
-        element.childNodes[1].textContent.toLowerCase().includes(('@' + currentStreamer).toLowerCase())
-      ) {
-        element.childNodes[1].innerHTML = highlightTerms(
-          element.childNodes[1].textContent, 
-          ['@' + currentUser, '@' + currentStreamer], 
-          ['rgb(234, 100, 4, .7)', 'rgb(187, 194, 11, .5)']
-        );
-      } else if (
-        element.childNodes[1].textContent.toLowerCase().includes((currentUser).toLowerCase())
-        || element.childNodes[1].textContent.toLowerCase().includes((currentStreamer).toLowerCase())
-      ) {
-        element.childNodes[1].innerHTML = highlightTerms(
-          element.childNodes[1].textContent, 
-          [currentUser, currentStreamer], 
-          ['rgb(234, 100, 4, .7)', 'rgb(187, 194, 11, .5)']
-        );
+      // Remove avatar if chatAvatarEnabled is false
+      if (!chatAvatarEnabled
+        && ele.childNodes[0].classList.contains("chat-history--user-avatar")){
+        ele.querySelector(".chat-history--user-avatar").style.display = "none";
+        //ele.childNodes[0].remove();
       }
-    }
 
-    // Add the message to the chat history
-    currentChatHistory.push({
-      username: element.childNodes[0].textContent,
-      message: element.childNodes[1].textContent,
-      color: userColor,
-      date: Date.now(),
+      let element = ele.querySelector('.chat-history--message-wrapper');
+      
+      // Assign random color to each unique username in current chat history
+      let userColor;
+
+      if (element){
+        if (!normalChatColors) {
+          userColor = getUserColor(element.childNodes[0].textContent, null);
+        } else {
+          userColor = getUserColor(element.childNodes[0].textContent, element.childNodes[0].querySelector('a').style.color);
+        }
+      
+        if (!normalChatColors){
+          // Assign text color to username and message
+          element.childNodes[0].style.color = userColor;
+          element.childNodes[0].querySelector('a').style.color = userColor;
+        }
+        
+        // Assign background color to row if chatStyleNormal is on
+        //if (chatStyleNormal) element.style.background = rumbleColors.darkBlue;
+
+        // Highlight current user's username when tagged with '@'
+        if ( currentUser && currentUser.length > 2 ){
+          if (
+            element.childNodes[1].textContent.toLowerCase().includes(('@' + currentUser).toLowerCase()) ||
+            element.childNodes[1].textContent.toLowerCase().includes(('@' + currentStreamer).toLowerCase())
+          ) {
+            element.childNodes[1].innerHTML = highlightTerms(
+              element.childNodes[1].textContent, 
+              ['@' + currentUser, '@' + currentStreamer], 
+              ['rgb(234, 100, 4, .7)', 'rgb(187, 194, 11, .5)']
+            );
+          } else if (
+            element.childNodes[1].textContent.toLowerCase().includes((currentUser).toLowerCase())
+            || element.childNodes[1].textContent.toLowerCase().includes((currentStreamer).toLowerCase())
+          ) {
+            element.childNodes[1].innerHTML = highlightTerms(
+              element.childNodes[1].textContent, 
+              [currentUser, currentStreamer], 
+              ['rgb(234, 100, 4, .7)', 'rgb(187, 194, 11, .5)']
+            );
+          }
+        }
+
+        // Add the message to the chat history
+        currentChatHistory.push({
+          username: element.childNodes[0].textContent,
+          message: element.childNodes[1].textContent,
+          color: userColor,
+          date: Date.now(),
+        });
+      }
     });
-  });
+  }
 };
 
 
@@ -660,6 +660,8 @@ const clearMentionPopup = () => {
 
 
 
+
+
 ///////   Main Chat Username List   ///////
 
 // Add username list tab to chat window
@@ -809,7 +811,7 @@ const addChatUsernameMenu = () => {
     // Update user count
     usernameMenuRefreshButton.innerHTML = (
       showListUserCount 
-        ? `<span>${getUserCount(userColors)}</span>`
+        ? `<span style="width: fit-content;">${getUserCount(userColors)}</span>`
         : `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
     );
   };
@@ -1261,125 +1263,6 @@ const addUserListBtn = () => {
 }
 
 
-const addViewRantsBtn = () => {
-  // Create button for full screen chat 
-  let viewRantsBtn = document.createElement('button');
-
-  viewRantsBtn.id = 'viewRantsBtn';
-  viewRantsBtn.addClassName = 'cmi';
-  viewRantsBtn.innerText = 'View Rants';
-
-  viewRantsBtn.style.color = '#D6E0EA';
-  viewRantsBtn.style.cursor = 'pointer';
-  viewRantsBtn.style.backgroundColor = 'transparent';
-  viewRantsBtn.style.borderStyle = 'none';
-  viewRantsBtn.style.fontFamily = 'inherit';
-  viewRantsBtn.style.fontWeight = 'inherit';
-  viewRantsBtn.style.fontSize = 'inherit';
-  viewRantsBtn.style.textDecoration = 'inherit';
-  viewRantsBtn.style.fontStyle = 'inherit';
-  viewRantsBtn.style.lineHeight = 'inherit';
-  viewRantsBtn.style.borderWidth = '2px';
-  viewRantsBtn.style.padding = '8px 1rem';
-  viewRantsBtn.style.paddingLeft = '1.5rem';
-  viewRantsBtn.style.paddingRight = '1.5rem';
-  viewRantsBtn.style.textAlign = 'left';
-  viewRantsBtn.style.whiteSpace = 'normal';
-  viewRantsBtn.style.width = '100%';
-  viewRantsBtn.style.maxWidth = '100%';
-  viewRantsBtn.style.outlineOffset = '-3px';
-  viewRantsBtn.style.userSelect = 'none';
-  
-  // Add hover effect
-  viewRantsBtn.addEventListener('mouseover', ()=>{
-    viewRantsBtn.style.backgroundColor = 'rgb(214, 224, 234, .025)';
-  });
-
-  // Remove hover effect
-  viewRantsBtn.addEventListener('mouseout', ()=>{
-    viewRantsBtn.style.backgroundColor = 'transparent';
-  });
-
-  if (chatHistoryEle[0]){
-    // Check data-chat-visible attribute
-    //var chatVisibilityDataAtr = document.querySelector('#chat-toggle-chat-visibility').getAttribute('data-chat-visible');
-    var chatVisibilityDataset = document.querySelector('#chat-toggle-chat-visibility').dataset.chatVisible;
-
-    if (chatVisibilityDataset){
-      document.querySelector('#chat-main-menu').appendChild(viewRantsBtn);
-    }
-    
-    viewRantsBtn.onclick = function() {
-      try {
-        chrome.runtime.sendMessage({ action:'new-window' }, (response) => {
-          //console.log('new rants window', response);
-        });
-      } catch (error) {
-        console.log('new rants window error', error);
-      } 
-    }
-  }
-}
-
-const addMissedRantCheckBtn = () => {
-  // Create button for full screen chat 
-  let missedRantCheckBtn = document.createElement('button');
-
-  missedRantCheckBtn.id = 'viewRantsBtn';
-  missedRantCheckBtn.addClassName = 'cmi';
-  missedRantCheckBtn.innerText = 'View Missed Rants';
-  missedRantCheckBtn.title = 'See unsaved Rants received while tab was idle. Missed Rants are gone after page refresh.';
-
-  missedRantCheckBtn.style.color = '#D6E0EA';
-  missedRantCheckBtn.style.cursor = 'pointer';
-  missedRantCheckBtn.style.backgroundColor = 'transparent';
-  missedRantCheckBtn.style.borderStyle = 'none';
-  missedRantCheckBtn.style.fontFamily = 'inherit';
-  missedRantCheckBtn.style.fontWeight = 'inherit';
-  missedRantCheckBtn.style.fontSize = 'inherit';
-  missedRantCheckBtn.style.textDecoration = 'inherit';
-  missedRantCheckBtn.style.fontStyle = 'inherit';
-  missedRantCheckBtn.style.lineHeight = 'inherit';
-  missedRantCheckBtn.style.borderWidth = '2px';
-  missedRantCheckBtn.style.padding = '8px 1rem';
-  missedRantCheckBtn.style.paddingLeft = '1.5rem';
-  missedRantCheckBtn.style.paddingRight = '1.5rem';
-  missedRantCheckBtn.style.textAlign = 'left';
-  missedRantCheckBtn.style.whiteSpace = 'normal';
-  missedRantCheckBtn.style.width = '100%';
-  missedRantCheckBtn.style.maxWidth = '100%';
-  missedRantCheckBtn.style.outlineOffset = '-3px';
-  missedRantCheckBtn.style.userSelect = 'none';
-  
-  // Add hover effect
-  missedRantCheckBtn.addEventListener('mouseover', ()=>{
-    missedRantCheckBtn.style.backgroundColor = 'rgb(214, 224, 234, .025)';
-  });
-
-  // Remove hover effect
-  missedRantCheckBtn.addEventListener('mouseout', ()=>{
-    missedRantCheckBtn.style.backgroundColor = 'transparent';
-  });
-
-  if (chatHistoryEle[0]){
-    // Check data-chat-visible attribute
-    //var chatVisibilityDataAtr = document.querySelector('#chat-toggle-chat-visibility').getAttribute('data-chat-visible');
-    var chatVisibilityDataset = document.querySelector('#chat-toggle-chat-visibility').dataset.chatVisible;
-
-    if (chatVisibilityDataset){
-      document.querySelector('#chat-main-menu').appendChild(missedRantCheckBtn);
-    }
-    
-    missedRantCheckBtn.onclick = function() {
-      //console.log('Missed rants button clicked');
-      getChatHistory();
-
-      console.log('Missed Rants', JSON.stringify(cachedRants));
-    }
-  }
-}
-
-
 
 
 
@@ -1485,7 +1368,6 @@ var chatObserver = new MutationObserver(function(mutations) {
 var setListeners = function() {
   let usernameListPopup = document.querySelector('.chat-plus-popup');
   let inputElement = document.getElementById("chat-message-text-input");
-  let popupListEle = document.querySelector('.chat-plus-popup-content');
 
   document.addEventListener("keydown", function(event) {
     if (enableChatPlus) {
@@ -1504,59 +1386,6 @@ var setListeners = function() {
         }
         toggleChatUsernameMenu(false);
       }
-
-      /*
-      // If tab key or space bar is pressed
-      if (
-        event.keyCode === 9 
-        || event.key === 'Tab'
-        || event.keyCode === 38
-        || event.key === 'ArrowUp'
-      ) {
-        // If username list is open
-        if (showUsernameList) {
-          // Check if popup list element children are focused
-
-        }
-      }
-
-      // If username list is open and popup list element is focused add arrow key navigation 
-      if (showUsernameList) {
-        let listIndex = 0;
-        // If up arrow key is pressed
-        if (event.keyCode === 38) {
-          // If the first element is focused
-          if (popupListEle.childNodes[0] === document.activeElement) {
-            // Focus on the last element
-            popupListEle.childNodes[popupListEle.childNodes.length - 1].focus();
-            listIndex = popupListEle.childNodes.length - 1;
-          } else {
-            // Focus on the previous element
-            listIndex = listIndex - 1;
-            popupListEle.childNodes[listIndex].focus();
-          }
-        }
-        // If down arrow key is pressed
-        if (event.keyCode === 40) {
-          // If the last element is focused
-          if (popupListEle.childNodes[popupListEle.childNodes.length - 1] === document.activeElement) {
-            // Focus on the first element
-            popupListEle.childNodes[0].focus();
-            listIndex = 0;
-          } else {
-            // Focus on the next element
-            listIndex = listIndex + 1;
-            popupListEle[listIndex].focus();
-          }
-        }
-      }*/
-      
-      console.table({
-        keyCode: event.keyCode, 
-        which: event.which, 
-        key: event.key, 
-        code: event.code
-      })
     }
   });
 
@@ -1669,7 +1498,7 @@ var setIntervals = function() {
       && document.querySelector('.username-menu-refresh-button')
     ){
       // Get new chat usernames for list
-      document.querySelector('.username-menu-refresh-button').innerHTML = `<span>${getUserCount(userColors)}</span>`   
+      document.querySelector('.username-menu-refresh-button').innerHTML = `<span style="width: fit-content;">${getUserCount(userColors)}</span>`   
     }
 
     // Refresh user list if enabled
@@ -1866,7 +1695,7 @@ const storeRants = function(rant) {
 
 
 
-
+/*
 //////  Rant Test   //////
 
 const addRantTestBtn = () => {
@@ -1964,3 +1793,4 @@ const addRantTestBtn = () => {
     });
   }
 }
+*/

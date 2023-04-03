@@ -333,52 +333,55 @@ const getChatHistory = () => {
     
     //Assign random color to each unique username in current chat history
     let userColor;
+    if (element){
 
-    if (!normalChatColors) {
-      userColor = getUserColor(element.childNodes[0].textContent, null);
-    } else {
-      userColor = getUserColor(element.childNodes[0].textContent, element.childNodes[0].querySelector('a').style.color);
-    }
-
-    if (!normalChatColors){
-      // Assign text color to username and message
-      element.childNodes[0].style.color = userColor;
-      element.childNodes[0].querySelector('a').style.color = userColor;
-    }
-
-    // Assign background color to row if chatStyleNormal is on
-    if (chatStyleNormal) element.style.background = rumbleColors.darkBlue;
-
-    // Highlight current user's username when tagged with '@'
-    if ( currentUser && currentUser.length > 2 ){
-      if (
-        element.childNodes[1].textContent.toLowerCase().includes(('@' + currentUser).toLowerCase()) ||
-        element.childNodes[1].textContent.toLowerCase().includes(('@' + currentStreamer).toLowerCase())
-      ) {
-        element.childNodes[1].innerHTML = highlightTerms(
-          element.childNodes[1].textContent, 
-          ['@' + currentUser, '@' + currentStreamer], 
-          ['rgb(234, 100, 4, .7)', 'rgb(187, 194, 11, .5)']
-        );
-      } else if (
-        element.childNodes[1].textContent.toLowerCase().includes((currentUser).toLowerCase())
-        || element.childNodes[1].textContent.toLowerCase().includes((currentStreamer).toLowerCase())
-      ) {
-        element.childNodes[1].innerHTML = highlightTerms(
-          element.childNodes[1].textContent, 
-          [currentUser, currentStreamer], 
-          ['rgb(234, 100, 4, .7)', 'rgb(187, 194, 11, .5)']
-        );
+      
+      if (!normalChatColors) {
+        userColor = getUserColor(element.childNodes[0].textContent, null);
+      } else {
+        userColor = getUserColor(element.childNodes[0].textContent, element.childNodes[0].querySelector('a').style.color);
       }
-    }
 
-    // Add the message to the chat history
-    currentChatHistory.push({
-      username: element.childNodes[0].textContent,
-      message: element.childNodes[1].textContent,
-      color: userColor,
-      date: Date.now(),
-    });
+      if (!normalChatColors){
+        // Assign text color to username and message
+        element.childNodes[0].style.color = userColor;
+        element.childNodes[0].querySelector('a').style.color = userColor;
+      }
+
+      // Assign background color to row if chatStyleNormal is on
+      if (chatStyleNormal) element.style.background = rumbleColors.darkBlue;
+
+      // Highlight current user's username when tagged with '@'
+      if ( currentUser && currentUser.length > 2 ){
+        if (
+          element.childNodes[1].textContent.toLowerCase().includes(('@' + currentUser).toLowerCase()) ||
+          element.childNodes[1].textContent.toLowerCase().includes(('@' + currentStreamer).toLowerCase())
+        ) {
+          element.childNodes[1].innerHTML = highlightTerms(
+            element.childNodes[1].textContent, 
+            ['@' + currentUser, '@' + currentStreamer], 
+            ['rgb(234, 100, 4, .7)', 'rgb(187, 194, 11, .5)']
+          );
+        } else if (
+          element.childNodes[1].textContent.toLowerCase().includes((currentUser).toLowerCase())
+          || element.childNodes[1].textContent.toLowerCase().includes((currentStreamer).toLowerCase())
+        ) {
+          element.childNodes[1].innerHTML = highlightTerms(
+            element.childNodes[1].textContent, 
+            [currentUser, currentStreamer], 
+            ['rgb(234, 100, 4, .7)', 'rgb(187, 194, 11, .5)']
+          );
+        }
+      }
+
+      // Add the message to the chat history
+      currentChatHistory.push({
+        username: element.childNodes[0].textContent,
+        message: element.childNodes[1].textContent,
+        color: userColor,
+        date: Date.now(),
+      });
+    }
   });
 };
 

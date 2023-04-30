@@ -330,20 +330,22 @@ const getChatHistory = () => {
     }
 
     let element = ele.querySelector('.chat-history--message-wrapper');
-    
+    let usernameEle = element.querySelector('.chat-history--username');
+
     //Assign random color to each unique username in current chat history
     let userColor;
 
     if (!normalChatColors) {
-      userColor = getUserColor(element.childNodes[0].textContent, null);
+      userColor = getUserColor(usernameEle.querySelector('a').textContent, null);
+
     } else {
-      userColor = getUserColor(element.childNodes[0].textContent, element.childNodes[0].querySelector('a').style.color);
+      userColor = getUserColor(usernameEle.querySelector('a').textContent, usernameEle.querySelector('a').style.color);
+
     }
 
     if (!normalChatColors){
       // Assign text color to username and message
-      element.childNodes[0].style.color = userColor;
-      element.childNodes[0].querySelector('a').style.color = userColor;
+      usernameEle.querySelector('a').style.color = userColor;
     }
 
     // Assign background color to row if chatStyleNormal is on
@@ -374,7 +376,7 @@ const getChatHistory = () => {
 
     // Add the message to the chat history
     currentChatHistory.push({
-      username: element.childNodes[0].textContent,
+      username: usernameEle.querySelector('a').textContent,
       message: element.childNodes[1].textContent,
       color: userColor,
       date: Date.now(),
@@ -1188,23 +1190,23 @@ var chatObserver = new MutationObserver(function(mutations) {
           }
 
           let addedNode = mutation.addedNodes[i].querySelector('.chat-history--message-wrapper');
+          let usernameEle = addedNode.querySelector('.chat-history--username');
 
           // For styling with other extensions
-          if (chatStyleNormal) {addedNode.style.background = rumbleColors.darkBlue;}
+          if (chatStyleNormal && addedNode) {addedNode.style.background = rumbleColors.darkBlue;}
 
           // Add the message to the chat history
-          let userColor = getUserColor(addedNode.childNodes[0].textContent);
+          let userColor = getUserColor(usernameEle.querySelector('a').textContent);
 
           if (!normalChatColors) {
-            userColor = getUserColor(addedNode.childNodes[0].textContent, null);
+            userColor = getUserColor(usernameEle.querySelector('a').textContent, null);
           } else {
-            userColor = getUserColor(addedNode.childNodes[0].textContent, element.childNodes[0].querySelector('a').style.color);
+            userColor = getUserColor(usernameEle.querySelector('a').textContent, usernameEle.querySelector('a').style.color);
           }
 
           if (!normalChatColors){
             // Assign color to username
-            addedNode.childNodes[0].style.color = userColor;
-            addedNode.childNodes[0].querySelector('a').style.color = userColor;
+            usernameEle.querySelector('a').style.color = userColor;
           }
           
           // Highlight current user's username and streamer's name when mentioned
@@ -1237,7 +1239,7 @@ var chatObserver = new MutationObserver(function(mutations) {
 
           // Add the message to the chat history
           currentChatHistory.push({
-            username: addedNode.childNodes[0].textContent,
+            username: usernameEle.querySelector('a').textContent,
             message: addedNode.childNodes[1].textContent,
             color: userColor,
             date: Date.now(),

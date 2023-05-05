@@ -50,7 +50,7 @@ let savedRants = [];
 
 // Text colors
 let usernameColors = {
-  rumbler: '#88a0b8',
+  chatplus: '#C2E1FE',
   divaPink: '#FF63B4', 
   magenta: '#BD03E5',
   electricPurple: '#850DF4',
@@ -67,8 +67,10 @@ let usernameColors = {
 }
 
 let messageColors = { 
-  chatPlus: '#E0E9F2',
+  chatPlusO: '#E0E9F2',
+  chatplus: '#C2E1FE',
   rumble: '#d6e0ea',
+  rumbler: '#88a0b8',
   white: '#FFFFFF',
 }
 let rumbleColors = {
@@ -376,7 +378,7 @@ const getChatHistory = () => {
 
     // Add the message to the chat history
     currentChatHistory.push({
-      username: usernameEle.querySelector('a').textContent,
+      username: usernameEle.querySelector('a') && usernameEle.querySelector('a').textContent,
       message: element.childNodes[1].textContent,
       color: userColor,
       date: Date.now(),

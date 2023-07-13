@@ -411,7 +411,10 @@ function storeCaretPosition(input) {
 
 // Inserts a username into a message
 function insertUsername(username, message, caretPos) {
-  return message.slice(0, caretPos) + username + ' ' + message.slice(caretPos);
+  // Get the position of the last @ before the caretPos
+  const lastAtPos = message.slice(0, caretPos).lastIndexOf('@');
+  // Return the message with the username inserted
+  return message.slice(0, lastAtPos) + '@' + username + ' ' + message.slice(caretPos);
 }
 
 // Open popup with username list

@@ -35,7 +35,7 @@ let debugMode = false;
 let showUsernameList = false;
 let streamerMode = false;
 let showFullWindowChat = false;
-let caretPosition, caretStart;
+let caretPosition, caretStart, atCaretPossition;
 
 // Vars for logged in user and current streamer 
 let currentUser = '';
@@ -410,7 +410,7 @@ function storeCaretPosition(input) {
 }
 
 // Inserts a username into a message
-function insertUsername(username, message, caretPos) {
+function insertUsername(username, message, caretPos, atPos) {
   // Get the position of the last @ before the caretPos
   const lastAtPos = message.slice(0, caretPos).lastIndexOf('@');
   // Return the message with the username inserted
@@ -494,7 +494,7 @@ const populateMentionPopup = (text) => {
         let thisCaret = storeCaretPosition(document.getElementById('chat-message-text-input'));
         // Get text from message input
         let thisText = document.getElementById('chat-message-text-input').value;
-        // Get the typed after the caret position
+        // Get the typed text after the caret position
         let textBetweenIndexes = thisText.substring(caretStart, thisCaret);
         
         // If there is no typed text or the text includes a space, add all usernames to the list. 

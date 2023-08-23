@@ -91,6 +91,8 @@ let userColors = {};
 
 // Get options from storage and initialize extension
 (async () => {
+  console.log('running chatplus...')
+
   await chrome.storage.sync.get("options")
   .then(function (result) {
     const defaultOptions = {
@@ -318,7 +320,11 @@ function highlightTerms(text, searchTerms, bgColors) {
 const getChatHistory = () => {
   currentChatHistory = [];
 
-  chatHistoryRows.forEach((ele, index) => {
+  let listRows = chatHistoryList.querySelectorAll('.chat-history--row');
+
+  listRows.forEach((ele, index) => {
+    if (index < 5) console.log('ele', ele);
+
     // Check element classlist for 'chat-history--rant' and skip row
     if (ele.classList.contains('chat-history--rant')) {
       return;
@@ -333,6 +339,8 @@ const getChatHistory = () => {
 
     let element = ele.querySelector('.chat-history--message-wrapper');
     let usernameEle = element.querySelector('.chat-history--username');
+
+    console.log('username ' + index, username)
 
     //Assign random color to each unique username in current chat history
     let userColor;
@@ -1085,7 +1093,7 @@ const addFullWindowBtn = () => {
   if (chatHistoryEle[0]){
     // Check data-chat-visible attribute
     //var chatVisibilityDataAtr = document.querySelector('#chat-toggle-chat-visibility').getAttribute('data-chat-visible');
-    var chatVisibilityDataset = document.querySelector('#chat-toggle-chat-visibility').dataset.chatVisible;
+    var chatVisibilityDataset = document.querySelector('#chat-toggle-chat-visibility')?.dataset.chatVisible;
 
     if (chatVisibilityDataset){
       document.querySelector('#chat-main-menu').appendChild(fullWindowChatBtn);
@@ -1156,7 +1164,7 @@ const addUserListBtn = () => {
   if (chatHistoryEle[0]){
     // Check data-chat-visible attribute
     //var chatVisibilityDataAtr = document.querySelector('#chat-toggle-chat-visibility').getAttribute('data-chat-visible');
-    var chatVisibilityDataset = document.querySelector('#chat-toggle-chat-visibility').dataset.chatVisible;
+    var chatVisibilityDataset = document.querySelector('#chat-toggle-chat-visibility')?.dataset.chatVisible;
 
     if (chatVisibilityDataset){
       document.querySelector('#chat-main-menu').appendChild(userListBtn);

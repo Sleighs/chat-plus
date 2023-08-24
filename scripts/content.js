@@ -91,7 +91,7 @@ let userColors = {};
 
 // Get options from storage and initialize extension
 (async () => {
-  console.log('running chatplus...')
+  //console.log('Running ChatPlus...')
 
   await chrome.storage.sync.get("options")
   .then(function (result) {
@@ -645,7 +645,10 @@ const addChatUsernameMenu = () => {
   usernameMenuButton.style.textAlign = 'center';
   usernameMenuButton.style.cursor = 'pointer';
   usernameMenuButton.addEventListener('click', () => {
-    toggleChatUsernameMenu(showUsernameList ? false : true);
+    toggleChatUsernameMenu(
+      !showUsernameList 
+      //? false : true\
+      );
   });
 
   // Create text element for toggle button 
@@ -852,6 +855,9 @@ const toggleChatUsernameMenu = (toggle) => {
   let usernameMenuContainer2 = document.querySelector('.username-menu-container2');
   let userListBtn = document.querySelector('#userListBtn');
   
+  // Update global variable
+  showUsernameList = toggle;
+
   if (toggle) {
     // Set display to flex
     usernameMenuContainer2.style.display = 'flex';
@@ -872,17 +878,17 @@ const toggleChatUsernameMenu = (toggle) => {
     buildUsernameList(false);
 
     // Change button text
-    userListBtn.innerText = 'Hide Recent List';
+    //userListBtn.innerText = 'Hide Recent List';
   } else {
     // Hide container
     usernameMenuContainer2.style.display = 'none';
+
     // Change button text
-    userListBtn.innerText = 'Show Recent List';
+    //userListBtn.innerText = 'Show Recent List';
+    
     // Change button icon
     document.querySelector('.username-menu-toggle-button-text').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>`;    
   }
-
-  showUsernameList = toggle;
 };
 
 

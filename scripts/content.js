@@ -323,7 +323,7 @@ const getChatHistory = () => {
   let listRows = chatHistoryList.querySelectorAll('.chat-history--row');
 
   listRows.forEach((ele, index) => {
-    if (index < 5) console.log('ele', ele);
+    //if (index < 5) console.log('ele', ele);
 
     // Check element classlist for 'chat-history--rant' and skip row
     if (ele.classList.contains('chat-history--rant')) {
@@ -340,7 +340,7 @@ const getChatHistory = () => {
     let element = ele.querySelector('.chat-history--message-wrapper');
     let usernameEle = element.querySelector('.chat-history--username');
 
-    console.log('username ' + index, username)
+    //console.log('username ' + index, username)
 
     //Assign random color to each unique username in current chat history
     let userColor;
@@ -716,11 +716,13 @@ const addChatUsernameMenu = () => {
   usernameMenuRefreshButton.style.paddingRight =  '5px'; 
   usernameMenuRefreshButton.style.cursor = 'pointer';
   usernameMenuRefreshButton.style.opacity = '0.75';
+  setTimeout(() => {
   usernameMenuRefreshButton.innerHTML = (
     showListUserCount 
       ? `<span style="width: fit-content;">${getUserCount(userColors)}</span>`
       : `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
   );
+  }, 1000);
   usernameMenuRefreshButton.onclick = function(){
     // Build new username list
     buildUsernameList(false)
@@ -763,9 +765,13 @@ const addChatUsernameMenu = () => {
   // Add container to page
   chatHistoryEle[0].appendChild(usernameMenuContainer);
   chatHistoryEle[0].appendChild(usernameMenuContainer2);
+  
+  // Add menu toggle to class=chat--header-buttons-wrapper
+  //let chatHeaderButtons = document.querySelector('.chat--header-buttons-wrapper');
+  chatHistoryList.appendChild(usernameMenuContainer);
 
   // Bring chat menu to front
-  document.querySelector('#chat-main-menu').style.zIndex = '190';
+  document.querySelector('#chat-main-menu').style.zIndex = '1900';
 };
 
 // Build and return recent user list
@@ -803,6 +809,7 @@ const buildUsernameList = (appended) => {
       });
     return sorted;
   }
+
   const sortedUserColors = sortObjectByPropName(userColors);
 
   // Loop through sortedUserColors object and add usernames to popup content
@@ -1217,6 +1224,11 @@ var chatObserver = new MutationObserver(function(mutations) {
           // Add the message to the chat history
           let userColor = getUserColor(usernameEle.querySelector('a').textContent);
 
+          // Log chat messages
+          if (debugMode) {
+            console.log(usernameEle.querySelector('a').textContent + ': ' + addedNode.childNodes[1].textContent);
+          }
+
           if (!normalChatColors) {
             userColor = getUserColor(usernameEle.querySelector('a').textContent, null);
           } else {
@@ -1245,6 +1257,7 @@ var chatObserver = new MutationObserver(function(mutations) {
             } else 
 
             if (
+              currentUser &&
               addedNode.childNodes[1].textContent.toLowerCase().includes((currentUser).toLowerCase())
               || addedNode.childNodes[1].textContent.toLowerCase().includes((currentStreamer).toLowerCase())
             ) {
@@ -1283,7 +1296,7 @@ var chatObserver = new MutationObserver(function(mutations) {
 var setListeners = function() {
   let usernameListPopup = document.querySelector('.chat-plus-popup');
   let inputElement = document.getElementById("chat-message-text-input");
-
+/*
   document.addEventListener("keydown", function(event) {
     if (enableChatPlus) {
       // If space bar is pressed remove username list popup
@@ -1304,6 +1317,7 @@ var setListeners = function() {
   });
 
   // Listen for inputs in chat message input
+  
   if (inputElement) {
     inputElement.addEventListener("input", function(e) {
       if (enableChatPlus) {
@@ -1354,6 +1368,7 @@ var setListeners = function() {
       }
     });
   }
+  */
 
   // Close popup when user clicks outside of element
   document.addEventListener("click", function(event) {
@@ -1396,8 +1411,14 @@ var setListeners = function() {
 
 //////   Intervals   //////
 
+setTimeout(() => {
+  // Get initial chat history
+  getChatHistory();
+  buildUsernameList(false);
+}, 1000);
+
 var setIntervals = function() {
-  // Refresh chat history every 60 seconds
+  // Refresh chat history every 45 seconds
   const chatRefreshInterval = setInterval(function(){
     //if (debugMode) console.log('refreshing chat history');
     if (enableChatPlus) {
@@ -1421,7 +1442,7 @@ var setIntervals = function() {
     ) {
       buildUsernameList(false);
     }
-  }, 60000);
+  }, 45000);
 
   if (!chatHistoryList || !enableChatPlus){
     //if (debugMode) console.log('clearing chat refresh interval')

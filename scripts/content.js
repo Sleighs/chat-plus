@@ -9,11 +9,11 @@ let optionsState = {
   popupBelow: false,
   playVideoOnPageLoad: false,
   hideFullWindowChatButton: false,
-  showListUserCount: false,
+  showListUserCount: true,
   chatStyleNormal: true,
   saveRants: false,
   chatAvatarEnabled: true,
-  normalChatColors: false
+  normalChatColors: true
 };
 
 // Undefined option vars
@@ -320,78 +320,82 @@ function highlightTerms(text, searchTerms, bgColors) {
 const getChatHistory = () => {
   currentChatHistory = [];
 
-  let listRows = chatHistoryList.querySelectorAll('.chat-history--row');
+  try {
+    let listRows = chatHistoryList.querySelectorAll('.chat-history--row');
 
-  listRows.forEach((ele, index) => {
-    //if (index < 5) console.log('ele', ele);
+    listRows.forEach((ele, index) => {
+      //if (index < 5) console.log('ele', ele);
 
-    // Check element classlist for 'chat-history--rant' and skip row
-    if (ele.classList.contains('chat-history--rant')) {
-      return;
-    }
-
-    // Remove avatar if chatAvatarEnabled is false
-    if (!chatAvatarEnabled
-      && ele.childNodes[0].classList.contains("chat-history--user-avatar")
-    ){
-      ele.querySelector(".chat-history--user-avatar").style.display = "none";
-    }
-
-    let element = ele.querySelector('.chat-history--message-wrapper');
-    let usernameEle = element.querySelector('.chat-history--username');
-
-    //console.log('username ' + index, username)
-
-    //Assign random color to each unique username in current chat history
-    let userColor;
-
-    if (!normalChatColors) {
-      userColor = getUserColor(usernameEle.querySelector('a').textContent, null);
-
-    } else {
-      userColor = getUserColor(usernameEle.querySelector('a').textContent, usernameEle.querySelector('a').style.color);
-
-    }
-
-    if (!normalChatColors){
-      // Assign text color to username and message
-      usernameEle.querySelector('a').style.color = userColor;
-    }
-
-    // Assign background color to row if chatStyleNormal is on
-    if (chatStyleNormal) element.style.background = rumbleColors.darkBlue;
-
-    // Highlight current user's username when tagged with '@'
-    if ( currentUser && currentUser.length > 2 ){
-      if (
-        element.childNodes[1].textContent.toLowerCase().includes(('@' + currentUser).toLowerCase()) ||
-        element.childNodes[1].textContent.toLowerCase().includes(('@' + currentStreamer).toLowerCase())
-      ) {
-        element.childNodes[1].innerHTML = highlightTerms(
-          element.childNodes[1].textContent, 
-          ['@' + currentUser, '@' + currentStreamer], 
-          ['rgb(234, 100, 4, .7)', 'rgb(187, 194, 11, .5)']
-        );
-      } else if (
-        element.childNodes[1].textContent.toLowerCase().includes((currentUser).toLowerCase())
-        || element.childNodes[1].textContent.toLowerCase().includes((currentStreamer).toLowerCase())
-      ) {
-        element.childNodes[1].innerHTML = highlightTerms(
-          element.childNodes[1].textContent, 
-          [currentUser, currentStreamer], 
-          ['rgb(234, 100, 4, .7)', 'rgb(187, 194, 11, .5)']
-        );
+      // Check element classlist for 'chat-history--rant' and skip row
+      if (ele.classList.contains('chat-history--rant')) {
+        return;
       }
-    }
 
-    // Add the message to the chat history
-    currentChatHistory.push({
-      username: usernameEle.querySelector('a') && usernameEle.querySelector('a').textContent,
-      message: element.childNodes[1].textContent,
-      color: userColor,
-      date: Date.now(),
+      // Remove avatar if chatAvatarEnabled is false
+      if (!chatAvatarEnabled
+        && ele.childNodes[0].classList.contains("chat-history--user-avatar")
+      ){
+        ele.querySelector(".chat-history--user-avatar").style.display = "none";
+      }
+
+      let element = ele.querySelector('.chat-history--message-wrapper');
+      let usernameEle = element.querySelector('.chat-history--username');
+
+      //console.log('username ' + index, username)
+
+      //Assign random color to each unique username in current chat history
+      let userColor;
+
+      if (!normalChatColors) {
+        userColor = getUserColor(usernameEle.querySelector('a').textContent, null);
+
+      } else {
+        userColor = getUserColor(usernameEle.querySelector('a').textContent, usernameEle.querySelector('a').style.color);
+
+      }
+
+      if (!normalChatColors){
+        // Assign text color to username and message
+        usernameEle.querySelector('a').style.color = userColor;
+      }
+
+      // Assign background color to row if chatStyleNormal is on
+      if (chatStyleNormal) element.style.background = rumbleColors.darkBlue;
+
+      // Highlight current user's username when tagged with '@'
+      if ( currentUser && currentUser.length > 2 ){
+        if (
+          element.childNodes[1].textContent.toLowerCase().includes(('@' + currentUser).toLowerCase()) ||
+          element.childNodes[1].textContent.toLowerCase().includes(('@' + currentStreamer).toLowerCase())
+        ) {
+          element.childNodes[1].innerHTML = highlightTerms(
+            element.childNodes[1].textContent, 
+            ['@' + currentUser, '@' + currentStreamer], 
+            ['rgb(234, 100, 4, .7)', 'rgb(187, 194, 11, .5)']
+          );
+        } else if (
+          element.childNodes[1].textContent.toLowerCase().includes((currentUser).toLowerCase())
+          || element.childNodes[1].textContent.toLowerCase().includes((currentStreamer).toLowerCase())
+        ) {
+          element.childNodes[1].innerHTML = highlightTerms(
+            element.childNodes[1].textContent, 
+            [currentUser, currentStreamer], 
+            ['rgb(234, 100, 4, .7)', 'rgb(187, 194, 11, .5)']
+          );
+        }
+      }
+
+      // Add the message to the chat history
+      currentChatHistory.push({
+        username: usernameEle.querySelector('a') && usernameEle.querySelector('a').textContent,
+        message: element.childNodes[1].textContent,
+        color: userColor,
+        date: Date.now(),
+      });
     });
-  });
+  } catch (error) {
+    if (debugMode) console.log('Error getting chat history', error);
+  }
 };
 
 
@@ -717,12 +721,12 @@ const addChatUsernameMenu = () => {
   usernameMenuRefreshButton.style.cursor = 'pointer';
   usernameMenuRefreshButton.style.opacity = '0.75';
   setTimeout(() => {
-  usernameMenuRefreshButton.innerHTML = (
-    showListUserCount 
-      ? `<span style="width: fit-content;">${getUserCount(userColors)}</span>`
-      : `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
-  );
-  }, 1000);
+    usernameMenuRefreshButton.innerHTML = (
+      showListUserCount 
+        ? `<span style="width: fit-content;">${getUserCount(userColors)}</span>`
+        : `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
+    );
+  }, 1500);
   usernameMenuRefreshButton.onclick = function(){
     // Build new username list
     buildUsernameList(false)
@@ -1239,11 +1243,14 @@ var chatObserver = new MutationObserver(function(mutations) {
             // Assign color to username
             usernameEle.querySelector('a').style.color = userColor;
           }
+
+          //console.log('Current User: ' + currentUser);
+          //console.log('Current Streamer: ' + currentStreamer);
           
           // Highlight current user's username and streamer's name when mentioned
           if (
             (currentUser && currentUser.length > 2)
-            || (currentStreamer && currentStreamer.length > 2)
+            //|| (currentStreamer && currentStreamer.length > 2)
           ){
             if (
               addedNode.childNodes[1].textContent.toLowerCase().includes(('@' + currentUser).toLowerCase())
@@ -1257,7 +1264,7 @@ var chatObserver = new MutationObserver(function(mutations) {
             } else 
 
             if (
-              currentUser &&
+              currentUser.length > 0 &&
               addedNode.childNodes[1].textContent.toLowerCase().includes((currentUser).toLowerCase())
               || addedNode.childNodes[1].textContent.toLowerCase().includes((currentStreamer).toLowerCase())
             ) {
@@ -1413,9 +1420,10 @@ var setListeners = function() {
 
 setTimeout(() => {
   // Get initial chat history
-  getChatHistory();
   buildUsernameList(false);
-}, 1000);
+  getChatHistory();
+  //buildUsernameList(false);
+}, 1500);
 
 var setIntervals = function() {
   // Refresh chat history every 45 seconds
@@ -1423,6 +1431,7 @@ var setIntervals = function() {
     //if (debugMode) console.log('refreshing chat history');
     if (enableChatPlus) {
       getChatHistory();
+      buildUsernameList(false);
     }
 
     // Refresh user list count if enabled

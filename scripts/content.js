@@ -1375,8 +1375,7 @@ var setListeners = function() {
       }
     });
   }
-  */
-
+  
   // Close popup when user clicks outside of element
   document.addEventListener("click", function(event) {
     var usernameListPopup = document.querySelector('.chat-plus-popup');
@@ -1389,6 +1388,7 @@ var setListeners = function() {
       clearMentionPopup();
     }
   });
+*/
 
   // Listen for window resize 
   window.addEventListener('resize', function(event){

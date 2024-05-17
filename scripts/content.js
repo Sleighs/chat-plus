@@ -1301,9 +1301,10 @@ var chatObserver = new MutationObserver(function(mutations) {
 });
 
 var setListeners = function() {
+  if (debugMode){
   let usernameListPopup = document.querySelector('.chat-plus-popup');
   let inputElement = document.getElementById("chat-message-text-input");
-/*
+
   document.addEventListener("keydown", function(event) {
     if (enableChatPlus) {
       // If space bar is pressed remove username list popup
@@ -1388,7 +1389,7 @@ var setListeners = function() {
       clearMentionPopup();
     }
   });
-*/
+}
 
   // Listen for window resize 
   window.addEventListener('resize', function(event){

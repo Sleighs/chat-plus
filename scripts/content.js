@@ -555,7 +555,8 @@ const populateMentionPopup = (text) => {
       const input = document.querySelector("input[type='text']");
       const caretPosition = storeCaretPosition(messageEle);
 
-      document.getElementById('chat-message-text-input').value = insertUsername(user, messageVal, caretPosition);
+      // Add username to message input
+      document.getElementById('chat-message-text-input').value = document.getElementById('chat-message-text-input').value + insertUsername(user, messageVal, caretPosition);
             
       // Remove popup
       popup.remove();
@@ -783,7 +784,7 @@ const buildUsernameList = (appended) => {
   // Get username menu container
   let usernameMenuList = document.querySelector('.username-menu-list');
   
-  // Clear username list is exists
+  // Clear username list exists
   if (usernameMenuList){
     while (usernameMenuList.firstChild) {
       usernameMenuList.removeChild(usernameMenuList.firstChild);
@@ -852,7 +853,8 @@ const buildUsernameList = (appended) => {
       const input = document.querySelector("input[type='text']");
       const caretPosition = storeCaretPosition(messageEle);
 
-      document.getElementById('chat-message-text-input').value = insertUsername(user, messageVal, caretPosition);
+      // Add username to message input
+      document.getElementById('chat-message-text-input').value = document.getElementById('chat-message-text-input').value + insertUsername(user, messageVal, caretPosition);
     });
   }
 

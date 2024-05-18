@@ -565,7 +565,6 @@ const populateMentionPopup = (text) => {
       document.getElementById('chat-message-text-input').focus();
     });
   }
-
 }
 
 const clearMentionPopup = () => {

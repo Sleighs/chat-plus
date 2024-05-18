@@ -1256,6 +1256,22 @@ var chatObserver = new MutationObserver(function(mutations) {
             } 
           }
 
+          // If username not found in currentChatHistory, rebuild username list
+          if (!currentChatHistory.find(user => user.username === usernameEle.querySelector('a').textContent)){
+            buildUsernameList(false);
+            //if (debugMode) console.log('Rebuilding username list for ' + usernameEle.querySelector('a').textContent);
+          
+            // Refresh user list count if enabled
+            if (
+              showUsernameList 
+              && showListUserCount 
+              && document.querySelector('.username-menu-refresh-button')
+            ){
+              // Get new chat usernames for list
+              document.querySelector('.username-menu-refresh-button').innerHTML = `<span>${getUserCount(userColors)}</span>`   
+            }
+          }
+        
           // Add the message to the chat history
           currentChatHistory.push({
             username: usernameEle.querySelector('a').textContent,

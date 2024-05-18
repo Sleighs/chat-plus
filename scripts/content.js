@@ -1278,6 +1278,22 @@ var chatObserver = new MutationObserver(function(mutations) {
             } 
           }
 
+          // If username not found in currentChatHistory, rebuild username list
+          if (!currentChatHistory.find(user => user.username === usernameEle.querySelector('a').textContent)){
+            buildUsernameList(false);
+            //if (debugMode) console.log('Rebuilding username list for ' + usernameEle.querySelector('a').textContent);
+          
+            // Refresh user list count if enabled
+            if (
+              showUsernameList 
+              && showListUserCount 
+              && document.querySelector('.username-menu-refresh-button')
+            ){
+              // Get new chat usernames for list
+              document.querySelector('.username-menu-refresh-button').innerHTML = `<span>${getUserCount(userColors)}</span>`   
+            }
+          }
+
           // Add the message to the chat history
           currentChatHistory.push({
             username: usernameEle.querySelector('a').textContent,
@@ -1314,7 +1330,6 @@ var setListeners = function() {
         // Close popup
         showUsernameList = false;
         clearMentionPopup();
-        
       }
 
       // If escape key is pressed hide username list
@@ -1391,7 +1406,7 @@ var setListeners = function() {
       clearMentionPopup();
     }
   });
-}
+  }
 
   // Listen for window resize 
   window.addEventListener('resize', function(event){
@@ -1429,7 +1444,7 @@ setTimeout(() => {
 }, 1500);
 
 var setIntervals = function() {
-  // Refresh chat history every 45 seconds
+  // Refresh chat history every 60 seconds
   const chatRefreshInterval = setInterval(function(){
     //if (debugMode) console.log('refreshing chat history');
     if (enableChatPlus) {
@@ -1454,7 +1469,7 @@ var setIntervals = function() {
     ) {
       buildUsernameList(false);
     }
-  }, 45000);
+  }, 60000);
 
   if (!chatHistoryList || !enableChatPlus){
     //if (debugMode) console.log('clearing chat refresh interval')

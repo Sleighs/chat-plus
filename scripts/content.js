@@ -601,7 +601,9 @@ const addChatUsernameMenu = () => {
   if (streamerMode){
     usernameMenuContainer2.style.width = '17%';
   } else {
-    usernameMenuContainer2.style.width = '105px';
+    usernameMenuContainer2.style.minWidth = '105px';
+    usernameMenuContainer2.style.width = '100%';
+    usernameMenuContainer2.style.maxWidth = '22%';
   }
 
   // Create first container for toggle button
@@ -880,7 +882,9 @@ const toggleChatUsernameMenu = (toggle) => {
       usernameMenuContainer2.style.height = '100%';
       usernameMenuContainer2.style.maxHeight = document.querySelector('#chat-history-list').offsetHeight + 'px';
     } else {
-      usernameMenuContainer2.style.width = '105px';
+      usernameMenuContainer2.style.minWidth = '105px';
+      usernameMenuContainer2.style.width = '100%';
+      usernameMenuContainer2.style.maxWidth = '22%';
     }
 
     // Change button icon

@@ -1,5 +1,7 @@
 //////   Define Variables   //////
 
+var browser = browser || chrome;
+
 // Default options
 let optionsState = {
   enableChatPlus: true,
@@ -93,7 +95,7 @@ let userColors = {};
 (async () => {
   //console.log('Running ChatPlus...')
 
-  await chrome.storage.sync.get("options")
+  await browser.storage.sync.get("options")
   .then(function (result) {
     const defaultOptions = {
       enableChatPlus: true,
@@ -258,9 +260,9 @@ try {
   if (rantEle && usernameEle) {
     if (usernameEle.length > 0) {
       currentUser = usernameEle[usernameEle.length - 1].textContent;
-      chrome.storage.local.set({ currentUser });
+      browser.storage.local.set({ currentUser });
     } else {
-      chrome.storage.local.get(['currentUser'], (result) => {
+      browser.storage.local.get(['currentUser'], (result) => {
         currentUser = result.currentUser;
       });
     } 
@@ -1213,7 +1215,7 @@ var chatObserver = new MutationObserver(function(mutations) {
         if (mutation.addedNodes[i].classList.contains("chat-history--row")) {
           // Check element classlist for 'chat-history--rant' 
           if (!enableChatPlus || mutation.addedNodes[i].classList.contains('chat-history--rant')) {
-            // Save rant to chrome.storage.sync
+            // Save rant to browser.storage.sync
             return;
           }
 

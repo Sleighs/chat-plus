@@ -1,5 +1,7 @@
 ////////   Installation   ////////
 
+var browser = browser || chrome;
+
 // Default options
 const defaultOptions = {
   enableChatPlus: true,
@@ -16,12 +18,12 @@ const defaultOptions = {
   normalChatColors: false,
 };
 
-// Options stored in chrome.storage.sync
+// Options stored in browser.storage.sync
 let options = {};
 
 // Initial setup
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.sync.get("options").then((result) => {
+browser.runtime.onInstalled.addListener(() => {
+  browser.storage.sync.get("options").then((result) => {
     let optionsList = [
       "enableChatPlus", 
       "colorUsernames", 
@@ -50,16 +52,16 @@ chrome.runtime.onInstalled.addListener(() => {
       return extracted;
     }
 
-    // Stores the options object in chrome.storage.sync
+    // Stores the options object in browser.storage.sync
     if ( result && result.options ) {
       let newOptionObj = extractProperties(optionsList, result.options);
         
-      chrome.storage.sync.set({ options: newOptionObj })
+      browser.storage.sync.set({ options: newOptionObj })
         .then(() => {
           console.log("Installed - set options", newOptionObj);
         });
     } else {
-      chrome.storage.sync.set({ options: defaultOptions })
+      browser.storage.sync.set({ options: defaultOptions })
         .then(() => {
           console.log("Installed - default options", defaultOptions);
         });
@@ -67,14 +69,14 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.method === 'enableChatPlus') {  
     updateIcon();
   }
 });
 
 async function updateIcon() {
-  await chrome.storage.sync.get('options', function(data) {
+  await browser.storage.sync.get('options', function(data) {
     try {    
       var iconPath = data.options.enableChatPlus 
         ? {
@@ -87,7 +89,7 @@ async function updateIcon() {
           "32": "../images/icon-gray-32.png",
           "128": "../images/icon-gray-128.png"
         };
-      chrome.action.setIcon({path: iconPath});
+        browser.action.setIcon({path: iconPath});
     } catch (err){
       console.log('Error updating Icon', err);
     }

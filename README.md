@@ -5,7 +5,7 @@
 <br/>
 
 <p align=""> 
-  Introducing ChatPlus, a browser extension that enhances your Rumble livestream experience. 
+  Introducing ChatPlus for Rumble, a browser extension that enhances your Rumble.com livestream experience. 
   ChatPlus improves mention visibility with username highlighting, allows for easier chat conversatsions with recent chatter mentioning, lets users view livestream chats in a full window area and more!   
 </p>
 
@@ -18,8 +18,6 @@
 Whether watching or streaming, ChatPlus offers a lightweight set of features to make Rumble more user-friendly, including:
 
 - Highlighed usernames mentions 
-- Easy @ username tagging
-- Full size chat option
 - Username colors that promote visibility
 - Option to automatically play videos
 
@@ -27,7 +25,9 @@ Whether watching or streaming, ChatPlus offers a lightweight set of features to 
 
 ### Chrome Web Store 
 
-ChatPlus is available in the Chrome Web Store. Check out the [ChatPlus for Rumble](https://chrome.google.com/webstore/detail/chatplus-for-rumble/odlcomopigapcpmlpmmmhlhegajembio?hl=en&authuser=0) extension page.
+ChatPlus is available in the Chrome Web Store and Firefox Add-on Store. 
+- [ChatPlus for Rumble (Chrome)](https://chrome.google.com/webstore/detail/chatplus-for-rumble/odlcomopigapcpmlpmmmhlhegajembio?hl=en&authuser=0)
+- [ChatPlus for Rumble (Firefox)](https://addons.mozilla.org/en-US/firefox/addon/chatplus-for-rumble/)
 
 ## Usage
 

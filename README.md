@@ -35,14 +35,14 @@ Access the options menu by clicking the extension icon in the browser toolbar.
 
 **Highlighted Mentions** - Mentions with your username will be highlighted as they come.
 
-**Username Tagging** - Type "@" to view a user list popup while logged in. Click a username in the list to add it to the chat message.
+**Username Tagging**(Discontinued) - Type "@" to view a user list popup while logged in. Click a username in the list to add it to the chat message.
 
-**Full Window Chat** - Select "Full Window Chat" from the Rumble chat options menu to change the chat view.
+**Full Window Chat**(Discontinued) - Select "Full Window Chat" from the Rumble chat options menu to change the chat view.
 
 **Play videos automatically** - Select "Page videos automatically on page load" from options menu to enable.
 
 ## Support
-- ChatPlus is currently in beta testing and any suggestions or reported bugs are greatly appreciated. 
+- Any suggestions or reported bugs are greatly appreciated. 
 - For support, troubleshooting, comments and suggestions feel free to email wsright987@gmail.com. 
 
 ## Contributing

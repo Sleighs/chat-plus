@@ -664,12 +664,12 @@ const addChatUsernameMenu = () => {
   usernameMenuButtonText.style.height = 'fit-content';
   usernameMenuButtonText.style.marginTop = '-6%';//'-20px';
   //usernameMenuButtonText.style.zIndex = '189';
-  usernameMenuButtonText.style.color = 'rgb(255,255,255,0.45)';
+  usernameMenuButtonText.style.color = 'rgb(255,255,255,0.5)';
   usernameMenuButtonText.style.writingMode = 'vertical-rl';
   usernameMenuButtonText.style.transform = 'rotate(180deg)';
   usernameMenuButtonText.style.fontWeight = 'bold';
   usernameMenuButtonText.style.textAlign = 'center';
-  usernameMenuButtonText.style.opacity = '0.3';
+  //usernameMenuButtonText.style.opacity = '0.3';
   usernameMenuButtonText.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>`;
   
   // Create button container
@@ -701,7 +701,7 @@ const addChatUsernameMenu = () => {
   };
   // Add hover effect
   usernameMenuCloseButton.addEventListener('mouseover', () => {
-    usernameMenuCloseButton.style.background = 'rgb(0,0,0,0.25)';
+    usernameMenuCloseButton.style.background = 'rgb(0,0,0,0.4)';
   });
   // Remove hover effect
   usernameMenuCloseButton.addEventListener('mouseout', () => {

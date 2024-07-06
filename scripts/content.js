@@ -1229,9 +1229,9 @@ var chatObserver = new MutationObserver(function(mutations) {
 
           // For styling with other extensions
           if (chatStyleNormal && addedNode) {addedNode.style.background = rumbleColors.darkBlue;}
-
+          
           // Add the message to the chat history
-          let userColor = getUserColor(usernameEle.querySelector('a').textContent);
+          let userColor = getUserColor(usernameEle.textContent);
 
           // Log chat messages
           if (debugMode) {
@@ -1239,14 +1239,14 @@ var chatObserver = new MutationObserver(function(mutations) {
           }
 
           if (!normalChatColors) {
-            userColor = getUserColor(usernameEle.querySelector('a').textContent, null);
+            userColor = getUserColor(usernameEle.textContent, null);
           } else {
-            userColor = getUserColor(usernameEle.querySelector('a').textContent, usernameEle.querySelector('a').style.color);
+            userColor = getUserColor(usernameEle.textContent, usernameEle.style.color);
           }
 
           if (!normalChatColors){
             // Assign color to username
-            usernameEle.querySelector('a').style.color = userColor;
+            usernameEle.style.color = userColor;
           }
 
           //console.log('Current User: ' + currentUser);
@@ -1282,7 +1282,7 @@ var chatObserver = new MutationObserver(function(mutations) {
           }
 
           // If username not found in currentChatHistory, rebuild username list
-          if (!currentChatHistory.find(user => user.username === usernameEle.querySelector('a').textContent)){
+          if (!currentChatHistory.find(user => user.username === usernameEle.textContent)){
             buildUsernameList(false);
             //if (debugMode) console.log('Rebuilding username list for ' + usernameEle.querySelector('a').textContent);
           
@@ -1299,7 +1299,7 @@ var chatObserver = new MutationObserver(function(mutations) {
 
           // Add the message to the chat history
           currentChatHistory.push({
-            username: usernameEle.querySelector('a').textContent,
+            username: usernameEle.textContent,
             message: addedNode.childNodes[1].textContent,
             color: userColor,
             date: Date.now(),

@@ -624,14 +624,19 @@ const addChatUsernameMenu = () => {
   usernameMenuContainer2.classList.add('username-menu-container2');
   // Create toggle button element for container 1
   let usernameMenuButton = document.createElement('div');
+  usernameMenuButton.classList.add('username-menu-toggle-button');
   // Create text element for toggle button 
   let usernameMenuButtonText = document.createElement('div');
+  usernameMenuButtonText.classList.add('username-menu-toggle-button-text');
   // Create button container
   let usernameMenuButtonContainer = document.createElement('div');
+  usernameMenuButtonContainer.classList.add('username-menu-button-container');
   // Create close button
   let usernameMenuCloseButton = document.createElement('div');
+  usernameMenuCloseButton.classList.add('username-menu-list-button');
   // Add a Refresh menu button 
   let usernameMenuRefreshButton = document.createElement('div');
+  usernameMenuRefreshButton.classList.add('username-menu-refresh-button');
 
 
   // Set the username list width 
@@ -653,7 +658,6 @@ const addChatUsernameMenu = () => {
 
   // Toggle Button
   usernameMenuButton.title = 'Toggle Users List';
-  usernameMenuButton.classList.add('username-menu-toggle-button');
   usernameMenuButton.style.color = rumbleColors.text;
   usernameMenuButton.addEventListener('click', () => {toggleChatUsernameMenu(!showUsernameList);});
   usernameMenuButton.addEventListener('mouseover', () => {usernameMenuButtonText.style.color = 'rgba(255,255,255,.9)';  });
@@ -661,7 +665,6 @@ const addChatUsernameMenu = () => {
 
 
   // Toggle button text
-  usernameMenuButtonText.classList.add('username-menu-toggle-button-text');
   usernameMenuButtonText.style.color = hideToggleIcon ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,.3)';
   usernameMenuButtonText.addEventListener('click', () => {toggleChatUsernameMenu(!showUsernameList);});
 
@@ -688,10 +691,9 @@ const addChatUsernameMenu = () => {
 
 
 
-  // List Elements
+  // Username List Elements
   
   // List Button container
-  usernameMenuButtonContainer.classList.add('username-menu-button-container');
   usernameMenuButtonContainer.style.width = '100%';
   usernameMenuButtonContainer.style.height = '17px';
   usernameMenuButtonContainer.style.background = 'rgb(133, 199, 66, 1)';
@@ -702,7 +704,6 @@ const addChatUsernameMenu = () => {
   
 
   // Close Button
-  usernameMenuCloseButton.classList.add('username-menu-list-button');
   usernameMenuCloseButton.title = 'Close List';
   usernameMenuCloseButton.style.width = '20%';
   usernameMenuCloseButton.style.height = '100%';
@@ -726,7 +727,6 @@ const addChatUsernameMenu = () => {
 
 
   // Refresh Button
-  usernameMenuRefreshButton.classList.add('username-menu-refresh-button');
   usernameMenuRefreshButton.title = 'Refresh List';
   usernameMenuRefreshButton.style.width = '42%';
   usernameMenuRefreshButton.style.height = '100%';
@@ -745,17 +745,21 @@ const addChatUsernameMenu = () => {
         : `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
     );
   }, 1500);
-  usernameMenuRefreshButton.onclick = function(){
+  usernameMenuRefreshButton.addEventListener('click', () => {
     // Build new username list
     buildUsernameList(false)
 
-    // Update user count
-    usernameMenuRefreshButton.innerHTML = (
-      showListUserCount 
-        ? `<span>${getUserCount(userColors)}</span>`
-        : `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
-    );
-  };
+    setTimeout(() => {
+      // Update user count
+      usernameMenuRefreshButton.innerHTML = (
+        showListUserCount 
+          ? `<span>${getUserCount(userColors)}</span>`
+          : `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
+      );
+    }, 200)
+    
+  });
+
   // Add hover effect
   usernameMenuRefreshButton.addEventListener('mouseover', () => {
     usernameMenuRefreshButton.style.background = 'rgb(0, 0, 0, 0.25)';
@@ -770,7 +774,7 @@ const addChatUsernameMenu = () => {
       usernameMenuRefreshButton.style.background = 'rgb(7, 247, 247, 0.5)';
       setTimeout(() => {
         usernameMenuRefreshButton.style.background = 'transparent';
-      }, 500);
+      }, 650);
     }, 100);
   });
 
@@ -816,7 +820,6 @@ const buildUsernameList = (appended) => {
     usernameMenuList.style.position = 'relative';
     usernameMenuList.style.width = '100%';
     usernameMenuList.style.height = '100%';
-    //usernameMenuList.style.zIndex = '195';
     usernameMenuList.style.overflow = 'scroll';
     usernameMenuList.style.boxSizing = 'border-box';
     usernameMenuList.style.padding = '6px 0';
@@ -892,7 +895,7 @@ const toggleChatUsernameMenu = (toggle) => {
     // Set display to flex
     usernameMenuContainer2.style.display = 'flex';
 
-    // Add width
+    // Set width
     if (streamerMode){
       usernameMenuContainer2.style.width = '17%';
       usernameMenuContainer2.style.height = '100%';
@@ -903,13 +906,6 @@ const toggleChatUsernameMenu = (toggle) => {
       usernameMenuContainer2.style.maxWidth = '22%';
     }
 
-    // Change button icon to right arrow
-    // document.querySelector('.username-menu-toggle-button-text').innerHTML = 
-    //   //Right Caret
-    //   `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
-    //     <path d="M10 12.796V3.204L4.519 8zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753"/>
-    //   </svg>`;
-    
     // Create filled icon
     const svgElement2 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svgElement2.setAttribute("width", "16");
@@ -933,13 +929,6 @@ const toggleChatUsernameMenu = (toggle) => {
   } else {
     // Hide container
     usernameMenuContainer2.style.display = 'none';
-
-    // Change button icon to left arrow
-    // document.querySelector('.username-menu-toggle-button-text').innerHTML = 
-    //   // Left Caret
-    //   `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
-    //     <path d="M6 12.796V3.204L11.481 8zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753"/>
-    //   </svg>`;
     
     const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svgElement.setAttribute("width", "16");
@@ -976,7 +965,6 @@ const toggleChatUsernameMenu = (toggle) => {
   //   usernameMenuContainer.classList.add('username-menu--normal-animation');
   // }
 };
-
 
 
 
@@ -1027,7 +1015,9 @@ var chatObserver = new MutationObserver(function(mutations) {
 
           //console.log('Current User: ' + currentUser);
           //console.log('Current Streamer: ' + currentStreamer);
-          
+
+          // Check if current user is the selected username to highlight
+
           // Highlight current user's username and streamer's name when mentioned
           if (
             (currentUser && currentUser.length > 2)

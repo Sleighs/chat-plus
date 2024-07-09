@@ -1,3 +1,5 @@
+const browser = chrome || browser
+
 ////////   Installation   ////////
 
 // Default options
@@ -14,6 +16,8 @@ const defaultOptions = {
   saveRants: false,
   chatAvatarEnabled: true,
   normalChatColors: false,
+  initialBoot: true,
+  hideToggleIcon: false
 };
 
 // Options stored in chrome.storage.sync
@@ -35,6 +39,8 @@ chrome.runtime.onInstalled.addListener(() => {
       "saveRants",
       "chatAvatarEnabled",
       "normalChatColors",
+      "initialBoot",
+      "hideToggleIcon"
     ];
 
     // Creates a new options object from the stored options and the default options

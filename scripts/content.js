@@ -1,5 +1,7 @@
 //////   Define Variables   //////
 
+let browser = chrome || browser;
+
 // Default options
 let optionsState = {
   enableChatPlus: true,
@@ -13,7 +15,9 @@ let optionsState = {
   chatStyleNormal: true,
   saveRants: false,
   chatAvatarEnabled: true,
-  normalChatColors: true
+  normalChatColors: true,
+  initialBoot: true,
+  hideToggleIcon: false,
 };
 
 // Undefined option vars
@@ -28,7 +32,9 @@ let enableChatPlus,
   chatStyleNormal,
   saveRants,
   chatAvatarEnabled,
-  normalChatColors;
+  normalChatColors,
+  initialBoot,
+  hideToggleIcon;
 
 // Vars that remain in scope
 let debugMode = false;
@@ -93,7 +99,7 @@ let userColors = {};
 (async () => {
   //console.log('Running ChatPlus...')
 
-  await chrome.storage.sync.get("options")
+  await browser.storage.sync.get("options")
   .then(function (result) {
     const defaultOptions = {
       enableChatPlus: true,
@@ -108,6 +114,8 @@ let userColors = {};
       saveRants: false,
       chatAvatarEnabled: true,
       normalChatColors: false,
+      initialBoot: true,
+      hideToggleIcon: false
     };
 
     const optionsList = [
@@ -122,7 +130,9 @@ let userColors = {};
       "chatStyleNormal",
       "saveRants",
       "chatAvatarEnabled",
-      "normalChatColors"
+      "normalChatColors",
+      "initialBoot",
+      "hideToggleIcon"
     ];
 
     function extractProperties(names, obj) {
@@ -154,6 +164,8 @@ let userColors = {};
       saveRants = newOptionObj.saveRants;
       chatAvatarEnabled = newOptionObj.chatAvatarEnabled;
       normalChatColors = newOptionObj.normalChatColors;
+      initialBoot = newOptionObj.initialBoot;
+      hideToggleIcon = newOptionObj.hideToggleIcon;
 
       Object.assign(optionsState, newOptionObj);
     } else {
@@ -169,6 +181,8 @@ let userColors = {};
       saveRants = defaultOptions.saveRants;
       chatAvatarEnabled = defaultOptions.chatAvatarEnabled;
       normalChatColors = defaultOptions.normalChatColors;
+      initialBoot = defaultOptions.initialBoot;
+      hideToggleIcon = defaultOptions.hideToggleIcon;
 
       Object.assign(optionsState, defaultOptions);
     } 
@@ -238,8 +252,27 @@ let userColors = {};
   });  
 })();
 
+//////   Functions   //////
 
+const setOptions = async (data) => {
+  await browser.storage.sync.set({ options: data })
+    .then(() => { 
+      if (debugMode) {console.log('Options saved.');} 
+    });
+}
 
+const getOptions = async (optionName) => {
+  const options = await browser.storage.sync.get(['options'])
+    .then((result) => {
+      return result.options;
+    });
+
+  if (optionName) {
+    return options[optionName];
+  }
+
+  return options;
+}
 
 
 //////   Chat History  //////
@@ -258,9 +291,9 @@ try {
   if (rantEle && usernameEle) {
     if (usernameEle.length > 0) {
       currentUser = usernameEle[usernameEle.length - 1].textContent;
-      chrome.storage.local.set({ currentUser });
+      browser.storage.local.set({ currentUser });
     } else {
-      chrome.storage.local.get(['currentUser'], (result) => {
+      browser.storage.local.get(['currentUser'], (result) => {
         currentUser = result.currentUser;
       });
     } 
@@ -324,8 +357,6 @@ const getChatHistory = () => {
     let listRows = chatHistoryList.querySelectorAll('.chat-history--row');
 
     listRows.forEach((ele, index) => {
-      //if (index < 5) console.log('ele', ele);
-
       // Check element classlist for 'chat-history--rant' and skip row
       if (ele.classList.contains('chat-history--rant')) {
         return;
@@ -588,15 +619,13 @@ const addChatUsernameMenu = () => {
   let usernameMenuContainer = document.createElement('div');
   let usernameMenuContainer2 = document.createElement('div');
 
-  // Add hover effect to container 1
-  usernameMenuContainer.addEventListener('mouseover', () => {
-    usernameMenuContainer.style.backgroundColor = 'rgba(255,255,255,.1)';
-  });
-  // Remove hover effect
-  usernameMenuContainer.addEventListener('mouseout', () => {
-    usernameMenuContainer.style.backgroundColor = 'transparent';
-  });
-  
+  // Create toggle button element for container 1
+  let usernameMenuButton = document.createElement('div');
+  // Create text element for toggle button 
+  let usernameMenuButtonText = document.createElement('div');
+  // Create button container
+  let usernameMenuButtonContainer = document.createElement('div');
+
   // Add width to container 2
   if (streamerMode){
     usernameMenuContainer2.style.width = '17%';
@@ -623,6 +652,15 @@ const addChatUsernameMenu = () => {
   usernameMenuContainer.style.cursor = 'pointer';
   usernameMenuContainer.style.top = '0';
   usernameMenuContainer.style.left = '0';
+  // Add hover effect to container 1
+  usernameMenuContainer.addEventListener('mouseover', () => {
+    usernameMenuContainer.style.backgroundColor = 'rgba(255,255,255,.11)';
+    
+  });
+  // Remove hover effect
+  usernameMenuContainer.addEventListener('mouseout', () => {
+    usernameMenuContainer.style.backgroundColor = 'transparent';
+  });
 
   // Create second container for list
   usernameMenuContainer2.classList.add('username-menu-container2');
@@ -636,44 +674,52 @@ const addChatUsernameMenu = () => {
   usernameMenuContainer2.style.justifyContent = 'center';
   //usernameMenuContainer2.style.zIndex = '190';
   
-  // Create toggle button element for container 1
-  let usernameMenuButton = document.createElement('div');
-  //usernameMenuButton.title = 'Toggle Recent Users';
-  usernameMenuButton.classList.add('username-menu-toggle-button');
-  usernameMenuButton.style.width = '100%';
-  usernameMenuButton.style.height = '100%';
+  // Toggle Button
+  usernameMenuButton.title = 'Toggle Users List';
+  usernameMenuButton.classList.add('username-menu-toggle-button', `${initialBoot ? 'username-menu-toggle-button-initial' : 'username-menu-toggle-button-normal'}`);
   usernameMenuButton.style.color = rumbleColors.text;
-  usernameMenuButton.style.boxSizing = 'border-box';
-  //usernameMenuButton.style.zIndex = '195';
-  usernameMenuButton.style.display = 'flex';
-  usernameMenuButton.style.justifyContent = 'center';
-  usernameMenuButton.style.alignItems = 'center';
-  usernameMenuButton.style.textAlign = 'center';
-  usernameMenuButton.style.cursor = 'pointer';
   usernameMenuButton.addEventListener('click', () => {
-    toggleChatUsernameMenu(
-      !showUsernameList 
-      //? false : true\
-      );
+    toggleChatUsernameMenu(!showUsernameList);
+    
+    // Prevent initial boot animation after first click
+    // if (initialBoot) {
+    //   initialBoot = false;
+    //   setOptions({
+    //     ...optionsState,
+    //     initialBoot: false
+    //   });
+
+    //   // Remove initial animation class
+    //   usernameMenuButton.classList.remove('username-menu-toggle-button-initial');
+    //   // Add normal animation class
+    //   usernameMenuButton.classList.add('username-menu-toggle-button-normal');
+    // }
+  });
+  usernameMenuButton.addEventListener('mouseover', () => {
+    usernameMenuButtonText.style.color = 'rgba(255,255,255,.9)';  
+  });
+  usernameMenuButton.addEventListener('mouseout', () => {
+    usernameMenuButtonText.style.color = hideToggleIcon ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,.3)';  
   });
 
-  // Create text element for toggle button 
-  let usernameMenuButtonText = document.createElement('div');
+
+  // Toggle button text
   usernameMenuButtonText.classList.add('username-menu-toggle-button-text');
   usernameMenuButtonText.style.width = 'fit-content';
   usernameMenuButtonText.style.height = 'fit-content';
   usernameMenuButtonText.style.marginTop = '-6%';//'-20px';
   //usernameMenuButtonText.style.zIndex = '189';
-  usernameMenuButtonText.style.color = 'rgb(255,255,255,0.5)';
   usernameMenuButtonText.style.writingMode = 'vertical-rl';
   usernameMenuButtonText.style.transform = 'rotate(180deg)';
   usernameMenuButtonText.style.fontWeight = 'bold';
   usernameMenuButtonText.style.textAlign = 'center';
-  //usernameMenuButtonText.style.opacity = '0.3';
-  usernameMenuButtonText.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>`;
+  usernameMenuButtonText.style.color = hideToggleIcon ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,.3)';
+  usernameMenuButtonText.innerHTML = 
+    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
+      <path d="M10 12.796V3.204L4.519 8zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753"/>
+    </svg>`;
   
-  // Create button container
-  let usernameMenuButtonContainer = document.createElement('div');
+  // List Button container
   usernameMenuButtonContainer.classList.add('username-menu-button-container');
   usernameMenuButtonContainer.style.width = '100%';
   usernameMenuButtonContainer.style.height = '17px';
@@ -840,7 +886,6 @@ const buildUsernameList = (appended) => {
     usernameTextElement.style.listStyle = 'none';
     usernameTextElement.style.cursor = 'pointer';
     usernameTextElement.style.fontWeight = 'bold';
-    //usernameTextElement.style.zIndex = '195';
     usernameTextElement.style.padding = '0 6px';
     usernameTextElement.innerHTML = user;
 
@@ -887,23 +932,23 @@ const toggleChatUsernameMenu = (toggle) => {
       usernameMenuContainer2.style.maxWidth = '22%';
     }
 
-    // Change button icon
-    document.querySelector('.username-menu-toggle-button-text').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>`    
+    // Change button icon to right arrow
+    document.querySelector('.username-menu-toggle-button-text').innerHTML = 
+      `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
+        <path d="M10 12.796V3.204L4.519 8zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753"/>
+      </svg>`;
 
     // Gets new user list
     buildUsernameList(false);
-
-    // Change button text
-    //userListBtn.innerText = 'Hide Recent List';
   } else {
     // Hide container
     usernameMenuContainer2.style.display = 'none';
 
-    // Change button text
-    //userListBtn.innerText = 'Show Recent List';
-    
-    // Change button icon
-    document.querySelector('.username-menu-toggle-button-text').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>`;    
+    // Change button icon to left arrow
+    document.querySelector('.username-menu-toggle-button-text').innerHTML = 
+      `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
+        <path d="M6 12.796V3.204L11.481 8zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753"/>
+      </svg>`;
   }
 };
 
@@ -1213,7 +1258,6 @@ var chatObserver = new MutationObserver(function(mutations) {
         if (mutation.addedNodes[i].classList.contains("chat-history--row")) {
           // Check element classlist for 'chat-history--rant' 
           if (!enableChatPlus || mutation.addedNodes[i].classList.contains('chat-history--rant')) {
-            // Save rant to chrome.storage.sync
             return;
           }
 
@@ -1227,9 +1271,6 @@ var chatObserver = new MutationObserver(function(mutations) {
           let addedNode = mutation.addedNodes[i].querySelector('.chat-history--message-wrapper');
           let usernameEle = addedNode.querySelector('.chat-history--username');
 
-          // For styling with other extensions
-          if (chatStyleNormal && addedNode) {addedNode.style.background = rumbleColors.darkBlue;}
-          
           // Add the message to the chat history
           let userColor = getUserColor(usernameEle.textContent);
 

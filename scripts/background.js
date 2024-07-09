@@ -1,4 +1,4 @@
-const browser = chrome || browser
+const browser = chrome || browser;
 
 ////////   Installation   ////////
 

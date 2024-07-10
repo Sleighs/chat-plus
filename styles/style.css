@@ -67,6 +67,36 @@
   /* animation: splash .5s infinite; */
 }
 
+.username-menu-button-container {
+  width: 100%;
+  height: 17px;
+  background: rgb(133, 199, 66, 1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.username-menu-close-button {
+  width: 20%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  opacity: 0.36;
+}
+
+.username-menu-refresh-button {
+  width: 42%;
+  height: 100%;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  padding-right: 5px;
+  cursor: pointer;
+  opacity: 0.75;
+}
+
 
 /* Username List */
 

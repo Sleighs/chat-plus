@@ -633,7 +633,7 @@ const addChatUsernameMenu = () => {
   usernameMenuButtonContainer.classList.add('username-menu-button-container');
   // Create close button
   let usernameMenuCloseButton = document.createElement('div');
-  usernameMenuCloseButton.classList.add('username-menu-list-button');
+  usernameMenuCloseButton.classList.add('username-menu-list-button', 'username-menu-close-button');
   // Add a Refresh menu button 
   let usernameMenuRefreshButton = document.createElement('div');
   usernameMenuRefreshButton.classList.add('username-menu-refresh-button');
@@ -694,24 +694,11 @@ const addChatUsernameMenu = () => {
   // Username List Elements
   
   // List Button container
-  usernameMenuButtonContainer.style.width = '100%';
-  usernameMenuButtonContainer.style.height = '17px';
-  usernameMenuButtonContainer.style.background = 'rgb(133, 199, 66, 1)';
-  usernameMenuButtonContainer.style.display = 'flex';
-  usernameMenuButtonContainer.style.alignItems = 'center';
-  usernameMenuButtonContainer.style.justifyContent = 'space-between';
   usernameMenuButtonContainer.style.color = rumbleColors.darkBlue;
   
 
   // Close Button
   usernameMenuCloseButton.title = 'Close List';
-  usernameMenuCloseButton.style.width = '20%';
-  usernameMenuCloseButton.style.height = '100%';
-  usernameMenuCloseButton.style.display = 'flex';
-  usernameMenuCloseButton.style.justifyContent = 'center';
-  usernameMenuCloseButton.style.alignItems = 'center';
-  usernameMenuCloseButton.style.cursor = 'pointer';  
-  usernameMenuCloseButton.style.opacity = '0.36';
   usernameMenuCloseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">T<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/></svg>`;
   usernameMenuCloseButton.onclick = function(){
     toggleChatUsernameMenu(false);
@@ -728,16 +715,6 @@ const addChatUsernameMenu = () => {
 
   // Refresh Button
   usernameMenuRefreshButton.title = 'Refresh List';
-  usernameMenuRefreshButton.style.width = '42%';
-  usernameMenuRefreshButton.style.height = '100%';
-  usernameMenuRefreshButton.style.fontSize = '0.83rem';
-  //usernameMenuRefreshButton.style.zIndex = '199';
-  usernameMenuRefreshButton.style.display = 'flex';
-  usernameMenuRefreshButton.style.justifyContent = 'right';
-  usernameMenuRefreshButton.style.alignItems = 'center';
-  usernameMenuRefreshButton.style.paddingRight =  '5px'; 
-  usernameMenuRefreshButton.style.cursor = 'pointer';
-  usernameMenuRefreshButton.style.opacity = '0.75';
   setTimeout(() => {
     usernameMenuRefreshButton.innerHTML = (
       showListUserCount 
@@ -747,7 +724,7 @@ const addChatUsernameMenu = () => {
   }, 1500);
   usernameMenuRefreshButton.addEventListener('click', () => {
     // Build new username list
-    buildUsernameList(false)
+    buildUsernameList(false);
 
     setTimeout(() => {
       // Update user count
@@ -756,8 +733,7 @@ const addChatUsernameMenu = () => {
           ? `<span>${getUserCount(userColors)}</span>`
           : `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
       );
-    }, 200)
-    
+    }, 200);
   });
 
   // Add hover effect

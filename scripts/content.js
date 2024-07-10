@@ -716,7 +716,7 @@ const addChatUsernameMenu = () => {
           ? `<span class="username-menu--username-list-user-count">${getUserCount(userColors)}</span>`
           : `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-arrow-clockwise username-menu--username-list-refresh-icon" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
       );
-    }, 200);
+    }, 100);
   });
   // Add hover effect
   usernameMenuRefreshButton.addEventListener('mouseover', () => {usernameMenuRefreshButton.style.background = 'rgb(0, 0, 0, 0.17)';});
@@ -834,6 +834,7 @@ const buildUsernameList = (appended) => {
 
 // Add username list menu to page
 const toggleChatUsernameMenu = (toggle) => {
+  // Set container variable
   let usernameMenuContainer2 = document.querySelector('.username-menu-container2');
   
   // Update global variable
@@ -872,27 +873,24 @@ const toggleChatUsernameMenu = (toggle) => {
     document.querySelector('.username-menu-toggle-button-text').innerHTML = '';
     document.querySelector('.username-menu-toggle-button-text').appendChild(svgElement2);
 
-    // Gets new user list
+    // Get new user list
     buildUsernameList(false);
   } else {
     // Hide container
     usernameMenuContainer2.style.display = 'none';
-    
+
+    // Create empty icon to replace filled icon
     const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svgElement.setAttribute("width", "16");
     svgElement.setAttribute("height", "16");
     svgElement.setAttribute("fill", "currentColor");
     svgElement.setAttribute("class", "bi bi-caret-left");
     svgElement.setAttribute("viewBox", "0 0 16 16");
-    svgElement.addEventListener('click', () => {
-      toggleChatUsernameMenu(!showUsernameList);
-    });
-    // Create the path element
+    svgElement.addEventListener('click', () => {toggleChatUsernameMenu(!showUsernameList);});
     const pathElement = document.createElementNS("http://www.w3.org/2000/svg", "path");
     pathElement.setAttribute("d", "M6 12.796V3.204L11.481 8zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753");
-    // Append the path element to the SVG element
     svgElement.appendChild(pathElement);
-    // Add the path element to the SVG element
+    // Add icon to page
     document.querySelector('.username-menu-toggle-button-text').innerHTML = '';
     document.querySelector('.username-menu-toggle-button-text').appendChild(svgElement);
   }

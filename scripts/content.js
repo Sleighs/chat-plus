@@ -71,7 +71,6 @@ let usernameColors = {
   coolBlue: '#07F7F7',
   dreamyBlue: '#2DA3FB'
 }
-
 let messageColors = { 
   chatPlusO: '#E0E9F2',
   chatplus: '#C2E1FE',
@@ -86,7 +85,7 @@ let rumbleColors = {
   darkBlue: '#061726'
 }
 
-// For assigned colors
+// List of assigned colors for users
 let userColors = {};
 
 
@@ -626,8 +625,8 @@ const addChatUsernameMenu = () => {
   let usernameMenuButton = document.createElement('div');
   usernameMenuButton.classList.add('username-menu-toggle-button');
   // Create text element for toggle button 
-  let usernameMenuButtonText = document.createElement('div');
-  usernameMenuButtonText.classList.add('username-menu-toggle-button-text');
+  let toggleButtonIcon = document.createElement('div');
+  toggleButtonIcon.classList.add('username-menu-toggle-button-text', 'toggle-button-icon');
   // Create button container
   let usernameMenuButtonContainer = document.createElement('div');
   usernameMenuButtonContainer.classList.add('username-menu-button-container');
@@ -637,7 +636,6 @@ const addChatUsernameMenu = () => {
   // Add a Refresh menu button 
   let usernameMenuRefreshButton = document.createElement('div');
   usernameMenuRefreshButton.classList.add('username-menu-refresh-button');
-
 
   // Set the username list width 
   if (streamerMode){
@@ -654,21 +652,16 @@ const addChatUsernameMenu = () => {
   // Add hover effect to the button container
   usernameMenuContainer.addEventListener('mouseover', () => {usernameMenuContainer.style.backgroundColor = 'rgba(255,255,255,0.12)';});
   usernameMenuContainer.addEventListener('mouseleave', () => {usernameMenuContainer.style.backgroundColor = 'rgba(255,255,255,0)';});
-
-
   // Toggle Button
   usernameMenuButton.title = 'Toggle Users List';
   usernameMenuButton.style.color = rumbleColors.text;
   usernameMenuButton.addEventListener('click', () => {toggleChatUsernameMenu(!showUsernameList);});
-  usernameMenuButton.addEventListener('mouseover', () => {usernameMenuButtonText.style.color = 'rgba(255,255,255,.9)';  });
-  usernameMenuButton.addEventListener('mouseleave', () => {usernameMenuButtonText.style.color = hideToggleIcon ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,.3)';  });
-
-
+  usernameMenuButton.addEventListener('mouseover', () => {toggleButtonIcon.style.color = 'rgba(255,255,255,.9)';  });
+  usernameMenuButton.addEventListener('mouseleave', () => {toggleButtonIcon.style.color = hideToggleIcon ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,.3)';  });
   // Toggle button text
-  usernameMenuButtonText.style.color = hideToggleIcon ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,.3)';
-  usernameMenuButtonText.addEventListener('click', () => {toggleChatUsernameMenu(!showUsernameList);});
-
-
+  toggleButtonIcon.style.color = hideToggleIcon ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,.3)';
+  toggleButtonIcon.addEventListener('click', () => {toggleChatUsernameMenu(!showUsernameList);});
+  
   // Create the icon element
   const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svgElement.setAttribute("width", "16");
@@ -676,74 +669,59 @@ const addChatUsernameMenu = () => {
   svgElement.setAttribute("fill", "currentColor");
   svgElement.setAttribute("class", "bi bi-caret-left");
   svgElement.setAttribute("viewBox", "0 0 16 16");
-  // Create the path element
   const pathElement = document.createElementNS("http://www.w3.org/2000/svg", "path");
   pathElement.setAttribute("d", "M6 12.796V3.204L11.481 8zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753");
-  // Append the path element to the SVG element
+  // Append path element to SVG element
   svgElement.appendChild(pathElement);
-
-  // Append the SVG element to the desired parent element
-  usernameMenuButtonText.appendChild(svgElement);
-  // Add a click event listener to the SVG element
-  svgElement.addEventListener('click', () => {
-    toggleChatUsernameMenu(!showUsernameList);
-  });
-
+  // Add a click event listener to SVG element
+  svgElement.addEventListener('click', () => {toggleChatUsernameMenu(!showUsernameList);});
+  // Append SVG element to button element
+  toggleButtonIcon.appendChild(svgElement);
 
 
   // Username List Elements
   
-  // List Button container
+  // Set button container color
   usernameMenuButtonContainer.style.color = rumbleColors.darkBlue;
   
-
   // Close Button
   usernameMenuCloseButton.title = 'Close List';
   usernameMenuCloseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">T<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/></svg>`;
   usernameMenuCloseButton.onclick = function(){
     toggleChatUsernameMenu(false);
   };
-  // Add hover effect
-  usernameMenuCloseButton.addEventListener('mouseover', () => {
-    usernameMenuCloseButton.style.background = 'rgb(0,0,0,0.4)';
-  });
-  // Remove hover effect
-  usernameMenuCloseButton.addEventListener('mouseout', () => {
-    usernameMenuCloseButton.style.background = 'transparent';
-  });
-
+  // Add hover effect on mouse over
+  usernameMenuCloseButton.addEventListener('mouseover', () => {usernameMenuCloseButton.style.background = 'rgb(0,0,0,0.17)';});
+  // Remove hover effect on mouse leave
+  usernameMenuCloseButton.addEventListener('mouseout', () => {usernameMenuCloseButton.style.background = 'transparent';});
 
   // Refresh Button
   usernameMenuRefreshButton.title = 'Refresh List';
+  //Get user count
   setTimeout(() => {
+    let showRefreshIcon = false;
     usernameMenuRefreshButton.innerHTML = (
       showListUserCount 
-        ? `<span style="width: fit-content;">${getUserCount(userColors)}</span>`
+        ? `<span class="username-menu--username-list-user-count">${showRefreshIcon ? '<svg  xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-arrow-clockwise username-menu--username-list-refresh-icon" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>' : ''}${getUserCount(userColors)}</span>`
         : `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
     );
   }, 1500);
   usernameMenuRefreshButton.addEventListener('click', () => {
     // Build new username list
     buildUsernameList(false);
-
+    // Update user count on click
     setTimeout(() => {
-      // Update user count
       usernameMenuRefreshButton.innerHTML = (
         showListUserCount 
-          ? `<span>${getUserCount(userColors)}</span>`
-          : `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
+          ? `<span class="username-menu--username-list-user-count">${getUserCount(userColors)}</span>`
+          : `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" class="bi bi-arrow-clockwise username-menu--username-list-refresh-icon" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`
       );
     }, 200);
   });
-
   // Add hover effect
-  usernameMenuRefreshButton.addEventListener('mouseover', () => {
-    usernameMenuRefreshButton.style.background = 'rgb(0, 0, 0, 0.25)';
-  });
+  usernameMenuRefreshButton.addEventListener('mouseover', () => {usernameMenuRefreshButton.style.background = 'rgb(0, 0, 0, 0.17)';});
   // Remove hover effect
-  usernameMenuRefreshButton.addEventListener('mouseout', () => {
-    usernameMenuRefreshButton.style.background = 'transparent';
-  });
+  usernameMenuRefreshButton.addEventListener('mouseout', () => {usernameMenuRefreshButton.style.background = 'transparent';});
   // Add flash effect
   usernameMenuRefreshButton.addEventListener('click', () => {
     setTimeout(() => {
@@ -754,28 +732,23 @@ const addChatUsernameMenu = () => {
     }, 100);
   });
 
-
-  // Add buttons to wrapper
+  // Add text element to button
+  usernameMenuButton.appendChild(toggleButtonIcon);
+  usernameMenuContainer.appendChild(usernameMenuButton);
+  // Add username list buttons to container
   usernameMenuButtonContainer.appendChild(usernameMenuCloseButton);
   usernameMenuButtonContainer.appendChild(usernameMenuRefreshButton);
-  // Add button wrapper to list container
+  // Add button container to username list
   usernameMenuContainer2.appendChild(usernameMenuButtonContainer);
   usernameMenuContainer2.appendChild(buildUsernameList(true));
-  
-  // Add text element to button
-  usernameMenuButton.appendChild(usernameMenuButtonText);
-  usernameMenuContainer.appendChild(usernameMenuButton);
-  // Add container to page
-  chatHistoryEle[0].appendChild(usernameMenuContainer);
-  chatHistoryEle[0].appendChild(usernameMenuContainer2);
-  
-  // Add menu toggle to class=chat--header-buttons-wrapper
-  //let chatHeaderButtons = document.querySelector('.chat--header-buttons-wrapper');
+  // Add containers to page
+  //chatHistoryEle[0].appendChild(usernameMenuContainer);
   chatHistoryList.appendChild(usernameMenuContainer);
-
-  // Bring chat menu to front
+  chatHistoryEle[0].appendChild(usernameMenuContainer2);
+  // Set chat menu to front
   document.querySelector('#chat-main-menu').style.zIndex = '1900';
 };
+
 
 // Build and return recent user list
 const buildUsernameList = (appended) => {
@@ -790,7 +763,6 @@ const buildUsernameList = (appended) => {
   } else {
     // Make new list
     usernameMenuList = document.createElement('ul');
-
     // Create username list element    
     usernameMenuList.classList.add('username-menu-list');
     usernameMenuList.style.position = 'relative';

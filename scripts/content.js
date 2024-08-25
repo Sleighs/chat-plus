@@ -610,7 +610,7 @@ const clearMentionPopup = () => {
 
 
 
-///////   Main Chat Username List   ///////
+///////   Chat Username List   ///////
 
 // Add username list tab to chat window
 const addChatUsernameMenu = () => {
